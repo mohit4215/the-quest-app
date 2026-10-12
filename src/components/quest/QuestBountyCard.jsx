@@ -36,7 +36,7 @@ export default function QuestBountyCard({
       Animated.spring(scaleAnim, { toValue: 1, speed: 30, useNativeDriver: true }),
     ]).start(() => {
       setAccepted(true);
-      if (onAccept) onAccept(quest.id);
+      if (onAccept) onAccept(quest);
     });
   };
 

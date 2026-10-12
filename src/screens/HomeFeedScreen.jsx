@@ -20,6 +20,7 @@ import {
   TouchableOpacity,
   Animated,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { Colors, Spacing, Radius } from '../constants';
 import { useQuestMode } from '../context/QuestModeContext';
 import TopAppBar from '../components/common/TopAppBar';
@@ -125,7 +126,8 @@ const INITIAL_QUESTS = [
 ];
 
 export default function HomeFeedScreen() {
-  const { isLazyMode, isQuesterMode, accentColor } = useQuestMode();
+  const navigation = useNavigation();
+  const { isLazyMode, isQuesterMode, accentColor, acceptQuest } = useQuestMode();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [quests, setQuests] = useState(INITIAL_QUESTS);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -137,11 +139,25 @@ export default function HomeFeedScreen() {
     return quests.filter((q) => q.category === selectedCategory);
   }, [selectedCategory, quests]);
 
-  const handleAcceptQuest = (id) => {
+  const handleAcceptQuest = (targetQuest) => {
+    const questObj = typeof targetQuest === 'object'
+      ? targetQuest
+      : quests.find((q) => q.id === targetQuest) || INITIAL_QUESTS[0];
+
+    // Mark as accepted in local feed list
     setQuests((prev) =>
-      prev.map((q) => (q.id === id ? { ...q, isAccepted: true } : q))
+      prev.map((q) => (q.id === questObj.id ? { ...q, isAccepted: true } : q))
     );
-    showToast('⚡ Quest accepted! Added to your Active Quest tracker.');
+
+    // Set as active quest in global context (auto switches to Quester Mode)
+    acceptQuest(questObj);
+
+    showToast('⚡ Quest accepted! Opening Active Quest tracker...');
+
+    // Automatically navigate to Active Quest tab
+    setTimeout(() => {
+      navigation.navigate('ActiveQuest');
+    }, 350);
   };
 
   const handleAddNewQuest = (newQuest) => {
