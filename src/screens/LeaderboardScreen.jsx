@@ -1,32 +1,187 @@
 /**
- * LeaderboardScreen — Placeholder screen for "Leaderboard"
- * Gamified rankings and hall of fame for hostel questers.
+ * LeaderboardScreen — Final "Leaderboard" tab for "Quest"
+ *
+ * Requirements:
+ * 1. Top section: User Profile Card showing Reliability Score (98%),
+ *    Quests Completed (24), and unlocked badges ("Night Owl Runner", "Hostel Saviour").
+ * 2. Middle section: "Inter-Hostel Leaderboard" comparing total points across hostels
+ *    (BH-1, BH-2, BH-3, GH-1) and a top 5 weekly student runners list.
+ * 3. Bottom section: "Redeem QP Store" where users can swap points for
+ *    "Free Delivery Pass (150 QP)" or "Night Canteen ₹50 Voucher (500 QP)".
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
+  TouchableOpacity,
+  Modal,
 } from 'react-native';
 import { Colors, Spacing, Radius } from '../constants';
 import { useQuestMode } from '../context/QuestModeContext';
 import TopAppBar from '../components/common/TopAppBar';
 
-export default function LeaderboardScreen() {
-  const { accentColor, userProfile } = useQuestMode();
+// Hostels data comparing total points
+const HOSTEL_RANKINGS = [
+  {
+    id: 'bh2',
+    name: 'BH-2 (Boy’s Hostel 2)',
+    shortName: 'BH-2',
+    points: 18450,
+    deliveries: 412,
+    rank: 1,
+    medal: '🥇',
+    isUserHostel: true,
+    sharePercent: 32,
+  },
+  {
+    id: 'bh1',
+    name: 'BH-1 (Boy’s Hostel 1)',
+    shortName: 'BH-1',
+    points: 16820,
+    deliveries: 380,
+    rank: 2,
+    medal: '🥈',
+    isUserHostel: false,
+    sharePercent: 29,
+  },
+  {
+    id: 'gh1',
+    name: 'GH-1 (Girl’s Hostel 1)',
+    shortName: 'GH-1',
+    points: 14310,
+    deliveries: 325,
+    rank: 3,
+    medal: '🥉',
+    isUserHostel: false,
+    sharePercent: 24,
+  },
+  {
+    id: 'bh3',
+    name: 'BH-3 (Boy’s Hostel 3)',
+    shortName: 'BH-3',
+    points: 11940,
+    deliveries: 268,
+    rank: 4,
+    medal: '4',
+    isUserHostel: false,
+    sharePercent: 15,
+  },
+];
 
-  const leaders = [
-    { rank: 1, name: 'Siddharth V.', room: 'BH-2 Room 318', qp: 2150, medal: '🥇' },
-    { rank: 2, name: 'Aditya Raj', room: 'BH-2 Room 104', qp: 1890, medal: '🥈' },
-    { rank: 3, name: 'Kunal Mehra', room: 'BH-1 Room 202', qp: 1640, medal: '🥉' },
-    { rank: 4, name: 'Tushar Garg', room: 'BH-2 Room 405', qp: 1220, medal: '4' },
-    { rank: 5, name: 'Harshit J.', room: 'BH-3 Room 119', qp: 980, medal: '5' },
-  ];
+// Top 5 weekly student runners
+const TOP_RUNNERS = [
+  {
+    rank: 1,
+    name: 'Siddharth Varma',
+    room: 'BH-2 • Room 318',
+    qp: 2150,
+    quests: 48,
+    badge: '🥇 Campus Legend',
+    avatar: 'SV',
+  },
+  {
+    rank: 2,
+    name: 'Aditya Raj',
+    room: 'BH-2 • Room 104',
+    qp: 1890,
+    quests: 41,
+    badge: '🥈 Speed Demon',
+    avatar: 'AR',
+  },
+  {
+    rank: 3,
+    name: 'Kunal Mehra',
+    room: 'BH-1 • Room 202',
+    qp: 1640,
+    quests: 36,
+    badge: '🥉 Midnight Hero',
+    avatar: 'KM',
+  },
+  {
+    rank: 4,
+    name: 'Tushar Garg',
+    room: 'BH-2 • Room 405',
+    qp: 1220,
+    quests: 29,
+    badge: '⚡ Gate Runner',
+    avatar: 'TG',
+  },
+  {
+    rank: 5,
+    name: 'Harshit Joshi',
+    room: 'BH-3 • Room 119',
+    qp: 980,
+    quests: 22,
+    badge: '📦 Lab Courier',
+    avatar: 'HJ',
+  },
+];
+
+// Redeem Store perks
+const STORE_PERKS = [
+  {
+    id: 'perk_pass',
+    title: 'Free Delivery Pass',
+    desc: 'Waives platform & runner tip fees on your next 3 Lazy Mode snack orders.',
+    costQP: 150,
+    emoji: '🎫',
+    tag: 'Popular',
+    codePrefix: 'PASS-FREE',
+  },
+  {
+    id: 'perk_canteen',
+    title: 'Night Canteen ₹50 Voucher',
+    desc: 'Instant ₹50 off on orders above ₹100 at Nescafe, Maggi Booth or Roll Counter.',
+    costQP: 500,
+    emoji: '🌙',
+    tag: 'Best Value',
+    codePrefix: 'CANTEEN-50',
+  },
+  {
+    id: 'perk_print',
+    title: 'Stationery 25-Page Xerox Pass',
+    desc: 'Free black & white photocopies or printouts at Central Stationery Shop.',
+    costQP: 80,
+    emoji: '🖨️',
+    tag: 'Academics',
+    codePrefix: 'XEROX-25',
+  },
+];
+
+export default function LeaderboardScreen() {
+  const { userProfile, deductQP } = useQuestMode();
+
+  // Redemption state
+  const [redeemedPerks, setRedeemedPerks] = useState({});
+  const [voucherModal, setVoucherModal] = useState(null);
+  const [insufficientModal, setInsufficientModal] = useState(null);
+
+  const handleRedeem = (perk) => {
+    const success = deductQP(perk.costQP);
+    if (!success) {
+      setInsufficientModal({
+        cost: perk.costQP,
+        current: userProfile?.qpBalance || 0,
+        title: perk.title,
+      });
+      return;
+    }
+
+    const uniqueCode = `${perk.codePrefix}-${Math.floor(1000 + Math.random() * 9000)}`;
+    setRedeemedPerks((prev) => ({ ...prev, [perk.id]: true }));
+    setVoucherModal({
+      perk,
+      code: uniqueCode,
+      deducted: perk.costQP,
+    });
+  };
 
   return (
     <View style={styles.container}>
+      {/* Top App Bar with live wallet balance */}
       <TopAppBar />
 
       <ScrollView
@@ -34,55 +189,336 @@ export default function LeaderboardScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* User Rank Card */}
-        <View style={styles.myRankCard}>
-          <View style={styles.myRankHeader}>
-            <Text style={styles.myRankBadge}>YOUR STANDING</Text>
-            <Text style={styles.myRankPoints}>{userProfile?.qpBalance ?? 450} QP</Text>
+        {/* 1. TOP SECTION: User Profile Card */}
+        <View style={styles.profileCard}>
+          {/* Header row */}
+          <View style={styles.profileHeader}>
+            <View style={styles.avatarCircle}>
+              <Text style={styles.avatarInitials}>
+                {(userProfile?.name || 'M')[0]}
+              </Text>
+              <View style={styles.verifiedOnlineDot} />
+            </View>
+
+            <View style={styles.profileMeta}>
+              <View style={styles.profileNameRow}>
+                <Text style={styles.profileName}>{userProfile?.name || 'Mohit'}</Text>
+                <View style={styles.tierPill}>
+                  <Text style={styles.tierPillText}>🏆 Silver Quester</Text>
+                </View>
+              </View>
+              <Text style={styles.profileRoom}>{userProfile?.hostelBadge || 'BH-2 • Room 214'}</Text>
+              <Text style={styles.profileRankSubtitle}>
+                Rank #14 in BH-2 • Top 8% active campus courier
+              </Text>
+            </View>
           </View>
-          <View style={styles.myRankRow}>
-            <View style={styles.myRankNumber}>
-              <Text style={styles.myRankNumText}>#14</Text>
+
+          {/* Key Metrics Row */}
+          <View style={styles.metricsGrid}>
+            {/* Reliability Score */}
+            <View style={styles.metricItem}>
+              <View style={styles.metricTop}>
+                <Text style={styles.metricEmoji}>🎯</Text>
+                <Text style={styles.metricValueGreen}>98%</Text>
+              </View>
+              <Text style={styles.metricLabel}>Reliability Score</Text>
+              <Text style={styles.metricSub}>0 drops cancelled</Text>
             </View>
-            <View style={styles.myRankInfo}>
-              <Text style={styles.myRankName}>{userProfile?.name ?? 'You'} (BH-2)</Text>
-              <Text style={styles.myRankRoom}>{userProfile?.hostelBadge ?? 'Room 214'}</Text>
+
+            {/* Quests Completed */}
+            <View style={styles.metricItem}>
+              <View style={styles.metricTop}>
+                <Text style={styles.metricEmoji}>⚡</Text>
+                <Text style={styles.metricValue}>24</Text>
+              </View>
+              <Text style={styles.metricLabel}>Quests Completed</Text>
+              <Text style={styles.metricSub}>All on-time</Text>
             </View>
-            <View style={[styles.leagueBadge, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
-              <Text style={styles.leagueText}>🏆 Silver Tier</Text>
+
+            {/* Total QP Wallet */}
+            <View style={styles.metricItem}>
+              <View style={styles.metricTop}>
+                <Text style={styles.metricEmoji}>🪙</Text>
+                <Text style={styles.metricValueGold}>{userProfile?.qpBalance ?? 450}</Text>
+              </View>
+              <Text style={styles.metricLabel}>Quest Points</Text>
+              <Text style={styles.metricSub}>Ready to redeem</Text>
+            </View>
+          </View>
+
+          {/* Unlocked Badges */}
+          <View style={styles.badgesContainer}>
+            <Text style={styles.badgesTitle}>UNLOCKED ACHIEVEMENTS</Text>
+            <View style={styles.badgesRow}>
+              {/* Badge 1: Night Owl Runner */}
+              <View style={styles.badgePill}>
+                <Text style={styles.badgeEmoji}>🦉</Text>
+                <View>
+                  <Text style={styles.badgeName}>Night Owl Runner</Text>
+                  <Text style={styles.badgeDesc}>10+ drops past 1 AM</Text>
+                </View>
+              </View>
+
+              {/* Badge 2: Hostel Saviour */}
+              <View style={styles.badgePill}>
+                <Text style={styles.badgeEmoji}>🦸‍♂️</Text>
+                <View>
+                  <Text style={styles.badgeName}>Hostel Saviour</Text>
+                  <Text style={styles.badgeDesc}>15+ exam week runs</Text>
+                </View>
+              </View>
             </View>
           </View>
         </View>
 
-        {/* Podium / Leaderboard Table */}
+        {/* 2. MIDDLE SECTION: Inter-Hostel Leaderboard */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>🏆 Weekly Hostel Champions</Text>
-          <Text style={styles.sectionSubtitle}>Resets every Sunday</Text>
-        </View>
-
-        {leaders.map((item) => (
-          <View key={item.rank} style={styles.leaderRow}>
-            <View style={styles.rankCol}>
-              <Text style={styles.medalText}>{item.medal}</Text>
-            </View>
-            <View style={styles.infoCol}>
-              <Text style={styles.leaderName}>{item.name}</Text>
-              <Text style={styles.leaderRoom}>{item.room}</Text>
-            </View>
-            <View style={styles.qpCol}>
-              <Text style={styles.qpAmount}>{item.qp} QP</Text>
-            </View>
+          <View>
+            <Text style={styles.sectionTitle}>🏰 Inter-Hostel Leaderboard</Text>
+            <Text style={styles.sectionSubtitle}>
+              Total Quest Points accumulated this semester
+            </Text>
           </View>
-        ))}
-
-        {/* Placeholder Shell Note */}
-        <View style={styles.infoCard}>
-          <Text style={styles.infoCardTitle}>📊 Leaderboard Shell</Text>
-          <Text style={styles.infoCardText}>
-            This placeholder tab features weekly wing competitions, wing-vs-wing showdowns (BH-1 vs BH-2), and seasonal delivery titles.
-          </Text>
+          <View style={styles.weeklyResetPill}>
+            <Text style={styles.weeklyResetText}>Week 8</Text>
+          </View>
         </View>
+
+        {/* Hostel Rankings Breakdown Cards */}
+        <View style={styles.hostelRankingsCard}>
+          {HOSTEL_RANKINGS.map((hostel) => (
+            <View
+              key={hostel.id}
+              style={[
+                styles.hostelRow,
+                hostel.isUserHostel && styles.hostelRowHighlighted,
+              ]}
+            >
+              <View style={styles.hostelRankCol}>
+                <Text style={styles.hostelMedal}>{hostel.medal}</Text>
+              </View>
+
+              <View style={styles.hostelInfoCol}>
+                <View style={styles.hostelNameRow}>
+                  <Text style={styles.hostelNameText}>{hostel.shortName}</Text>
+                  {hostel.isUserHostel && (
+                    <View style={styles.yourHostelTag}>
+                      <Text style={styles.yourHostelText}>YOUR HOSTEL • #1</Text>
+                    </View>
+                  )}
+                </View>
+                {/* Progress bar visual */}
+                <View style={styles.hostelBarBg}>
+                  <View
+                    style={[
+                      styles.hostelBarFill,
+                      {
+                        width: `${hostel.sharePercent * 2.8}%`,
+                        backgroundColor: hostel.isUserHostel
+                          ? '#10B981'
+                          : '#F59E0B',
+                      },
+                    ]}
+                  />
+                </View>
+                <Text style={styles.hostelSubtext}>
+                  {hostel.deliveries} deliveries this month
+                </Text>
+              </View>
+
+              <View style={styles.hostelPointsCol}>
+                <Text style={styles.hostelPointsText}>
+                  {hostel.points.toLocaleString()}
+                </Text>
+                <Text style={styles.hostelPointsLabel}>QP</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+
+        {/* Top 5 Weekly Student Runners List */}
+        <View style={styles.sectionHeader}>
+          <View>
+            <Text style={styles.sectionTitle}>🏃 Top 5 Weekly Student Runners</Text>
+            <Text style={styles.sectionSubtitle}>
+              Leading delivery heroes across campus
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.runnersCard}>
+          {TOP_RUNNERS.map((runner) => (
+            <View key={runner.rank} style={styles.runnerRow}>
+              <View style={styles.runnerRankCol}>
+                <Text style={styles.runnerRankText}>#{runner.rank}</Text>
+              </View>
+
+              <View style={styles.runnerAvatar}>
+                <Text style={styles.runnerAvatarText}>{runner.avatar}</Text>
+              </View>
+
+              <View style={styles.runnerInfoCol}>
+                <View style={styles.runnerNameRow}>
+                  <Text style={styles.runnerName}>{runner.name}</Text>
+                </View>
+                <Text style={styles.runnerRoom}>{runner.room}</Text>
+                <Text style={styles.runnerBadge}>{runner.badge}</Text>
+              </View>
+
+              <View style={styles.runnerQPCol}>
+                <Text style={styles.runnerQPAmount}>{runner.qp} QP</Text>
+                <Text style={styles.runnerQuestCount}>{runner.quests} runs</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+
+        {/* 3. BOTTOM SECTION: Redeem QP Store */}
+        <View style={styles.sectionHeader}>
+          <View>
+            <Text style={styles.sectionTitle}>🎁 Redeem QP Store</Text>
+            <Text style={styles.sectionSubtitle}>
+              Swap your hard-earned points for real campus perks
+            </Text>
+          </View>
+          <View style={styles.storeWalletPill}>
+            <Text style={styles.storeWalletText}>
+              🪙 {userProfile?.qpBalance ?? 450} Available
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.storeContainer}>
+          {STORE_PERKS.map((perk) => {
+            const isRedeemed = redeemedPerks[perk.id];
+
+            return (
+              <View key={perk.id} style={styles.perkCard}>
+                <View style={styles.perkTopRow}>
+                  <View style={styles.perkIconWrapper}>
+                    <Text style={styles.perkEmoji}>{perk.emoji}</Text>
+                  </View>
+                  <View style={styles.perkInfo}>
+                    <View style={styles.perkTitleRow}>
+                      <Text style={styles.perkTitle}>{perk.title}</Text>
+                      <View style={styles.perkTagBadge}>
+                        <Text style={styles.perkTagText}>{perk.tag}</Text>
+                      </View>
+                    </View>
+                    <Text style={styles.perkDesc}>{perk.desc}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.perkDivider} />
+
+                <View style={styles.perkFooter}>
+                  <View style={styles.perkCostGroup}>
+                    <Text style={styles.perkCostCoin}>🪙</Text>
+                    <Text style={styles.perkCostAmount}>{perk.costQP} QP</Text>
+                  </View>
+
+                  <TouchableOpacity
+                    style={[
+                      styles.redeemBtn,
+                      isRedeemed && styles.redeemedBtn,
+                    ]}
+                    onPress={() => handleRedeem(perk)}
+                    disabled={isRedeemed}
+                    activeOpacity={0.8}
+                  >
+                    <Text
+                      style={[
+                        styles.redeemBtnText,
+                        isRedeemed && styles.redeemedBtnText,
+                      ]}
+                    >
+                      {isRedeemed ? '✓ Redeemed' : `Redeem (${perk.costQP} QP)`}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+
+        <View style={{ height: 40 }} />
       </ScrollView>
+
+      {/* Voucher Confirmation Modal */}
+      <Modal
+        visible={!!voucherModal}
+        animationType="fade"
+        transparent
+        onRequestClose={() => setVoucherModal(null)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.voucherCard}>
+            <Text style={styles.voucherEmoji}>{voucherModal?.perk?.emoji} 🎉</Text>
+            <Text style={styles.voucherTitle}>Reward Redeemed!</Text>
+            <Text style={styles.voucherSubtitle}>
+              You have successfully claimed {voucherModal?.perk?.title}. Show this voucher code at the vendor or apply during checkout.
+            </Text>
+
+            {/* Voucher Code Box */}
+            <View style={styles.voucherCodeBox}>
+              <Text style={styles.voucherCodeLabel}>VOUCHER CODE</Text>
+              <Text style={styles.voucherCodeText}>{voucherModal?.code}</Text>
+              <Text style={styles.voucherExpiryText}>Valid for 7 days • Single use</Text>
+            </View>
+
+            {/* Wallet update summary */}
+            <View style={styles.voucherSummary}>
+              <Text style={styles.summaryDeduct}>
+                -{voucherModal?.deducted} QP Deducted
+              </Text>
+              <Text style={styles.summaryBalance}>
+                Remaining Balance: {userProfile?.qpBalance ?? 450} QP
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              style={styles.voucherCloseBtn}
+              onPress={() => setVoucherModal(null)}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.voucherCloseText}>Done & Save Voucher</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Insufficient QP Modal */}
+      <Modal
+        visible={!!insufficientModal}
+        animationType="fade"
+        transparent
+        onRequestClose={() => setInsufficientModal(null)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.voucherCard}>
+            <Text style={styles.voucherEmoji}>🪙 ⚠️</Text>
+            <Text style={styles.voucherTitle}>Need More Points</Text>
+            <Text style={styles.voucherSubtitle}>
+              "{insufficientModal?.title}" costs {insufficientModal?.cost} QP, but you currently have {insufficientModal?.current} QP.
+            </Text>
+
+            <View style={styles.voucherCodeBox}>
+              <Text style={styles.earnMoreText}>
+                🚀 Hop into Quester Mode in the Home Feed to accept student delivery bounties and earn +40 to +60 QP per run!
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              style={[styles.voucherCloseBtn, { backgroundColor: '#F59E0B' }]}
+              onPress={() => setInsufficientModal(null)}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.voucherCloseText}>Got it, Back to Leaderboard</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -97,75 +533,183 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: Spacing.base,
-    paddingBottom: 96,
+    paddingBottom: 110,
   },
-  myRankCard: {
-    backgroundColor: '#161922',
+
+  // 1. User Profile Card
+  profileCard: {
+    backgroundColor: Colors.surface, // #161922
     borderRadius: Radius.lg,
     padding: Spacing.base,
-    borderWidth: 1.5,
-    borderColor: '#F59E0B',
+    borderWidth: 1,
+    borderColor: '#242C3D',
     marginBottom: Spacing.lg,
   },
-  myRankHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  myRankBadge: {
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 0.8,
-    color: '#FBBF24',
-  },
-  myRankPoints: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#FBBF24',
-  },
-  myRankRow: {
+  profileHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+    marginBottom: 16,
   },
-  myRankNumber: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#252B3B',
+  avatarCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: '#1E2330',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#F59E0B',
+    position: 'relative',
   },
-  myRankNumText: {
+  avatarInitials: {
     color: '#FBBF24',
+    fontSize: 20,
     fontWeight: '800',
-    fontSize: 14,
   },
-  myRankInfo: {
+  verifiedOnlineDot: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#10B981',
+    borderWidth: 2,
+    borderColor: '#161922',
+  },
+  profileMeta: {
     flex: 1,
   },
-  myRankName: {
-    fontSize: 15,
-    fontWeight: '700',
+  profileNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  profileName: {
+    fontSize: 17,
+    fontWeight: '800',
     color: Colors.textPrimary,
   },
-  myRankRoom: {
-    fontSize: 12,
-    color: Colors.textMuted,
-  },
-  leagueBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+  tierPill: {
+    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     borderRadius: Radius.full,
     borderWidth: 1,
     borderColor: 'rgba(245, 158, 11, 0.4)',
   },
-  leagueText: {
+  tierPillText: {
+    fontSize: 10,
+    fontWeight: '700',
     color: '#FBBF24',
+  },
+  profileRoom: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  profileRankSubtitle: {
+    fontSize: 11,
+    color: Colors.textMuted,
+    marginTop: 2,
+  },
+
+  // Metrics Grid
+  metricsGrid: {
+    flexDirection: 'row',
+    backgroundColor: '#0D0F14',
+    borderRadius: Radius.md,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#1F2432',
+    marginBottom: 14,
+    gap: 8,
+  },
+  metricItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  metricTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 2,
+  },
+  metricEmoji: {
+    fontSize: 12,
+  },
+  metricValue: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: Colors.textPrimary,
+  },
+  metricValueGreen: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#34D399',
+  },
+  metricValueGold: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#FBBF24',
+  },
+  metricLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: Colors.textSecondary,
+    textAlign: 'center',
+  },
+  metricSub: {
+    fontSize: 9,
+    color: Colors.textMuted,
+    marginTop: 1,
+  },
+
+  // Badges container
+  badgesContainer: {
+    borderTopWidth: 1,
+    borderTopColor: '#1E2330',
+    paddingTop: 12,
+  },
+  badgesTitle: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: Colors.textMuted,
+    letterSpacing: 0.8,
+    marginBottom: 8,
+  },
+  badgesRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  badgePill: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1E2330',
+    padding: 8,
+    borderRadius: Radius.md,
+    borderWidth: 1,
+    borderColor: '#2A3245',
+    gap: 8,
+  },
+  badgeEmoji: {
+    fontSize: 18,
+  },
+  badgeName: {
     fontSize: 11,
     fontWeight: '700',
+    color: '#E2E8F0',
   },
+  badgeDesc: {
+    fontSize: 9,
+    color: Colors.textMuted,
+    marginTop: 1,
+  },
+
+  // 2. Inter-Hostel Leaderboard Section
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -174,73 +718,406 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '800',
     color: Colors.textPrimary,
   },
   sectionSubtitle: {
     fontSize: 11,
     color: Colors.textMuted,
-  },
-  leaderRow: {
-    backgroundColor: Colors.surface, // #161922
-    borderRadius: Radius.md,
-    paddingVertical: 12,
-    paddingHorizontal: Spacing.base,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  rankCol: {
-    width: 32,
-    alignItems: 'center',
-  },
-  medalText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Colors.textMuted,
-  },
-  infoCol: {
-    flex: 1,
-    marginLeft: 8,
-  },
-  leaderName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: Colors.textPrimary,
-  },
-  leaderRoom: {
-    fontSize: 11,
-    color: Colors.textMuted,
     marginTop: 2,
   },
-  qpCol: {
-    alignItems: 'flex-end',
+  weeklyResetPill: {
+    backgroundColor: '#1E2330',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: '#2A3245',
   },
-  qpAmount: {
-    fontSize: 14,
+  weeklyResetText: {
+    fontSize: 10,
     fontWeight: '700',
-    color: '#FBBF24',
+    color: Colors.textSecondary,
   },
-  infoCard: {
-    backgroundColor: '#161922',
+  hostelRankingsCard: {
+    backgroundColor: Colors.surface,
     borderRadius: Radius.lg,
     padding: Spacing.base,
     borderWidth: 1,
-    borderColor: '#262D3D',
-    borderStyle: 'dashed',
-    marginTop: Spacing.md,
+    borderColor: Colors.border,
+    marginBottom: Spacing.lg,
+    gap: 12,
   },
-  infoCardTitle: {
-    fontSize: 13,
+  hostelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#11141D',
+    padding: 10,
+    borderRadius: Radius.md,
+    borderWidth: 1,
+    borderColor: '#1E2433',
+    gap: 10,
+  },
+  hostelRowHighlighted: {
+    backgroundColor: 'rgba(16, 185, 129, 0.08)',
+    borderColor: 'rgba(16, 185, 129, 0.4)',
+  },
+  hostelRankCol: {
+    width: 28,
+    alignItems: 'center',
+  },
+  hostelMedal: {
+    fontSize: 18,
     fontWeight: '700',
-    color: Colors.textSecondary,
+    color: Colors.textMuted,
+  },
+  hostelInfoCol: {
+    flex: 1,
+  },
+  hostelNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     marginBottom: 4,
   },
-  infoCardText: {
-    fontSize: 12,
+  hostelNameText: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: Colors.textPrimary,
+  },
+  yourHostelTag: {
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: Radius.sm,
+    borderWidth: 1,
+    borderColor: '#10B981',
+  },
+  yourHostelText: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: '#34D399',
+  },
+  hostelBarBg: {
+    height: 6,
+    backgroundColor: '#1F2432',
+    borderRadius: 3,
+    overflow: 'hidden',
+    marginVertical: 3,
+  },
+  hostelBarFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  hostelSubtext: {
+    fontSize: 10,
     color: Colors.textMuted,
+  },
+  hostelPointsCol: {
+    alignItems: 'flex-end',
+    minWidth: 64,
+  },
+  hostelPointsText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#FBBF24',
+  },
+  hostelPointsLabel: {
+    fontSize: 9,
+    color: Colors.textMuted,
+    fontWeight: '600',
+  },
+
+  // Runners List Card
+  runnersCard: {
+    backgroundColor: Colors.surface,
+    borderRadius: Radius.lg,
+    padding: Spacing.base,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    marginBottom: Spacing.lg,
+    gap: 8,
+  },
+  runnerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1E2330',
+    gap: 10,
+  },
+  runnerRankCol: {
+    width: 26,
+    alignItems: 'center',
+  },
+  runnerRankText: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: Colors.textMuted,
+  },
+  runnerAvatar: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#1E2330',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#2A3245',
+  },
+  runnerAvatarText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+  },
+  runnerInfoCol: {
+    flex: 1,
+  },
+  runnerNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  runnerName: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+  },
+  runnerRoom: {
+    fontSize: 11,
+    color: Colors.textMuted,
+    marginTop: 1,
+  },
+  runnerBadge: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#F59E0B',
+    marginTop: 2,
+  },
+  runnerQPCol: {
+    alignItems: 'flex-end',
+  },
+  runnerQPAmount: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#FBBF24',
+  },
+  runnerQuestCount: {
+    fontSize: 10,
+    color: Colors.textMuted,
+    marginTop: 2,
+  },
+
+  // 3. Redeem QP Store
+  storeWalletPill: {
+    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.4)',
+  },
+  storeWalletText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#FBBF24',
+  },
+  storeContainer: {
+    gap: 12,
+  },
+  perkCard: {
+    backgroundColor: Colors.surface,
+    borderRadius: Radius.lg,
+    padding: Spacing.base,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  perkTopRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  perkIconWrapper: {
+    width: 44,
+    height: 44,
+    borderRadius: Radius.md,
+    backgroundColor: '#1E2330',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#2A3245',
+  },
+  perkEmoji: {
+    fontSize: 20,
+  },
+  perkInfo: {
+    flex: 1,
+  },
+  perkTitleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  perkTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+  },
+  perkTagBadge: {
+    backgroundColor: '#1E2330',
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: Radius.sm,
+    borderWidth: 1,
+    borderColor: '#2A3245',
+  },
+  perkTagText: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: '#F59E0B',
+  },
+  perkDesc: {
+    fontSize: 11,
+    color: Colors.textSecondary,
+    lineHeight: 16,
+  },
+  perkDivider: {
+    height: 1,
+    backgroundColor: '#1E2330',
+    marginVertical: 12,
+  },
+  perkFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  perkCostGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  perkCostCoin: {
+    fontSize: 13,
+  },
+  perkCostAmount: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#FBBF24',
+  },
+  redeemBtn: {
+    backgroundColor: Colors.lazyMode, // Purple store button
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: Radius.md,
+  },
+  redeemedBtn: {
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    borderWidth: 1,
+    borderColor: '#10B981',
+  },
+  redeemBtnText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  redeemedBtnText: {
+    color: '#34D399',
+  },
+
+  // Modals
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(5, 7, 10, 0.88)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.base,
+  },
+  voucherCard: {
+    width: '100%',
+    backgroundColor: '#161922',
+    borderRadius: Radius.xl,
+    padding: Spacing.xl,
+    borderWidth: 1.5,
+    borderColor: '#F59E0B',
+    alignItems: 'center',
+  },
+  voucherEmoji: {
+    fontSize: 40,
+    marginBottom: 10,
+  },
+  voucherTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#FBBF24',
+    marginBottom: 6,
+  },
+  voucherSubtitle: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    textAlign: 'center',
     lineHeight: 18,
+    marginBottom: 14,
+  },
+  voucherCodeBox: {
+    width: '100%',
+    backgroundColor: '#0D0F14',
+    borderRadius: Radius.md,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.35)',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  voucherCodeLabel: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: Colors.textMuted,
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  voucherCodeText: {
+    fontSize: 20,
+    fontWeight: '900',
+    color: '#F9FAFB',
+    letterSpacing: 2,
+    marginBottom: 4,
+  },
+  voucherExpiryText: {
+    fontSize: 10,
+    color: Colors.textMuted,
+  },
+  voucherSummary: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+    paddingHorizontal: 4,
+  },
+  summaryDeduct: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#EF4444',
+  },
+  summaryBalance: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FBBF24',
+  },
+  earnMoreText: {
+    fontSize: 12,
+    color: '#FDE68A',
+    textAlign: 'center',
+    lineHeight: 17,
+  },
+  voucherCloseBtn: {
+    width: '100%',
+    backgroundColor: '#10B981',
+    paddingVertical: 13,
+    borderRadius: Radius.md,
+    alignItems: 'center',
+  },
+  voucherCloseText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '800',
   },
 });
