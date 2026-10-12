@@ -4,8 +4,8 @@
  * Bootstraps:
  *  - SafeAreaProvider (safe area insets for all screens)
  *  - QuestModeProvider (Lazy Mode vs Quester Mode state & user hostel data)
- *  - RootNavigator (NavigationContainer + Dark themed 4-tab shell)
- *  - StatusBar (Dark theme configuration)
+ *  - RootNavigator (NavigationContainer + White themed 3-tab shell)
+ *  - StatusBar (Light theme configuration)
  */
 
 import React from 'react';
@@ -19,7 +19,7 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <QuestModeProvider>
-        <StatusBar style="light" backgroundColor="#0D0F14" translucent={false} />
+        <StatusBar style="dark" backgroundColor="#FFFFFF" translucent={false} />
         <RootNavigator />
       </QuestModeProvider>
     </SafeAreaProvider>

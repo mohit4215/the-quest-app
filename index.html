@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quest — Gamified College Hostel Micro-Delivery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Quest — College Hostel Micro-Delivery</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -12,83 +12,88 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0D0F14;
-      --surface: #161922;
-      --surface-alt: #1E2330;
-      --surface-elevated: #242B3C;
-      --border: #232838;
-      --border-light: #1B202D;
+      --bg: #FFFFFF;
+      --surface: #FFFFFF;
+      --surface-alt: #F8FAFC;
+      --surface-elevated: #F1F5F9;
+      --border: #E2E8F0;
+      --border-light: #F1F5F9;
       --lazy: #7C3AED;
       --lazy-light: #A78BFA;
-      --lazy-bg: rgba(124, 58, 237, 0.18);
+      --lazy-bg: rgba(124, 58, 237, 0.12);
       --quester: #10B981;
-      --quester-light: #34D399;
-      --quester-bg: rgba(16, 185, 129, 0.18);
-      --gold: #F59E0B;
-      --gold-light: rgba(245, 158, 11, 0.16);
-      --gold-text: #FBBF24;
-      --text: #F9FAFB;
-      --text-sec: #94A3B8;
+      --quester-light: #059669;
+      --quester-bg: rgba(16, 185, 129, 0.12);
+      --gold: #D97706;
+      --gold-light: #FEF3C7;
+      --gold-border: #FDE68A;
+      --gold-text: #B45309;
+      --lemon-yellow: #FAEA48;
+      --text: #0F172A;
+      --text-sec: #475569;
       --text-muted: #64748B;
       --radius-sm: 8px;
       --radius-md: 12px;
-      --radius-lg: 18px;
+      --radius-lg: 16px;
       --radius-xl: 24px;
       --accent: var(--lazy);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.03);
     }
 
     body {
       font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      background: var(--bg);
+      background: #F1F5F9;
       color: var(--text);
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       margin: 0;
-      padding: 20px 10px;
+      padding: 0;
       overflow-x: hidden;
     }
 
-    /* ── App Shell / Device Frame ───────────────────────────────────── */
+    /* ── App Shell / Responsive Frame for Web & Mobile ────────────────── */
     .app-device {
       width: 100%;
-      max-width: 440px;
-      height: 920px;
+      max-width: 480px;
+      height: 100vh;
+      max-height: 940px;
       background: var(--bg);
-      border-radius: 40px;
-      border: 8px solid #202636;
-      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(124, 58, 237, 0.15);
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
       display: flex;
       flex-direction: column;
       position: relative;
       overflow: hidden;
     }
 
-    /* Device Speaker / Notch */
-    .device-notch {
-      width: 120px;
-      height: 22px;
-      background: #202636;
-      border-bottom-left-radius: 14px;
-      border-bottom-right-radius: 14px;
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
+    @media (min-width: 600px) {
+      body {
+        padding: 20px 10px;
+        background: #E2E8F0;
+      }
+      .app-device {
+        border-radius: 36px;
+        border: 4px solid #CBD5E1;
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.18), 0 0 20px rgba(250, 234, 72, 0.25);
+        height: 900px;
+      }
     }
 
     /* ── TOP APP BAR ─────────────────────────────────────────────────── */
     .top-app-bar {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 30px 16px 14px;
+      padding: 16px 16px 14px;
       display: flex;
       flex-direction: column;
       gap: 12px;
       z-index: 100;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      box-shadow: var(--shadow-sm);
     }
 
     .top-row {
@@ -97,36 +102,62 @@
       align-items: center;
     }
 
-    .hostel-badge {
+    .logo-and-hostel {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Lemon Yellow Logo */
+    .app-logo {
       display: flex;
       align-items: center;
       gap: 8px;
+      text-decoration: none;
+    }
+
+    .logo-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: var(--lemon-yellow);
+      border: 2px solid #EAB308;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(250, 234, 72, 0.45);
+    }
+
+    .logo-letter {
+      font-size: 20px;
+      font-weight: 900;
+      color: #0F172A;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #0F172A;
+      letter-spacing: -0.4px;
+    }
+
+    .hostel-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
       background: var(--surface-alt);
-      padding: 6px 12px;
+      padding: 6px 10px;
       border-radius: var(--radius-md);
-      border: 1px solid #2B3346;
+      border: 1px solid var(--border);
     }
 
     .hostel-badge .icon-box {
-      width: 24px;
-      height: 24px;
-      background: #141822;
-      border-radius: 6px;
-      display: grid;
-      place-items: center;
-      font-size: 12px;
-    }
-
-    .hostel-badge .label {
-      font-size: 8px;
-      font-weight: 800;
-      color: var(--text-muted);
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
+      font-size: 13px;
     }
 
     .hostel-badge .value {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       color: var(--text);
     }
@@ -136,15 +167,15 @@
       align-items: center;
       gap: 5px;
       background: var(--gold-light);
-      border: 1px solid rgba(245, 158, 11, 0.45);
-      padding: 6px 14px;
+      border: 1px solid var(--gold-border);
+      padding: 6px 12px;
       border-radius: 999px;
-      box-shadow: 0 0 14px rgba(245, 158, 11, 0.2);
+      box-shadow: 0 1px 3px rgba(217, 119, 6, 0.1);
     }
 
     .qp-pill .coin { font-size: 13px; }
     .qp-pill .amount { font-size: 13px; font-weight: 800; color: var(--gold-text); }
-    .qp-pill .unit { font-size: 11px; font-weight: 700; color: var(--gold); }
+    .qp-pill .unit { font-size: 10px; font-weight: 800; color: var(--gold-text); }
 
     /* Mode Switcher */
     .mode-switch-wrapper {
@@ -156,7 +187,7 @@
     .mode-switch-track {
       flex: 1;
       display: flex;
-      background: #0D0F14;
+      background: var(--surface-alt);
       border: 1px solid var(--border);
       border-radius: 999px;
       padding: 3px;
@@ -176,21 +207,23 @@
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.25s ease;
+      transition: all 0.2s ease;
     }
 
     .mode-switch-btn.active-lazy {
-      background: rgba(124, 58, 237, 0.25);
-      border: 1px solid var(--lazy);
-      color: #DDD6FE;
-      font-weight: 700;
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      color: var(--lazy);
+      font-weight: 800;
+      box-shadow: var(--shadow-sm);
     }
 
     .mode-switch-btn.active-quester {
-      background: rgba(16, 185, 129, 0.25);
-      border: 1px solid var(--quester);
-      color: #A7F3D0;
-      font-weight: 700;
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      color: #059669;
+      font-weight: 800;
+      box-shadow: var(--shadow-sm);
     }
 
     .mode-slider-pill {
@@ -215,6 +248,7 @@
       font-size: 11px;
       transition: transform 0.25s;
       transform: translateX(0);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
 
     /* ── SCROLLABLE APP BODY ─────────────────────────────────────────── */
@@ -222,12 +256,13 @@
       flex: 1;
       overflow-y: auto;
       padding: 16px;
-      padding-bottom: 90px;
+      padding-bottom: 96px;
       scroll-behavior: smooth;
+      background: var(--bg);
     }
 
-    .app-body::-webkit-scrollbar { width: 4px; }
-    .app-body::-webkit-scrollbar-thumb { background: #262D3E; border-radius: 2px; }
+    .app-body::-webkit-scrollbar { width: 5px; }
+    .app-body::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
 
     /* ── TAB PANELS ──────────────────────────────────────────────────── */
     .tab-panel { display: none; }
@@ -240,7 +275,7 @@
       border-radius: var(--radius-lg);
       padding: 16px;
       margin-bottom: 16px;
-      position: relative;
+      box-shadow: var(--shadow-sm);
     }
 
     .radar-header {
@@ -257,20 +292,12 @@
     }
 
     .pulse-dot-wrap {
+      width: 14px;
+      height: 14px;
       position: relative;
-      width: 12px;
-      height: 12px;
-      display: grid;
-      place-items: center;
-    }
-
-    .pulse-ring {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background: #10B981;
-      animation: pulseAnim 1.6s infinite ease-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .pulse-dot {
@@ -278,42 +305,50 @@
       height: 8px;
       border-radius: 50%;
       background: #10B981;
-      z-index: 2;
+    }
+
+    .pulse-ring {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: rgba(16, 185, 129, 0.4);
+      animation: pulseAnim 2s infinite ease-out;
     }
 
     @keyframes pulseAnim {
-      0% { transform: scale(1); opacity: 0.8; }
-      100% { transform: scale(2.4); opacity: 0; }
+      0% { transform: scale(0.6); opacity: 1; }
+      100% { transform: scale(1.6); opacity: 0; }
     }
 
     .radar-title {
       font-size: 11px;
       font-weight: 800;
-      color: #10B981;
-      letter-spacing: 1px;
+      color: #059669;
+      letter-spacing: 0.8px;
     }
 
     .radar-peers-count {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 700;
       color: var(--text-sec);
       background: var(--surface-alt);
       padding: 3px 8px;
       border-radius: 999px;
-      border: 1px solid #2B3346;
+      border: 1px solid var(--border);
     }
 
     .radar-subtitle {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-muted);
       margin-bottom: 12px;
     }
 
     /* Radar Visual Scope */
     .radar-scope {
-      height: 100px;
-      background: #090B0F;
-      border: 1px solid #1E2332;
+      height: 96px;
+      background: #F8FAFC;
+      border: 1px solid var(--border);
       border-radius: var(--radius-md);
       position: relative;
       overflow: hidden;
@@ -324,7 +359,7 @@
 
     .scope-ring {
       position: absolute;
-      border: 1px solid rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.25);
       border-radius: 50%;
     }
     .scope-ring.r1 { width: 130px; height: 130px; }
@@ -348,26 +383,27 @@
     }
 
     .scope-center-dot {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
-      background: var(--accent);
+      background: #FFFFFF;
+      border: 1.5px solid #10B981;
       display: grid;
       place-items: center;
       font-size: 10px;
       z-index: 10;
-      box-shadow: 0 0 10px var(--accent);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
     }
 
     .blip {
       position: absolute;
-      background: rgba(16, 185, 129, 0.25);
-      border: 1px solid rgba(16, 185, 129, 0.6);
-      padding: 2px 6px;
+      background: #DCFCE7;
+      border: 1px solid #86EFAC;
+      padding: 2px 7px;
       border-radius: 999px;
       font-size: 9px;
       font-weight: 700;
-      color: #A7F3D0;
+      color: #065F46;
       z-index: 5;
     }
 
@@ -382,7 +418,7 @@
 
     .spot-pill {
       background: var(--surface-alt);
-      border: 1px solid #242B3C;
+      border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: 8px 12px;
       min-width: 130px;
@@ -390,7 +426,7 @@
       transition: all 0.2s;
       flex-shrink: 0;
     }
-    .spot-pill:hover { border-color: var(--accent); }
+    .spot-pill:hover { border-color: #10B981; }
 
     .spot-top {
       display: flex;
@@ -400,8 +436,8 @@
     .spot-peers {
       font-size: 9px;
       font-weight: 700;
-      color: #34D399;
-      background: rgba(16, 185, 129, 0.15);
+      color: #059669;
+      background: #DCFCE7;
       padding: 2px 6px;
       border-radius: 999px;
     }
@@ -442,9 +478,9 @@
     }
 
     .category-chip.active {
-      background: rgba(124, 58, 237, 0.2);
-      border-color: var(--accent);
-      color: var(--text);
+      background: var(--text);
+      border-color: var(--text);
+      color: #FFFFFF;
       font-weight: 700;
     }
 
@@ -460,11 +496,13 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       padding: 16px;
-      transition: all 0.25s ease;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
     }
     .bounty-card:hover {
-      border-color: #2D364C;
-      transform: translateY(-2px);
+      border-color: #CBD5E1;
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
     }
 
     .bounty-top {
@@ -476,7 +514,7 @@
 
     .bounty-category-tag {
       background: var(--surface-alt);
-      border: 1px solid #2B3346;
+      border: 1px solid var(--border);
       border-radius: 999px;
       padding: 4px 10px;
       font-size: 11px;
@@ -488,18 +526,18 @@
       display: flex;
       align-items: center;
       gap: 4px;
-      background: rgba(59, 130, 246, 0.12);
-      border: 1px solid rgba(59, 130, 246, 0.35);
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
       border-radius: 999px;
       padding: 4px 8px;
       font-size: 10px;
       font-weight: 700;
-      color: #60A5FA;
+      color: #2563EB;
     }
     .bounty-timer.urgent {
-      background: rgba(239, 68, 68, 0.14);
-      border-color: rgba(239, 68, 68, 0.4);
-      color: #F87171;
+      background: #FEF2F2;
+      border-color: #FECACA;
+      color: #DC2626;
     }
 
     .bounty-title {
@@ -511,8 +549,8 @@
     }
 
     .route-box {
-      background: #0F121A;
-      border: 1px solid #1E2332;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: 10px;
       margin-bottom: 12px;
@@ -529,13 +567,13 @@
     }
     .route-label { color: var(--text-muted); font-weight: 600; }
     .route-val { color: var(--text-sec); font-weight: 600; }
-    .route-val.highlight { color: #fff; font-weight: 700; }
+    .route-val.highlight { color: var(--text); font-weight: 700; }
 
     .bounty-bottom {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-top: 1px solid var(--border-light);
+      border-top: 1px solid var(--border);
       padding-top: 12px;
     }
 
@@ -546,13 +584,13 @@
     }
 
     .tip-pill {
-      background: rgba(16, 185, 129, 0.14);
-      border: 1px solid rgba(16, 185, 129, 0.4);
+      background: #DCFCE7;
+      border: 1px solid #BBF7D0;
       padding: 5px 10px;
       border-radius: 999px;
       font-size: 11px;
       font-weight: 800;
-      color: #34D399;
+      color: #059669;
     }
 
     .qp-reward-pill {
@@ -560,7 +598,7 @@
       align-items: center;
       gap: 4px;
       background: var(--gold-light);
-      border: 1px solid rgba(245, 158, 11, 0.4);
+      border: 1px solid var(--gold-border);
       padding: 5px 10px;
       border-radius: 999px;
       font-size: 11px;
@@ -597,7 +635,7 @@
       border-radius: 999px;
       font-size: 13px;
       font-weight: 800;
-      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -614,6 +652,7 @@
       border-radius: var(--radius-lg);
       padding: 16px;
       margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
     }
 
     .tracker-title-row {
@@ -636,14 +675,14 @@
       left: 20px;
       right: 20px;
       height: 2px;
-      background: #242B3C;
+      background: var(--border);
       z-index: 1;
     }
 
     .stepper-progress-bar {
       height: 100%;
       background: #10B981;
-      width: 33%;
+      width: 0%;
       transition: width 0.3s;
     }
 
@@ -660,7 +699,7 @@
       height: 28px;
       border-radius: 50%;
       background: var(--surface-alt);
-      border: 2px solid #2B3346;
+      border: 2px solid var(--border);
       display: grid;
       place-items: center;
       font-size: 11px;
@@ -669,9 +708,9 @@
       margin-bottom: 4px;
     }
     .step-node.active .step-circle {
-      background: rgba(16, 185, 129, 0.2);
+      background: #ECFDF5;
       border-color: #10B981;
-      color: #10B981;
+      color: #059669;
     }
     .step-node.completed .step-circle {
       background: #10B981;
@@ -685,17 +724,17 @@
       text-align: center;
       width: 58px;
     }
-    .step-node.active .step-label { color: #fff; font-weight: 700; }
+    .step-node.active .step-label { color: var(--text); font-weight: 700; }
 
     /* Step Action Box */
     .step-action-box {
-      background: #0D1017;
-      border: 1px solid #1E2332;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: 14px;
       margin-bottom: 16px;
     }
-    .step-action-title { font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 3px; }
+    .step-action-title { font-size: 13px; font-weight: 800; color: var(--text); margin-bottom: 3px; }
     .step-action-sub { font-size: 11px; color: var(--text-sec); }
 
     .advance-btn {
@@ -727,25 +766,26 @@
       width: 48px;
       height: 52px;
       border-radius: var(--radius-md);
-      background: #090B0F;
-      border: 1.5px solid #2B3346;
-      color: #fff;
+      background: var(--surface-alt);
+      border: 1.5px solid var(--border);
+      color: var(--text);
       font-size: 20px;
       font-weight: 800;
       text-align: center;
       outline: none;
     }
-    .otp-cell:focus { border-color: #10B981; }
+    .otp-cell:focus { border-color: #10B981; background: #ECFDF5; }
 
     .demo-otp-chip {
-      background: rgba(245, 158, 11, 0.15);
-      border: 1px dashed rgba(245, 158, 11, 0.5);
+      background: var(--gold-light);
+      border: 1px dashed var(--gold-border);
       padding: 8px 12px;
       border-radius: var(--radius-md);
       font-size: 11px;
-      color: #FBBF24;
+      color: var(--gold-text);
       text-align: center;
       cursor: pointer;
+      font-weight: 600;
     }
 
     /* Quick Chat */
@@ -754,13 +794,14 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       padding: 14px;
+      box-shadow: var(--shadow-sm);
     }
     .chat-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding-bottom: 8px;
-      border-bottom: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--border);
       margin-bottom: 10px;
     }
     .chat-messages {
@@ -779,14 +820,16 @@
     }
     .msg-bubble.recipient {
       background: var(--surface-alt);
-      color: #E2E8F0;
+      color: var(--text);
+      border: 1px solid var(--border);
       align-self: flex-start;
     }
     .msg-bubble.me {
-      background: rgba(16, 185, 129, 0.25);
-      border: 1px solid rgba(16, 185, 129, 0.5);
-      color: #A7F3D0;
+      background: #ECFDF5;
+      border: 1px solid #10B981;
+      color: #065F46;
       align-self: flex-end;
+      font-weight: 600;
     }
 
     .preset-chips-row {
@@ -797,122 +840,74 @@
     }
     .preset-chips-row::-webkit-scrollbar { display: none; }
     .preset-btn {
-      background: #10141D;
-      border: 1px solid #232838;
-      color: #CBD5E1;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      color: var(--text-sec);
       padding: 5px 10px;
       border-radius: 999px;
       font-size: 10px;
+      font-weight: 600;
       white-space: nowrap;
       cursor: pointer;
     }
-    .preset-btn:hover { border-color: #10B981; }
+    .preset-btn:hover { border-color: #10B981; color: #059669; }
 
-    /* ── 3. SENIOR CONNECT ───────────────────────────────────────────── */
-    .subtabs-nav {
-      display: flex;
-      background: #090B0F;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 4px;
-      margin-bottom: 16px;
-      gap: 6px;
-    }
-    .subtab-btn {
-      flex: 1;
-      padding: 8px;
-      border-radius: 999px;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .subtab-btn.active {
-      background: var(--surface-alt);
-      color: #fff;
-      border: 1px solid var(--lazy);
-    }
-
-    .senior-card, .gear-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      margin-bottom: 14px;
-    }
-
-    .skill-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin: 10px 0 14px;
-    }
-    .skill-pill {
-      background: var(--surface-alt);
-      border: 1px solid #283042;
-      border-radius: 6px;
-      padding: 3px 8px;
-      font-size: 10px;
-      font-weight: 600;
-      color: #E2E8F0;
-    }
-
-    /* ── 4. LEADERBOARD ──────────────────────────────────────────────── */
+    /* ── 3. LEADERBOARD ──────────────────────────────────────────────── */
     .profile-card {
       background: var(--surface);
-      border: 1px solid #2B3346;
+      border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       padding: 16px;
       margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
     }
 
     .metrics-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
-      background: #0B0E14;
-      border: 1px solid #1E2332;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: 10px;
       margin: 12px 0;
       text-align: center;
     }
-    .metric-num { font-size: 16px; font-weight: 800; color: #fff; }
-    .metric-num.green { color: #34D399; }
-    .metric-num.gold { color: #FBBF24; }
-    .metric-lbl { font-size: 9px; font-weight: 700; color: var(--text-sec); }
+    .metric-num { font-size: 16px; font-weight: 800; color: var(--text); }
+    .metric-num.green { color: #059669; }
+    .metric-num.gold { color: #D97706; }
+    .metric-lbl { font-size: 9px; font-weight: 700; color: var(--text-muted); }
 
     .hostel-leader-row {
       display: flex;
       align-items: center;
-      background: #0E121A;
-      border: 1px solid #1F2534;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: 10px 14px;
       margin-bottom: 8px;
       gap: 12px;
     }
     .hostel-leader-row.highlight {
-      border-color: rgba(16, 185, 129, 0.4);
-      background: rgba(16, 185, 129, 0.08);
+      border-color: #10B981;
+      background: #ECFDF5;
     }
 
-    /* ── BOTTOM NAVIGATION BAR ───────────────────────────────────────── */
+    /* ── BOTTOM NAVIGATION BAR (3 Tabs: Home, Active, Leaderboard) ───── */
     .bottom-nav {
       position: absolute;
       bottom: 0;
       left: 0;
       right: 0;
-      height: 68px;
-      background: #11141D;
-      border-top: 1px solid #202636;
+      height: 70px;
+      background: #FFFFFF;
+      border-top: 1px solid var(--border);
       display: flex;
       justify-content: space-around;
       align-items: center;
       z-index: 100;
       padding-bottom: 4px;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
     }
 
     .nav-tab {
@@ -920,22 +915,23 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 3px;
+      gap: 4px;
       background: transparent;
       border: none;
       color: var(--text-muted);
       cursor: pointer;
       position: relative;
-      width: 70px;
+      flex: 1;
+      padding: 8px 0;
     }
     .nav-tab.active { color: var(--accent); }
-    .nav-tab .icon { font-size: 18px; }
-    .nav-tab .label { font-size: 10px; font-weight: 600; }
+    .nav-tab .icon { font-size: 20px; }
+    .nav-tab .label { font-size: 11px; font-weight: 600; }
     .nav-tab.active .label { font-weight: 800; }
     .nav-tab .active-pill {
       position: absolute;
-      bottom: -6px;
-      width: 20px;
+      bottom: -4px;
+      width: 24px;
       height: 3px;
       border-radius: 2px;
       background: var(--accent);
@@ -947,7 +943,7 @@
     .modal-overlay {
       position: absolute;
       inset: 0;
-      background: rgba(4, 6, 9, 0.82);
+      background: rgba(15, 23, 42, 0.6);
       z-index: 500;
       display: none;
       align-items: flex-end;
@@ -956,14 +952,15 @@
 
     .bottom-sheet {
       width: 100%;
-      background: #161922;
+      background: #FFFFFF;
       border-top-left-radius: 28px;
       border-top-right-radius: 28px;
       border: 1px solid var(--border);
-      padding: 20px 18px;
+      padding: 22px 20px;
       max-height: 85%;
       overflow-y: auto;
       animation: slideUp 0.25s ease-out;
+      box-shadow: var(--shadow-lg);
     }
     @keyframes slideUp {
       from { transform: translateY(100%); }
@@ -974,15 +971,15 @@
     .form-label { font-size: 11px; font-weight: 700; color: var(--text-sec); margin-bottom: 6px; display: block; }
     .form-input {
       width: 100%;
-      background: #090B0F;
-      border: 1px solid #232838;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       padding: 10px 12px;
-      color: #fff;
+      color: var(--text);
       font-size: 13px;
       outline: none;
     }
-    .form-input:focus { border-color: var(--lazy); }
+    .form-input:focus { border-color: var(--lazy); background: #fff; }
 
     .template-chips {
       display: flex;
@@ -991,23 +988,23 @@
       margin-bottom: 12px;
     }
     .template-chip {
-      background: #1E2330;
-      border: 1px solid #2B3346;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
       border-radius: 999px;
       padding: 6px 12px;
       font-size: 11px;
-      color: #CBD5E1;
+      color: var(--text);
       white-space: nowrap;
       cursor: pointer;
     }
-    .template-chip:hover { border-color: var(--lazy); color: #fff; }
+    .template-chip:hover { border-color: var(--lazy); }
 
     .toast-msg {
       position: absolute;
       top: 110px;
       left: 20px;
       right: 20px;
-      background: #10B981;
+      background: #0F172A;
       color: #fff;
       padding: 10px 14px;
       border-radius: var(--radius-md);
@@ -1016,6 +1013,7 @@
       text-align: center;
       z-index: 1000;
       display: none;
+      box-shadow: var(--shadow-md);
       animation: fadeIn 0.2s;
     }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -1023,23 +1021,28 @@
 </head>
 <body>
 
-  <!-- MOBILE DEVICE FRAME -->
+  <!-- RESPONSIVE APP SHELL -->
   <div class="app-device">
-    <div class="device-notch"></div>
 
     <!-- ── TOP APP BAR ─────────────────────────────────────────── -->
     <header class="top-app-bar">
       <div class="top-row">
-        <!-- 1. User Hostel Badge -->
-        <div class="hostel-badge">
-          <div class="icon-box">🏢</div>
-          <div>
-            <div class="label">HOSTEL</div>
-            <div class="value">BH-2 • Room 214</div>
+        <!-- Logo (Lemon Yellow) & Hostel Badge -->
+        <div class="logo-and-hostel">
+          <div class="app-logo">
+            <div class="logo-badge">
+              <span class="logo-letter">Q</span>
+            </div>
+            <span class="logo-title">Quest</span>
+          </div>
+
+          <div class="hostel-badge">
+            <span class="icon-box">🏢</span>
+            <span class="value">BH-2 • 214</span>
           </div>
         </div>
 
-        <!-- 2. Gold Pill Badge showing "450 QP" -->
+        <!-- Gold Pill Badge showing "450 QP" -->
         <div class="qp-pill">
           <span class="coin">🪙</span>
           <span class="amount" id="qp-display">450</span>
@@ -1047,7 +1050,7 @@
         </div>
       </div>
 
-      <!-- 3. Mode Switcher: Lazy Mode (#7C3AED) vs Quester Mode (#10B981) -->
+      <!-- Mode Switcher: Lazy Mode (#7C3AED) vs Quester Mode (#10B981) -->
       <div class="mode-switch-wrapper">
         <div class="mode-switch-track">
           <button class="mode-switch-btn active-lazy" id="btn-lazy-mode" onclick="setMode('lazy')">
@@ -1099,50 +1102,66 @@
             <div class="blip" style="bottom: 20px; right: 40px;">☕ 4 Nescafe</div>
           </div>
 
-          <!-- Spot Cards -->
+          <!-- Hotspots Carousel -->
           <div class="radar-spots">
             <div class="spot-pill" onclick="filterCategory('Night Canteen')">
-              <div class="spot-top"><span>🌙</span><span class="spot-peers">8 peers</span></div>
-              <div class="spot-name">Night Canteen</div>
-              <div class="spot-desc">High Activity</div>
+              <div class="spot-top">
+                <span class="spot-name">Night Canteen</span>
+                <span class="spot-peers">8 peers</span>
+              </div>
+              <div class="spot-desc">Nescafe & Maggi Point</div>
             </div>
             <div class="spot-pill" onclick="filterCategory('Gate Parcel')">
-              <div class="spot-top"><span>🚪</span><span class="spot-peers">5 peers</span></div>
-              <div class="spot-name">Main Gate</div>
-              <div class="spot-desc">Parcels Waiting</div>
+              <div class="spot-top">
+                <span class="spot-name">Main Gate</span>
+                <span class="spot-peers">5 peers</span>
+              </div>
+              <div class="spot-desc">Zomato / Swiggy drop point</div>
             </div>
             <div class="spot-pill" onclick="filterCategory('Printouts')">
-              <div class="spot-top"><span>🖨️</span><span class="spot-peers">2 peers</span></div>
-              <div class="spot-name">Stationery Shop</div>
-              <div class="spot-desc">Xerox Open</div>
+              <div class="spot-top">
+                <span class="spot-name">Stationery Shop</span>
+                <span class="spot-peers">2 peers</span>
+              </div>
+              <div class="spot-desc">Lab manual Xerox hub</div>
+            </div>
+            <div class="spot-pill" onclick="filterCategory('Borrow Item')">
+              <div class="spot-top">
+                <span class="spot-name">BH-1 Lounge</span>
+                <span class="spot-peers">4 peers</span>
+              </div>
+              <div class="spot-desc">Academic gear sharing</div>
             </div>
           </div>
         </div>
 
-        <!-- Horizontal Category Filter Chips -->
+        <!-- Category Filter Chips -->
         <div class="filter-chips-wrap">
-          <button class="category-chip active" onclick="filterCategory('all', this)">⚡ All</button>
-          <button class="category-chip" onclick="filterCategory('Night Canteen', this)">🌙 Night Canteen</button>
-          <button class="category-chip" onclick="filterCategory('Gate Parcel', this)">🚪 Gate Parcel</button>
+          <button class="category-chip active" onclick="filterCategory('all', this)">✨ All Bounties</button>
+          <button class="category-chip" onclick="filterCategory('Night Canteen', this)">🍜 Night Canteen</button>
+          <button class="category-chip" onclick="filterCategory('Gate Parcel', this)">📦 Gate Parcel</button>
           <button class="category-chip" onclick="filterCategory('Printouts', this)">🖨️ Printouts</button>
           <button class="category-chip" onclick="filterCategory('Borrow Item', this)">🤝 Borrow Item</button>
         </div>
 
-        <!-- List of realistic Quest Bounty Cards -->
+        <!-- Quest Bounty Cards Container -->
         <div class="bounty-list" id="bounty-container">
-          <!-- Injected via JS -->
+          <!-- Injected via JavaScript -->
         </div>
       </section>
 
-      <!-- TAB 2: ACTIVE QUEST -->
+      <!-- TAB 2: ACTIVE QUEST (Interactive 4-Step Tracker + Quick-Chat) -->
       <section class="tab-panel" id="tab-active">
-        <div class="tracker-card">
+        <div class="tracker-card" style="border-color: #10B981;">
           <div class="tracker-title-row">
-            <span style="font-size: 15px; font-weight: 800; color: #fff;">📍 Live Delivery Tracker</span>
-            <span style="font-size: 11px; font-weight: 700; color: #10B981;" id="active-step-label">Step 1 of 4</span>
+            <div>
+              <div style="font-size: 11px; font-weight: 800; color: #059669; letter-spacing: 0.8px;">ACTIVE DELIVERY IN PROGRESS</div>
+              <div style="font-size: 16px; font-weight: 800; color: var(--text); margin-top: 2px;">2× Cheese Butter Maggi & Coffee</div>
+            </div>
+            <span class="bounty-timer" style="height: fit-content;">⏱️ 14 mins left</span>
           </div>
 
-          <!-- 4-Step Progress Tracker -->
+          <!-- 4-Step Interactive Progress Tracker -->
           <div class="stepper-nav">
             <div class="stepper-progress-bg">
               <div class="stepper-progress-bar" id="stepper-bar"></div>
@@ -1153,7 +1172,7 @@
             </div>
             <div class="step-node" id="node-1" onclick="setTrackerStep(1)">
               <div class="step-circle">2</div>
-              <div class="step-label">At Shop/Gate</div>
+              <div class="step-label">At Shop</div>
             </div>
             <div class="step-node" id="node-2" onclick="setTrackerStep(2)">
               <div class="step-circle">3</div>
@@ -1182,8 +1201,8 @@
         <!-- Compact Quick-Chat Box -->
         <div class="chat-card">
           <div class="chat-header">
-            <div style="font-size: 12px; font-weight: 700; color: #fff;">💬 Chat with Recipient (Aman • Room 214)</div>
-            <span style="font-size: 10px; color: #10B981; font-weight: 700;">● Online</span>
+            <div style="font-size: 12px; font-weight: 700; color: var(--text);">💬 Chat with Recipient (Aman • Room 214)</div>
+            <span style="font-size: 10px; color: #059669; font-weight: 700;">● Online</span>
           </div>
 
           <div class="chat-messages" id="chat-stream">
@@ -1202,28 +1221,15 @@
         </div>
       </section>
 
-      <!-- TAB 3: SENIOR CONNECT -->
-      <section class="tab-panel" id="tab-seniors">
-        <!-- Sub-tabs: Mentorship vs Borrow Gear -->
-        <div class="subtabs-nav">
-          <button class="subtab-btn active" id="subtab-mentor" onclick="switchSeniorSubtab('mentorship')">🎓 1-on-1 Mentorship</button>
-          <button class="subtab-btn" id="subtab-gear" onclick="switchSeniorSubtab('gear')">🛠️ Borrow Gear</button>
-        </div>
-
-        <div id="senior-content">
-          <!-- Injected via JS -->
-        </div>
-      </section>
-
-      <!-- TAB 4: LEADERBOARD -->
+      <!-- TAB 3: LEADERBOARD -->
       <section class="tab-panel" id="tab-leaderboard">
         <!-- 1. Top Section: User Profile Card -->
         <div class="profile-card">
           <div style="display: flex; gap: 12px; align-items: center;">
-            <div style="width: 44px; height: 44px; border-radius: 22px; background: #1E2330; display: grid; place-items: center; border: 2px solid #F59E0B; font-weight: 800; color: #FBBF24;">M</div>
+            <div style="width: 44px; height: 44px; border-radius: 22px; background: #FEF3C7; display: grid; place-items: center; border: 2px solid #F59E0B; font-weight: 800; color: #B45309;">M</div>
             <div>
-              <div style="font-size: 15px; font-weight: 800; color: #fff;">Mohit (BH-2 • Room 214)</div>
-              <div style="font-size: 11px; color: #A78BFA; font-weight: 600;">Rank #14 in BH-2 • Silver Quester</div>
+              <div style="font-size: 15px; font-weight: 800; color: var(--text);">Mohit (BH-2 • Room 214)</div>
+              <div style="font-size: 11px; color: var(--lazy); font-weight: 700;">Rank #14 in BH-2 • Silver Quester</div>
             </div>
           </div>
 
@@ -1244,56 +1250,56 @@
 
           <div style="font-size: 10px; font-weight: 800; color: var(--text-muted); margin-bottom: 6px;">UNLOCKED BADGES</div>
           <div style="display: flex; gap: 8px;">
-            <div style="background: var(--surface-alt); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; color: #E2E8F0; border: 1px solid #2B3346;">
+            <div style="background: var(--surface-alt); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; color: var(--text); border: 1px solid var(--border);">
               🦉 Night Owl Runner
             </div>
-            <div style="background: var(--surface-alt); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; color: #E2E8F0; border: 1px solid #2B3346;">
+            <div style="background: var(--surface-alt); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; color: var(--text); border: 1px solid var(--border);">
               🦸‍♂️ Hostel Saviour
             </div>
           </div>
         </div>
 
         <!-- 2. Middle Section: Inter-Hostel Leaderboard -->
-        <div style="font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 8px;">🏰 Inter-Hostel Leaderboard</div>
+        <div style="font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 8px;">🏰 Inter-Hostel Leaderboard</div>
         <div class="hostel-leader-row highlight">
           <span style="font-size: 18px;">🥇</span>
           <div style="flex: 1;">
-            <div style="font-size: 13px; font-weight: 800; color: #fff;">BH-2 (Your Hostel)</div>
-            <div style="font-size: 10px; color: #10B981; font-weight: 700;">412 deliveries • Leading Rank 1</div>
+            <div style="font-size: 13px; font-weight: 800; color: var(--text);">BH-2 (Your Hostel)</div>
+            <div style="font-size: 10px; color: #059669; font-weight: 700;">412 deliveries • Leading Rank 1</div>
           </div>
-          <div style="font-size: 15px; font-weight: 800; color: #FBBF24;">18,450 QP</div>
+          <div style="font-size: 15px; font-weight: 800; color: #D97706;">18,450 QP</div>
         </div>
         <div class="hostel-leader-row">
           <span style="font-size: 18px;">🥈</span>
           <div style="flex: 1;">
-            <div style="font-size: 13px; font-weight: 800; color: #fff;">BH-1</div>
+            <div style="font-size: 13px; font-weight: 800; color: var(--text);">BH-1</div>
             <div style="font-size: 10px; color: var(--text-muted);">380 deliveries</div>
           </div>
-          <div style="font-size: 15px; font-weight: 800; color: #FBBF24;">16,820 QP</div>
+          <div style="font-size: 15px; font-weight: 800; color: #D97706;">16,820 QP</div>
         </div>
         <div class="hostel-leader-row">
           <span style="font-size: 18px;">🥉</span>
           <div style="flex: 1;">
-            <div style="font-size: 13px; font-weight: 800; color: #fff;">GH-1</div>
+            <div style="font-size: 13px; font-weight: 800; color: var(--text);">GH-1</div>
             <div style="font-size: 10px; color: var(--text-muted);">325 deliveries</div>
           </div>
-          <div style="font-size: 15px; font-weight: 800; color: #FBBF24;">14,310 QP</div>
+          <div style="font-size: 15px; font-weight: 800; color: #D97706;">14,310 QP</div>
         </div>
         <div class="hostel-leader-row">
           <span style="font-size: 18px;">4</span>
           <div style="flex: 1;">
-            <div style="font-size: 13px; font-weight: 800; color: #fff;">BH-3</div>
+            <div style="font-size: 13px; font-weight: 800; color: var(--text);">BH-3</div>
             <div style="font-size: 10px; color: var(--text-muted);">268 deliveries</div>
           </div>
-          <div style="font-size: 15px; font-weight: 800; color: #FBBF24;">11,940 QP</div>
+          <div style="font-size: 15px; font-weight: 800; color: #D97706;">11,940 QP</div>
         </div>
 
         <!-- 3. Bottom Section: Redeem QP Store -->
-        <div style="font-size: 15px; font-weight: 800; color: #fff; margin: 18px 0 8px;">🎁 Redeem QP Store</div>
-        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 10px;">
+        <div style="font-size: 15px; font-weight: 800; color: var(--text); margin: 18px 0 8px;">🎁 Redeem QP Store</div>
+        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 10px; box-shadow: var(--shadow-sm);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <div style="font-size: 14px; font-weight: 800; color: #fff;">🎫 Free Delivery Pass</div>
-            <div style="font-size: 12px; font-weight: 800; color: #FBBF24;">150 QP</div>
+            <div style="font-size: 14px; font-weight: 800; color: var(--text);">🎫 Free Delivery Pass</div>
+            <div style="font-size: 12px; font-weight: 800; color: #D97706;">150 QP</div>
           </div>
           <div style="font-size: 11px; color: var(--text-sec); margin-bottom: 10px;">Waives runner tip fee on your next 3 Lazy Mode snack orders.</div>
           <button class="advance-btn" style="background: var(--lazy); padding: 9px;" onclick="redeemPerk('Free Delivery Pass', 150)">
@@ -1301,10 +1307,10 @@
           </button>
         </div>
 
-        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px;">
+        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; box-shadow: var(--shadow-sm);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <div style="font-size: 14px; font-weight: 800; color: #fff;">🌙 Night Canteen ₹50 Voucher</div>
-            <div style="font-size: 12px; font-weight: 800; color: #FBBF24;">500 QP</div>
+            <div style="font-size: 14px; font-weight: 800; color: var(--text);">🌙 Night Canteen ₹50 Voucher</div>
+            <div style="font-size: 12px; font-weight: 800; color: #D97706;">500 QP</div>
           </div>
           <div style="font-size: 11px; color: var(--text-sec); margin-bottom: 10px;">Valid on orders above ₹100 at Nescafe & Maggi counters.</div>
           <button class="advance-btn" style="background: var(--lazy); padding: 9px;" onclick="redeemPerk('Night Canteen ₹50 Voucher', 500)">
@@ -1320,7 +1326,7 @@
       <span>➕</span> Post New Quest
     </button>
 
-    <!-- ── BOTTOM NAVIGATION TABS ──────────────────────────────── -->
+    <!-- ── BOTTOM NAVIGATION TABS (3 Tabs) ──────────────────────── -->
     <nav class="bottom-nav">
       <button class="nav-tab active" onclick="switchTab('home', this)">
         <span class="icon">🏠</span>
@@ -1330,11 +1336,6 @@
       <button class="nav-tab" onclick="switchTab('active', this)">
         <span class="icon">⚔️</span>
         <span class="label">Active Quest</span>
-        <div class="active-pill"></div>
-      </button>
-      <button class="nav-tab" onclick="switchTab('seniors', this)">
-        <span class="icon">🎓</span>
-        <span class="label">Senior Connect</span>
         <div class="active-pill"></div>
       </button>
       <button class="nav-tab" onclick="switchTab('leaderboard', this)">
@@ -1348,8 +1349,8 @@
     <div class="modal-overlay" id="post-modal" onclick="closeModalOnBg(event)">
       <div class="bottom-sheet">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-          <div style="font-size: 18px; font-weight: 800; color: #fff;">🛋️ Post a Quest</div>
-          <button onclick="closePostModal()" style="background: var(--surface-alt); border: none; color: #fff; width: 28px; height: 28px; border-radius: 14px; cursor: pointer;">✕</button>
+          <div style="font-size: 18px; font-weight: 800; color: var(--text);">🛋️ Post a Quest</div>
+          <button onclick="closePostModal()" style="background: var(--surface-alt); border: 1px solid var(--border); color: var(--text); width: 28px; height: 28px; border-radius: 14px; cursor: pointer;">✕</button>
         </div>
 
         <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">⚡ Quick-Fill Templates:</div>
@@ -1378,12 +1379,12 @@
         <div class="form-group">
           <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
             <label class="form-label">Bounty Cash Tip</label>
-            <span style="font-size: 13px; font-weight: 800; color: #34D399;" id="slider-tip-val">₹30</span>
+            <span style="font-size: 13px; font-weight: 800; color: #059669;" id="slider-tip-val">₹30</span>
           </div>
           <input type="range" min="10" max="100" step="5" value="30" style="width: 100%; accent-color: var(--lazy);" id="tip-slider" oninput="updateTipSlider(this.value)" />
           <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-top: 4px;">
             <span>₹10 (Min)</span>
-            <span style="color: #FBBF24; font-weight: 700;" id="calc-bonus-qp">+50 QP Auto-Bonus</span>
+            <span style="color: #D97706; font-weight: 700;" id="calc-bonus-qp">+50 QP Auto-Bonus</span>
             <span>₹100 (Max)</span>
           </div>
         </div>
@@ -1391,7 +1392,7 @@
         <div class="form-group">
           <label class="form-label">Handover Method</label>
           <div style="display: flex; gap: 8px;">
-            <button class="preset-btn" style="flex: 1; padding: 9px; text-align: center; border-color: var(--lazy);" id="btn-otp-mode" onclick="toggleHandover('otp')">🔐 4-Digit OTP</button>
+            <button class="preset-btn" style="flex: 1; padding: 9px; text-align: center; border-color: var(--lazy); color: var(--lazy);" id="btn-otp-mode" onclick="toggleHandover('otp')">🔐 4-Digit OTP</button>
             <button class="preset-btn" style="flex: 1; padding: 9px; text-align: center;" id="btn-door-mode" onclick="toggleHandover('door')">🚪 Drop at Door</button>
           </div>
         </div>
@@ -1492,7 +1493,6 @@
     // Initialize
     function init() {
       renderBounties();
-      renderSeniorContent('mentorship');
       updateWallet();
     }
 
@@ -1513,7 +1513,7 @@
         slider.style.background = '#7C3AED';
         document.documentElement.style.setProperty('--accent', '#7C3AED');
         fab.style.display = 'flex';
-        showToast('Switched to Lazy Mode (Purple #7C3AED)');
+        showToast('Switched to Lazy Mode (Purple)');
       } else {
         btnLazy.className = 'mode-switch-btn';
         btnQuester.className = 'mode-switch-btn active-quester';
@@ -1522,7 +1522,7 @@
         slider.style.background = '#10B981';
         document.documentElement.style.setProperty('--accent', '#10B981');
         fab.style.display = 'none';
-        showToast('Switched to Quester Mode (Green #10B981)');
+        showToast('Switched to Quester Mode (Green)');
       }
       renderBounties();
     }
@@ -1580,7 +1580,12 @@
     function filterCategory(cat, btn) {
       activeCategory = cat;
       document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
-      if (btn) btn.classList.add('active');
+      if (btn) {
+        btn.classList.add('active');
+      } else {
+        const found = Array.from(document.querySelectorAll('.category-chip')).find(c => c.innerText.includes(cat));
+        if (found) found.classList.add('active');
+      }
       renderBounties();
     }
 
@@ -1616,7 +1621,6 @@
     }
 
     function updateTrackerView() {
-      document.getElementById('active-step-label').innerText = `Step ${trackerStep + 1} of 4`;
       document.getElementById('stepper-bar').style.width = `${(trackerStep / 3) * 100}%`;
 
       for (let i = 0; i < 4; i++) {
@@ -1648,10 +1652,10 @@
               <input class="otp-cell" maxlength="1" id="otp-4" value="1" />
             </div>
             <div class="demo-otp-chip" onclick="fillDemoOtp()">
-              💡 Recipient OTP: <strong>4821</strong> (Tap to verify)
+              💡 Recipient's OTP: <strong>4821</strong> (Tap to Auto-Fill)
             </div>
-            <button class="advance-btn" style="background: #10B981;" onclick="completeDelivery()">
-              🎉 Verify OTP & Claim +50 QP
+            <button class="advance-btn" style="background: #10B981;" onclick="completeQuest()">
+              🎉 Verify OTP & Collect +50 QP
             </button>
           </div>
         `;
@@ -1665,128 +1669,34 @@
       document.getElementById('otp-4').value = '1';
     }
 
-    function completeDelivery() {
-      qpBalance += 50;
-      updateWallet();
-      showToast('🎉 Delivery verified! +50 QP added to your wallet.');
-      setTimeout(() => {
+    function completeQuest() {
+      const o1 = document.getElementById('otp-1').value;
+      const o2 = document.getElementById('otp-2').value;
+      const o3 = document.getElementById('otp-3').value;
+      const o4 = document.getElementById('otp-4').value;
+
+      if (o1 === '4' && o2 === '8' && o3 === '2' && o4 === '1') {
+        qpBalance += 50;
+        updateWallet();
+        alert('🎉 Delivery Complete!\n+50 QP added to your wallet.\nCash tip ₹30 received.');
+        showToast('🎉 Quest Finished! +50 QP Earned.');
         trackerStep = 0;
         updateTrackerView();
         switchTab('home', document.querySelectorAll('.nav-tab')[0]);
-      }, 1500);
+      } else {
+        alert('❌ Invalid OTP! Recipient demo OTP is 4821');
+      }
     }
 
-    // Quick Chat
+    // Quick-Chat replies
     function sendQuickReply(text) {
       const stream = document.getElementById('chat-stream');
       const bubble = document.createElement('div');
       bubble.className = 'msg-bubble me';
-      bubble.innerText = `${text} ✓✓`;
+      bubble.innerText = text;
       stream.appendChild(bubble);
       stream.scrollTop = stream.scrollHeight;
-    }
-
-    // Senior Connect Subtabs
-    function switchSeniorSubtab(type) {
-      document.getElementById('subtab-mentor').classList.toggle('active', type === 'mentorship');
-      document.getElementById('subtab-gear').classList.toggle('active', type === 'gear');
-      renderSeniorContent(type);
-    }
-
-    function renderSeniorContent(type) {
-      const target = document.getElementById('senior-content');
-      if (type === 'mentorship') {
-        target.innerHTML = `
-          <div class="senior-card">
-            <div style="display: flex; gap: 10px; align-items: center;">
-              <div style="width: 40px; height: 40px; border-radius: 20px; background: #1E2330; display: grid; place-items: center; border: 1px solid var(--lazy); font-weight: 800; color: #DDD6FE;">AS</div>
-              <div>
-                <div style="font-size: 14px; font-weight: 800; color: #fff;">Abhinav Sharma ⭐ 4.9</div>
-                <div style="font-size: 11px; color: var(--text-sec);">4th Year • CSE (BH-2 Room 418) • Amazon SDE</div>
-              </div>
-            </div>
-            <div class="skill-pills">
-              <span class="skill-pill">Flutter</span>
-              <span class="skill-pill">DSA</span>
-              <span class="skill-pill">Resume Review</span>
-              <span class="skill-pill">MLOps</span>
-            </div>
-            <button class="advance-btn" style="background: var(--lazy); padding: 9px;" onclick="bookSenior(100, 'Abhinav Sharma')">
-              ⚡ Book 15-min Chat (100 QP)
-            </button>
-          </div>
-          <div class="senior-card">
-            <div style="display: flex; gap: 10px; align-items: center;">
-              <div style="width: 40px; height: 40px; border-radius: 20px; background: #1E2330; display: grid; place-items: center; border: 1px solid var(--lazy); font-weight: 800; color: #DDD6FE;">SJ</div>
-              <div>
-                <div style="font-size: 14px; font-weight: 800; color: #fff;">Sakshi Jain ⭐ 5.0</div>
-                <div style="font-size: 11px; color: var(--text-sec);">4th Year • IT (BH-1 Room 302) • Microsoft SWE</div>
-              </div>
-            </div>
-            <div class="skill-pills">
-              <span class="skill-pill">MLOps</span>
-              <span class="skill-pill">Python</span>
-              <span class="skill-pill">Mock Interviews</span>
-            </div>
-            <button class="advance-btn" style="background: var(--lazy); padding: 9px;" onclick="bookSenior(100, 'Sakshi Jain')">
-              ⚡ Book 15-min Chat (100 QP)
-            </button>
-          </div>
-        `;
-      } else {
-        target.innerHTML = `
-          <div class="gear-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <div style="font-size: 14px; font-weight: 800; color: #fff;">🥼 Standard White Lab Coat</div>
-              <span style="font-size: 11px; font-weight: 800; color: #FBBF24;">30 QP</span>
-            </div>
-            <div style="font-size: 11px; color: var(--text-sec); margin-bottom: 10px;">Size L • Cotton • Cleaned • Senior Kunal (BH-2 Room 314)</div>
-            <button class="advance-btn" style="background: #3B82F6; padding: 9px;" onclick="requestGear(30, 'White Lab Coat')">
-              📦 Request Item (30 QP)
-            </button>
-          </div>
-          <div class="gear-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <div style="font-size: 14px; font-weight: 800; color: #fff;">🔢 Casio fx-991EX Calculator</div>
-              <span style="font-size: 11px; font-weight: 800; color: #FBBF24;">30 QP</span>
-            </div>
-            <div style="font-size: 11px; color: var(--text-sec); margin-bottom: 10px;">ClassWiz • Allowed in Exams • Senior Aditya (BH-2 Room 104)</div>
-            <button class="advance-btn" style="background: #3B82F6; padding: 9px;" onclick="requestGear(30, 'fx-991EX Calculator')">
-              📦 Request Item (30 QP)
-            </button>
-          </div>
-          <div class="gear-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <div style="font-size: 14px; font-weight: 800; color: #fff;">📐 Mini Drafter & Clips</div>
-              <span style="font-size: 11px; font-weight: 800; color: #FBBF24;">30 QP</span>
-            </div>
-            <div style="font-size: 11px; color: var(--text-sec); margin-bottom: 10px;">Steel Arm with Table Clamps • Senior Tushar (BH-2 Room 405)</div>
-            <button class="advance-btn" style="background: #3B82F6; padding: 9px;" onclick="requestGear(30, 'Mini Drafter')">
-              📦 Request Item (30 QP)
-            </button>
-          </div>
-        `;
-      }
-    }
-
-    function bookSenior(cost, name) {
-      if (qpBalance < cost) {
-        alert('Insufficient QP! Earn more in Home Feed.');
-        return;
-      }
-      qpBalance -= cost;
-      updateWallet();
-      showToast(`🎉 15-min session booked with ${name}! -${cost} QP`);
-    }
-
-    function requestGear(cost, item) {
-      if (qpBalance < cost) {
-        alert('Insufficient QP! Earn more in Home Feed.');
-        return;
-      }
-      qpBalance -= cost;
-      updateWallet();
-      showToast(`📦 Borrow request sent for "${item}"! -${cost} QP`);
+      showToast(`Sent: "${text}"`);
     }
 
     function redeemPerk(title, cost) {
@@ -1821,8 +1731,8 @@
 
     function toggleHandover(method) {
       handoverMethod = method;
-      document.getElementById('btn-otp-mode').style.borderColor = method === 'otp' ? 'var(--lazy)' : '#232838';
-      document.getElementById('btn-door-mode').style.borderColor = method === 'door' ? 'var(--lazy)' : '#232838';
+      document.getElementById('btn-otp-mode').style.borderColor = method === 'otp' ? 'var(--lazy)' : 'var(--border)';
+      document.getElementById('btn-door-mode').style.borderColor = method === 'door' ? 'var(--lazy)' : 'var(--border)';
     }
 
     function submitNewQuest() {

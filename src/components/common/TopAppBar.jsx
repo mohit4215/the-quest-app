@@ -1,9 +1,11 @@
 /**
  * TopAppBar — Header component for "Quest"
  * Features:
- * 1. User Hostel badge ("BH-2 • Room 214")
- * 2. Gold pill badge showing "450 QP" (Quest Points)
- * 3. Toggle switch to flip between "Lazy Mode" (Purple #7C3AED) and "Quester Mode" (Green #10B981)
+ * - Lemon yellow logo ("Q")
+ * - User Hostel badge ("BH-2 • Room 214")
+ * - Gold pill badge showing "450 QP" (Quest Points)
+ * - Toggle switch to flip between "Lazy Mode" (Purple #7C3AED) and "Quester Mode" (Green #10B981)
+ * - White UI background theme
  */
 
 import React from 'react';
@@ -38,24 +40,30 @@ export default function TopAppBar({
 
   return (
     <View style={[styles.wrapper, { paddingTop: Math.max(insets.top, 12) }]}>
-      {/* Upper Bar: Hostel Badge & Gold QP Pill */}
+      {/* Upper Bar: Lemon Yellow Logo + Hostel Badge + Gold QP Pill */}
       <View style={styles.topRow}>
-        {/* 1. User Hostel Badge */}
-        <View style={styles.hostelBadgeContainer}>
-          <View style={styles.hostelIconWrapper}>
-            <Text style={styles.hostelIcon}>🏢</Text>
+        {/* Left: Lemon Yellow Logo + Hostel Badge */}
+        <View style={styles.leftGroup}>
+          {/* Lemon Yellow Logo */}
+          <View style={styles.lemonLogo}>
+            <Text style={styles.lemonLogoText}>Q</Text>
           </View>
-          <View>
-            <Text style={styles.hostelLabel}>HOSTEL</Text>
-            <Text style={styles.hostelText}>{hostelText}</Text>
+
+          {/* User Hostel Badge */}
+          <View style={styles.hostelBadgeContainer}>
+            <Text style={styles.hostelIcon}>🏢</Text>
+            <View>
+              <Text style={styles.hostelLabel}>HOSTEL</Text>
+              <Text style={styles.hostelText}>{hostelText}</Text>
+            </View>
           </View>
         </View>
 
-        {/* 2. Gold Pill Badge showing "450 QP" */}
+        {/* Right: Gold Pill Badge showing "450 QP" */}
         <QPBadge amount={qpAmount} />
       </View>
 
-      {/* 3. Toggle Switch for Lazy Mode (#7C3AED) vs Quester Mode (#10B981) */}
+      {/* Mode Switcher: Lazy Mode (Purple #7C3AED) vs Quester Mode (Green #10B981) */}
       <View style={styles.switchWrapper}>
         <View style={styles.switchTrack}>
           {/* Lazy Mode Option */}
@@ -134,11 +142,16 @@ export default function TopAppBar({
 
 const styles = StyleSheet.create({
   wrapper: {
-    backgroundColor: Colors.surface, // #161922
+    backgroundColor: '#FFFFFF', // White background
     paddingHorizontal: Spacing.base,
     paddingBottom: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border, // #232838
+    borderBottomColor: '#E2E8F0',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
   },
   topRow: {
     flexDirection: 'row',
@@ -146,43 +159,61 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: Spacing.md,
   },
-  // 1. Hostel Badge styles
+  leftGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  // Lemon Yellow Logo
+  lemonLogo: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: '#FAEA48', // Lemon Yellow
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: '#EAB308',
+    shadowColor: '#EAB308',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  lemonLogoText: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#0F172A', // Dark contrasting text
+    letterSpacing: -0.5,
+  },
+  // Hostel Badge
   hostelBadgeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1E2330',
+    backgroundColor: '#F8FAFC',
     paddingVertical: 5,
-    paddingHorizontal: Spacing.md,
-    borderRadius: Radius.lg,
+    paddingHorizontal: 10,
+    borderRadius: Radius.md,
     borderWidth: 1,
-    borderColor: '#2A3245',
-    gap: 8,
-  },
-  hostelIconWrapper: {
-    width: 26,
-    height: 26,
-    borderRadius: 6,
-    backgroundColor: '#141822',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: '#E2E8F0',
+    gap: 6,
   },
   hostelIcon: {
     fontSize: 13,
   },
   hostelLabel: {
-    fontSize: 9,
-    fontWeight: '700',
+    fontSize: 8,
+    fontWeight: '800',
     letterSpacing: 0.8,
-    color: Colors.textMuted,
+    color: '#64748B',
   },
   hostelText: {
     fontSize: 12,
     fontWeight: '700',
-    color: Colors.textPrimary,
-    letterSpacing: 0.1,
+    color: '#0F172A',
   },
 
-  // 3. Mode Switcher styles
+  // Mode Switcher styles
   switchWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -191,31 +222,41 @@ const styles = StyleSheet.create({
   switchTrack: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: '#0D0F14',
+    backgroundColor: '#F1F5F9',
     borderRadius: Radius.full,
     padding: 3,
     borderWidth: 1,
-    borderColor: '#232838',
+    borderColor: '#E2E8F0',
   },
   switchOption: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 8,
+    paddingVertical: 7,
     paddingHorizontal: 10,
     borderRadius: Radius.full,
     gap: 6,
   },
   switchOptionActiveLazy: {
-    backgroundColor: 'rgba(124, 58, 237, 0.22)',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: Colors.lazyMode, // #7C3AED
+    shadowColor: Colors.lazyMode,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 2,
   },
   switchOptionActiveQuester: {
-    backgroundColor: 'rgba(16, 185, 129, 0.22)',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: Colors.questerMode, // #10B981
+    shadowColor: Colors.questerMode,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 2,
   },
   optionIcon: {
     fontSize: 13,
@@ -223,14 +264,14 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 12,
     fontWeight: '600',
-    color: Colors.textMuted,
+    color: '#64748B',
   },
   optionTextActiveLazy: {
-    color: '#DDD6FE',
+    color: Colors.lazyMode,
     fontWeight: '700',
   },
   optionTextActiveQuester: {
-    color: '#A7F3D0',
+    color: Colors.questerMode,
     fontWeight: '700',
   },
   lazyDot: {
@@ -264,7 +305,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.2,
     shadowRadius: 2,
   },
   toggleThumbLeft: {

@@ -1,7 +1,7 @@
 /**
  * TabNavigator — Bottom navigation bar for "Quest"
- * 4 tabs: Home Feed, Active Quest, Senior Connect, and Leaderboard
- * Dark theme (#0D0F14 background, #161922 card surface)
+ * 3 tabs: Home Feed, Active Quest, and Leaderboard (Senior Connect removed)
+ * Light theme (#FFFFFF background)
  */
 
 import React from 'react';
@@ -12,10 +12,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Spacing, Radius } from '../constants';
 import { useQuestMode } from '../context/QuestModeContext';
 
-// 4 Screens
+// 3 Screens
 import HomeFeedScreen from '../screens/HomeFeedScreen';
 import ActiveQuestScreen from '../screens/ActiveQuestScreen';
-import SeniorConnectScreen from '../screens/SeniorConnectScreen';
 import LeaderboardScreen from '../screens/LeaderboardScreen';
 
 const Tab = createBottomTabNavigator();
@@ -34,12 +33,6 @@ const TABS = [
     label: 'Active Quest',
   },
   {
-    name: 'SeniorConnect',
-    component: SeniorConnectScreen,
-    icon: '🎓',
-    label: 'Senior Connect',
-  },
-  {
     name: 'Leaderboard',
     component: LeaderboardScreen,
     icon: '🏆',
@@ -56,7 +49,7 @@ function TabIcon({ icon, label, focused, activeColor }) {
       <Text
         style={[
           styles.tabLabel,
-          focused && { color: activeColor, fontWeight: '700' },
+          focused && { color: activeColor, fontWeight: '800' },
         ]}
       >
         {label}
@@ -109,9 +102,9 @@ export default function TabNavigator() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#12151E', // Dark navigation surface
+    backgroundColor: '#FFFFFF', // White navigation surface
     borderTopWidth: 1,
-    borderTopColor: '#202636',
+    borderTopColor: '#E2E8F0',
     position: 'absolute',
     bottom: 0,
     left: 0,
@@ -119,8 +112,8 @@ const styles = StyleSheet.create({
     elevation: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
     paddingTop: 6,
   },
   tabItem: {
@@ -128,25 +121,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'relative',
     paddingTop: 2,
-    minWidth: 72,
+    minWidth: 80,
   },
   tabIcon: {
     fontSize: 20,
-    opacity: 0.6,
+    opacity: 0.65,
   },
   tabIconActive: {
     opacity: 1,
   },
   tabLabel: {
     fontSize: 11,
-    fontWeight: '500',
+    fontWeight: '600',
     color: '#64748B',
     marginTop: 3,
   },
   activePill: {
     position: 'absolute',
     bottom: -6,
-    width: 22,
+    width: 24,
     height: 3,
     borderRadius: Radius.full,
   },

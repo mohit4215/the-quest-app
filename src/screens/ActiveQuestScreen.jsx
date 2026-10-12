@@ -560,7 +560,7 @@ export default function ActiveQuestScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background, // #0D0F14
+    backgroundColor: Colors.background,
   },
   scroll: {
     flex: 1,
@@ -572,12 +572,13 @@ const styles = StyleSheet.create({
 
   // Active Quest Info Header Card
   questCard: {
-    backgroundColor: Colors.surface, // #161922
+    backgroundColor: Colors.card,
     borderRadius: Radius.lg,
     padding: Spacing.base,
     borderWidth: 1.5,
     borderColor: '#10B981', // Quester mode green
     marginBottom: Spacing.base,
+    ...Colors.shadowSm,
   },
   questCardTop: {
     flexDirection: 'row',
@@ -600,20 +601,20 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '800',
     letterSpacing: 0.8,
-    color: '#10B981',
+    color: '#059669',
   },
   etaPill: {
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    backgroundColor: '#FEF3C7',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.4)',
+    borderColor: '#FDE68A',
   },
   etaText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#FBBF24',
+    color: '#B45309',
   },
   questTitle: {
     fontSize: 17,
@@ -622,11 +623,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   routeBox: {
-    backgroundColor: '#11141C',
+    backgroundColor: Colors.surfaceAlt,
     borderRadius: Radius.md,
     padding: 10,
     borderWidth: 1,
-    borderColor: '#1E2433',
+    borderColor: Colors.border,
     marginBottom: 12,
   },
   routeItem: {
@@ -655,12 +656,12 @@ const styles = StyleSheet.create({
   routeValHighlight: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#F9FAFB',
+    color: Colors.textPrimary,
     marginTop: 1,
   },
   routeDivider: {
     height: 1,
-    backgroundColor: '#1E2330',
+    backgroundColor: Colors.border,
     marginVertical: 8,
     marginLeft: 22,
   },
@@ -670,41 +671,42 @@ const styles = StyleSheet.create({
   },
   cashPill: {
     flex: 1,
-    backgroundColor: 'rgba(16, 185, 129, 0.14)',
+    backgroundColor: '#DCFCE7',
     paddingVertical: 7,
     borderRadius: Radius.md,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.4)',
+    borderColor: '#BBF7D0',
   },
   cashPillText: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#34D399',
+    color: '#059669',
   },
   qpPill: {
     flex: 1,
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    backgroundColor: '#FEF3C7',
     paddingVertical: 7,
     borderRadius: Radius.md,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.45)',
+    borderColor: '#FDE68A',
   },
   qpPillText: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#FBBF24',
+    color: '#B45309',
   },
 
   // 1. Progress Tracker Card
   trackerCard: {
-    backgroundColor: Colors.surface, // #161922
+    backgroundColor: Colors.card,
     borderRadius: Radius.lg,
     padding: Spacing.base,
     borderWidth: 1,
     borderColor: Colors.border,
     marginBottom: Spacing.base,
+    ...Colors.shadowSm,
   },
   trackerHeader: {
     flexDirection: 'row',
@@ -720,7 +722,7 @@ const styles = StyleSheet.create({
   trackerSubtitle: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#10B981',
+    color: '#059669',
   },
 
   // Stepper horizontal row
@@ -739,9 +741,9 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#1E2330',
+    backgroundColor: '#F1F5F9',
     borderWidth: 1.5,
-    borderColor: '#2A3245',
+    borderColor: '#CBD5E1',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 6,
@@ -751,13 +753,13 @@ const styles = StyleSheet.create({
     borderColor: '#10B981',
   },
   stepCircleCurrent: {
-    backgroundColor: 'rgba(16, 185, 129, 0.25)',
+    backgroundColor: '#ECFDF5',
     borderColor: '#10B981',
   },
   stepCircleText: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#0F172A',
   },
   stepName: {
     fontSize: 10,
@@ -773,7 +775,7 @@ const styles = StyleSheet.create({
   stepConnector: {
     flex: 1,
     height: 2,
-    backgroundColor: '#262D3D',
+    backgroundColor: '#E2E8F0',
     marginTop: -20,
     marginHorizontal: 2,
   },
@@ -785,11 +787,11 @@ const styles = StyleSheet.create({
   currentStepCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#10141D',
+    backgroundColor: '#F8FAFC',
     padding: 12,
     borderRadius: Radius.md,
     borderWidth: 1,
-    borderColor: '#222938',
+    borderColor: Colors.border,
     marginBottom: 16,
     gap: 12,
   },
@@ -797,11 +799,11 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+    backgroundColor: '#ECFDF5',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.3)',
+    borderColor: '#A7F3D0',
   },
   currentStepEmoji: {
     fontSize: 18,
@@ -861,42 +863,42 @@ const styles = StyleSheet.create({
     width: 54,
     height: 56,
     borderRadius: Radius.md,
-    backgroundColor: '#0D0F14',
+    backgroundColor: '#F8FAFC',
     borderWidth: 1.5,
-    borderColor: '#262D3E',
+    borderColor: '#CBD5E1',
     textAlign: 'center',
     fontSize: 22,
     fontWeight: '800',
-    color: '#F9FAFB',
+    color: '#0F172A',
   },
   otpBoxFilled: {
     borderColor: '#10B981',
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    backgroundColor: '#ECFDF5',
   },
   otpBoxError: {
     borderColor: '#EF4444',
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    backgroundColor: '#FEF2F2',
   },
   otpErrorText: {
-    color: '#F87171',
+    color: '#DC2626',
     fontSize: 12,
     fontWeight: '600',
     textAlign: 'center',
     marginBottom: 8,
   },
   demoOtpChip: {
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    backgroundColor: '#FEF3C7',
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: Radius.md,
     borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.4)',
+    borderColor: '#FDE68A',
     alignItems: 'center',
     marginVertical: 8,
   },
   demoOtpText: {
     fontSize: 12,
-    color: '#FBBF24',
+    color: '#B45309',
   },
   demoOtpBold: {
     fontWeight: '800',
@@ -919,11 +921,12 @@ const styles = StyleSheet.create({
 
   // 3. Compact Quick-Chat Box at Bottom
   chatCard: {
-    backgroundColor: Colors.surface, // #161922
+    backgroundColor: Colors.card,
     borderRadius: Radius.lg,
     padding: Spacing.base,
     borderWidth: 1,
     borderColor: Colors.border,
+    ...Colors.shadowSm,
   },
   chatHeader: {
     flexDirection: 'row',
@@ -931,7 +934,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#1F2432',
+    borderBottomColor: Colors.border,
     marginBottom: 10,
   },
   chatUserRow: {
@@ -943,11 +946,11 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: '#252B3B',
+    backgroundColor: '#F1F5F9',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#374151',
+    borderColor: '#CBD5E1',
   },
   chatAvatarText: {
     color: Colors.textPrimary,
@@ -961,16 +964,16 @@ const styles = StyleSheet.create({
   },
   chatUserRoom: {
     fontSize: 10,
-    color: '#10B981',
+    color: '#059669',
     marginTop: 1,
   },
   phoneBtn: {
-    backgroundColor: '#1E2330',
+    backgroundColor: '#F8FAFC',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: Radius.sm,
     borderWidth: 1,
-    borderColor: '#2A3245',
+    borderColor: Colors.border,
   },
   phoneBtnText: {
     fontSize: 11,
@@ -992,13 +995,13 @@ const styles = StyleSheet.create({
     maxWidth: '85%',
   },
   msgBubbleRecipient: {
-    backgroundColor: '#1E2330',
+    backgroundColor: '#F1F5F9',
     alignSelf: 'flex-start',
     borderWidth: 1,
-    borderColor: '#2A3245',
+    borderColor: '#E2E8F0',
   },
   msgBubbleMe: {
-    backgroundColor: 'rgba(16, 185, 129, 0.25)',
+    backgroundColor: '#ECFDF5',
     alignSelf: 'flex-end',
     borderWidth: 1,
     borderColor: '#10B981',
@@ -1011,7 +1014,7 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
   },
   msgTextMe: {
-    color: '#A7F3D0',
+    color: '#065F46',
     fontWeight: '500',
   },
   msgTime: {
@@ -1023,7 +1026,7 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
   },
   msgTimeMe: {
-    color: '#34D399',
+    color: '#059669',
   },
 
   // 1-Tap Preset Replies
@@ -1041,16 +1044,16 @@ const styles = StyleSheet.create({
     paddingRight: 4,
   },
   presetChip: {
-    backgroundColor: '#1A202C',
+    backgroundColor: '#F8FAFC',
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: '#262E3F',
+    borderColor: Colors.border,
   },
   presetChipText: {
     fontSize: 11,
-    color: '#E2E8F0',
+    color: '#334155',
     fontWeight: '600',
   },
 
@@ -1062,9 +1065,9 @@ const styles = StyleSheet.create({
   },
   chatTextInput: {
     flex: 1,
-    backgroundColor: '#0D0F14',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#232838',
+    borderColor: Colors.border,
     borderRadius: Radius.md,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -1091,19 +1094,20 @@ const styles = StyleSheet.create({
   // Celebration Modal
   celebrationOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(5, 7, 10, 0.88)',
+    backgroundColor: 'rgba(15, 23, 42, 0.65)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: Spacing.base,
   },
   celebrationCard: {
     width: '100%',
-    backgroundColor: '#161922',
+    backgroundColor: '#FFFFFF',
     borderRadius: Radius.xl,
     padding: Spacing.xl,
     borderWidth: 1.5,
     borderColor: '#F59E0B',
     alignItems: 'center',
+    ...Colors.shadowLg,
   },
   celebrationEmoji: {
     fontSize: 42,
@@ -1112,7 +1116,7 @@ const styles = StyleSheet.create({
   celebrationTitle: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#FBBF24',
+    color: '#D97706',
     marginBottom: 6,
   },
   celebrationSubtitle: {
@@ -1124,11 +1128,11 @@ const styles = StyleSheet.create({
   },
   rewardSummaryCard: {
     width: '100%',
-    backgroundColor: '#0D0F14',
+    backgroundColor: '#F8FAFC',
     borderRadius: Radius.md,
     padding: 14,
     borderWidth: 1,
-    borderColor: '#242C3D',
+    borderColor: Colors.border,
     marginBottom: 18,
   },
   rewardSummaryRow: {
@@ -1144,16 +1148,16 @@ const styles = StyleSheet.create({
   rewardValueQP: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#FBBF24',
+    color: '#D97706',
   },
   rewardValueCash: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#34D399',
+    color: '#059669',
   },
   rewardDivider: {
     height: 1,
-    backgroundColor: '#1F2432',
+    backgroundColor: Colors.border,
     marginVertical: 8,
   },
   rewardLabelTotal: {
@@ -1164,7 +1168,7 @@ const styles = StyleSheet.create({
   rewardValueTotal: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#FBBF24',
+    color: '#D97706',
   },
   celebrationDismissBtn: {
     width: '100%',

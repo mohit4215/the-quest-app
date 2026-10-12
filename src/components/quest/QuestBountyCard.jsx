@@ -1,11 +1,6 @@
 /**
  * QuestBountyCard — Gamified Hostel Micro-Delivery Bounty Card
- * Requirements:
- * - Item title
- * - Pickup spot -> Drop-off Hostel & Room
- * - Countdown timer ("15 mins left")
- * - Cash Tip (₹30) + QP Reward (+50 QP)
- * - "Accept Quest" button (visible in Quester Mode)
+ * White UI Theme
  */
 
 import React, { useState } from 'react';
@@ -148,12 +143,17 @@ export default function QuestBountyCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.surface, // #161922
+    backgroundColor: '#FFFFFF', // White background
     borderRadius: Radius.lg,
     padding: Spacing.base,
     borderWidth: 1,
-    borderColor: Colors.border, // #232838
+    borderColor: '#E2E8F0',
     marginBottom: Spacing.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
   },
   topRow: {
     flexDirection: 'row',
@@ -162,32 +162,32 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   categoryBadge: {
-    backgroundColor: '#1E2330',
+    backgroundColor: '#F1F5F9',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: '#2A3245',
+    borderColor: '#E2E8F0',
   },
   categoryBadgeText: {
     fontSize: 11,
     fontWeight: '700',
-    color: Colors.textSecondary,
+    color: '#475569',
   },
   timerBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(59, 130, 246, 0.12)',
+    backgroundColor: '#EFF6FF',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: 'rgba(59, 130, 246, 0.3)',
+    borderColor: '#BFDBFE',
     gap: 4,
   },
   timerBadgeUrgent: {
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
-    borderColor: 'rgba(239, 68, 68, 0.4)',
+    backgroundColor: '#FEF2F2',
+    borderColor: '#FECACA',
   },
   timerIcon: {
     fontSize: 11,
@@ -195,26 +195,26 @@ const styles = StyleSheet.create({
   timerText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#60A5FA',
+    color: '#2563EB',
   },
   timerTextUrgent: {
-    color: '#F87171',
+    color: '#DC2626',
   },
   itemTitle: {
     fontSize: 16,
-    fontWeight: '700',
-    color: Colors.textPrimary,
+    fontWeight: '800',
+    color: '#0F172A',
     marginBottom: 12,
     lineHeight: 22,
   },
 
   // Route: Pickup Spot -> Drop-off Hostel & Room
   routeContainer: {
-    backgroundColor: '#11141C',
+    backgroundColor: '#F8FAFC',
     borderRadius: Radius.md,
     padding: 10,
     borderWidth: 1,
-    borderColor: '#1E2433',
+    borderColor: '#E2E8F0',
     marginBottom: 10,
   },
   routeRow: {
@@ -227,19 +227,19 @@ const styles = StyleSheet.create({
   },
   routeLabel: {
     fontSize: 11,
-    color: Colors.textMuted,
+    color: '#64748B',
     fontWeight: '600',
   },
   routeValue: {
     fontSize: 12,
-    color: Colors.textSecondary,
+    color: '#475569',
     fontWeight: '600',
     flex: 1,
   },
   routeValueHighlight: {
     fontSize: 12,
-    color: '#F9FAFB',
-    fontWeight: '700',
+    color: '#0F172A',
+    fontWeight: '800',
     flex: 1,
   },
   routeArrowRow: {
@@ -252,12 +252,12 @@ const styles = StyleSheet.create({
   routeDottedLine: {
     width: 1,
     height: 10,
-    backgroundColor: '#2A3245',
+    backgroundColor: '#CBD5E1',
     marginLeft: 5,
   },
   routeArrow: {
     fontSize: 11,
-    color: '#64748B',
+    color: '#94A3B8',
     marginLeft: 14,
   },
 
@@ -267,13 +267,13 @@ const styles = StyleSheet.create({
   },
   notesText: {
     fontSize: 12,
-    color: Colors.textMuted,
+    color: '#64748B',
     fontStyle: 'italic',
   },
 
   divider: {
     height: 1,
-    backgroundColor: '#1E2330',
+    backgroundColor: '#F1F5F9',
     marginBottom: 12,
   },
 
@@ -289,27 +289,27 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   cashTipPill: {
-    backgroundColor: 'rgba(16, 185, 129, 0.14)',
+    backgroundColor: '#DCFCE7',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.4)',
+    borderColor: '#86EFAC',
   },
   cashTipText: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#34D399',
+    color: '#15803D',
   },
   qpRewardPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    backgroundColor: '#FEF3C7',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.45)',
+    borderColor: '#FCD34D',
     gap: 4,
   },
   qpCoin: {
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
   qpText: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#FBBF24',
+    color: '#B45309',
   },
 
   // Buttons
@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
   },
   acceptedBtn: {
-    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    backgroundColor: '#DCFCE7',
     borderWidth: 1,
     borderColor: '#10B981',
   },
@@ -339,18 +339,18 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   acceptedBtnText: {
-    color: '#34D399',
+    color: '#059669',
   },
   detailsBtn: {
-    backgroundColor: '#1E2330',
+    backgroundColor: '#F8FAFC',
     paddingHorizontal: 12,
     paddingVertical: 7,
     borderRadius: Radius.md,
     borderWidth: 1,
-    borderColor: '#2A3245',
+    borderColor: '#E2E8F0',
   },
   detailsBtnText: {
-    color: Colors.textSecondary,
+    color: '#475569',
     fontSize: 12,
     fontWeight: '600',
   },

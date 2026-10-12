@@ -1,14 +1,6 @@
 /**
  * HomeFeedScreen — "Home Feed" tab for "Quest"
- * Features:
- * 1. "Live Campus Radar" card with pulsing indicator (active peers near campus spots)
- * 2. Horizontal category filter chips: All, Night Canteen, Gate Parcel, Printouts, Borrow Item
- * 3. List of realistic Quest Bounty Cards (Item, Pickup -> Drop-off, Countdown, Cash Tip + QP, Accept button in Quester Mode)
- * 4. Interactive "Post a Quest" bottom sheet modal triggered by Lazy Mode floating action button
- *    - Quick-fill templates ("Gate Zomato Pickup", "2x Maggi from Canteen", "Lab File Printout")
- *    - Interactive slider for Bounty Tip (₹10 to ₹100) auto-calculating bonus QP
- *    - Toggle for "Drop at Door" vs "4-Digit OTP Handover"
- *    - Dynamically prepends newly posted quest to top of list
+ * White background theme
  */
 
 import React, { useState, useMemo } from 'react';
@@ -28,7 +20,6 @@ import LiveCampusRadar from '../components/quest/LiveCampusRadar';
 import QuestBountyCard from '../components/quest/QuestBountyCard';
 import PostQuestModal from '../components/quest/PostQuestModal';
 
-// Categories specified
 const CATEGORIES = [
   { id: 'all', label: 'All', icon: '⚡' },
   { id: 'Night Canteen', label: 'Night Canteen', icon: '🌙' },
@@ -37,7 +28,6 @@ const CATEGORIES = [
   { id: 'Borrow Item', label: 'Borrow Item', icon: '🤝' },
 ];
 
-// Realistic mock bounty quests
 const INITIAL_QUESTS = [
   {
     id: 'q_1',
@@ -133,7 +123,6 @@ export default function HomeFeedScreen() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
 
-  // Filter logic
   const filteredQuests = useMemo(() => {
     if (selectedCategory === 'all') return quests;
     return quests.filter((q) => q.category === selectedCategory);
@@ -144,27 +133,21 @@ export default function HomeFeedScreen() {
       ? targetQuest
       : quests.find((q) => q.id === targetQuest) || INITIAL_QUESTS[0];
 
-    // Mark as accepted in local feed list
     setQuests((prev) =>
       prev.map((q) => (q.id === questObj.id ? { ...q, isAccepted: true } : q))
     );
 
-    // Set as active quest in global context (auto switches to Quester Mode)
     acceptQuest(questObj);
-
     showToast('⚡ Quest accepted! Opening Active Quest tracker...');
 
-    // Automatically navigate to Active Quest tab
     setTimeout(() => {
       navigation.navigate('ActiveQuest');
     }, 350);
   };
 
   const handleAddNewQuest = (newQuest) => {
-    // Dynamically prepend newly created quest to top of Home Feed list
     setQuests((prev) => [newQuest, ...prev]);
 
-    // Ensure it's immediately visible
     if (selectedCategory !== 'all' && selectedCategory !== newQuest.category) {
       setSelectedCategory('all');
     }
@@ -181,10 +164,8 @@ export default function HomeFeedScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Top App Bar with Hostel Badge, Gold QP Badge, and Mode Switcher */}
       <TopAppBar />
 
-      {/* Dynamic Toast Banner */}
       {toastMessage && (
         <View style={styles.toastContainer}>
           <Text style={styles.toastText}>{toastMessage}</Text>
@@ -196,14 +177,14 @@ export default function HomeFeedScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* 1. Live Campus Radar Card */}
+        {/* 1. Live Campus Radar */}
         <LiveCampusRadar
           onSelectSpot={(cat) => {
             if (cat) setSelectedCategory(cat);
           }}
         />
 
-        {/* 2. Horizontal Category Filter Chips */}
+        {/* 2. Category Filter Chips */}
         <View style={styles.filterSection}>
           <ScrollView
             horizontal
@@ -220,9 +201,7 @@ export default function HomeFeedScreen() {
                     isActive && [
                       styles.chipActive,
                       {
-                        backgroundColor: isLazyMode
-                          ? 'rgba(124, 58, 237, 0.22)'
-                          : 'rgba(16, 185, 129, 0.22)',
+                        backgroundColor: isLazyMode ? '#F5F3FF' : '#ECFDF5',
                         borderColor: accentColor,
                       },
                     ],
@@ -245,7 +224,7 @@ export default function HomeFeedScreen() {
           </ScrollView>
         </View>
 
-        {/* Quest Section Header */}
+        {/* Feed Header */}
         <View style={styles.feedHeader}>
           <View>
             <Text style={styles.feedTitle}>
@@ -264,7 +243,7 @@ export default function HomeFeedScreen() {
           </View>
         </View>
 
-        {/* 3. List of realistic Quest Bounty Cards */}
+        {/* 3. Bounty Cards List */}
         {filteredQuests.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyIcon}>🔍</Text>
@@ -292,7 +271,7 @@ export default function HomeFeedScreen() {
         )}
       </ScrollView>
 
-      {/* 4. "Post New Quest" Floating Action Button (Visible in Lazy Mode) */}
+      {/* 4. Floating Action Button (Lazy Mode) */}
       {isLazyMode && (
         <TouchableOpacity
           style={[styles.floatingPostBtn, { backgroundColor: Colors.lazyMode }]}
@@ -306,7 +285,6 @@ export default function HomeFeedScreen() {
         </TouchableOpacity>
       )}
 
-      {/* Interactive "Post a Quest" Modal / Bottom Sheet */}
       <PostQuestModal
         visible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
@@ -319,22 +297,21 @@ export default function HomeFeedScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background, // #0D0F14
+    backgroundColor: '#FFFFFF', // White background
   },
   toastContainer: {
-    backgroundColor: '#1E2330',
+    backgroundColor: '#DCFCE7',
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#2A3245',
+    borderBottomColor: '#86EFAC',
     alignItems: 'center',
     justifyContent: 'center',
   },
   toastText: {
-    color: '#34D399',
+    color: '#15803D',
     fontSize: 12,
     fontWeight: '700',
-    letterSpacing: 0.2,
   },
   scroll: {
     flex: 1,
@@ -343,8 +320,6 @@ const styles = StyleSheet.create({
     padding: Spacing.base,
     paddingBottom: 110,
   },
-
-  // Category filter chips
   filterSection: {
     marginBottom: Spacing.base,
   },
@@ -355,12 +330,12 @@ const styles = StyleSheet.create({
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#161922',
+    backgroundColor: '#F8FAFC',
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: '#232838',
+    borderColor: '#E2E8F0',
     gap: 6,
   },
   chipActive: {
@@ -372,10 +347,8 @@ const styles = StyleSheet.create({
   chipLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: Colors.textSecondary,
+    color: '#475569',
   },
-
-  // Feed section header
   feedHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -384,36 +357,34 @@ const styles = StyleSheet.create({
   },
   feedTitle: {
     fontSize: 16,
-    fontWeight: '700',
-    color: Colors.textPrimary,
+    fontWeight: '800',
+    color: '#0F172A',
   },
   feedSubtitle: {
     fontSize: 11,
-    color: Colors.textMuted,
+    color: '#64748B',
     marginTop: 2,
   },
   countBadge: {
-    backgroundColor: '#1E2330',
+    backgroundColor: '#F1F5F9',
     paddingHorizontal: 9,
     paddingVertical: 4,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: '#2A3245',
+    borderColor: '#E2E8F0',
   },
   countText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#94A3B8',
+    color: '#475569',
   },
-
-  // Empty state
   emptyContainer: {
-    backgroundColor: Colors.surface,
+    backgroundColor: '#FFFFFF',
     borderRadius: Radius.lg,
     padding: Spacing.xl,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: '#E2E8F0',
     marginVertical: Spacing.md,
   },
   emptyIcon: {
@@ -423,12 +394,12 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: Colors.textPrimary,
+    color: '#0F172A',
     marginBottom: 4,
   },
   emptySubtitle: {
     fontSize: 12,
-    color: Colors.textMuted,
+    color: '#64748B',
     textAlign: 'center',
     marginBottom: 14,
   },
@@ -442,8 +413,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
   },
-
-  // Floating Action Button in Lazy Mode
   floatingPostBtn: {
     position: 'absolute',
     bottom: 84,
@@ -454,13 +423,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
     paddingVertical: 13,
     borderRadius: Radius.full,
-    elevation: 8,
+    elevation: 6,
     shadowColor: Colors.lazyMode,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
   },
   floatingPostIcon: {
     fontSize: 15,

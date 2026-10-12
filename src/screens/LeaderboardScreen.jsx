@@ -526,7 +526,7 @@ export default function LeaderboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background, // #0D0F14
+    backgroundColor: Colors.background,
   },
   scroll: {
     flex: 1,
@@ -538,12 +538,13 @@ const styles = StyleSheet.create({
 
   // 1. User Profile Card
   profileCard: {
-    backgroundColor: Colors.surface, // #161922
+    backgroundColor: Colors.card,
     borderRadius: Radius.lg,
     padding: Spacing.base,
     borderWidth: 1,
-    borderColor: '#242C3D',
+    borderColor: Colors.border,
     marginBottom: Spacing.lg,
+    ...Colors.shadowSm,
   },
   profileHeader: {
     flexDirection: 'row',
@@ -555,7 +556,7 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: '#1E2330',
+    backgroundColor: '#FEF3C7',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
@@ -563,7 +564,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   avatarInitials: {
-    color: '#FBBF24',
+    color: '#B45309',
     fontSize: 20,
     fontWeight: '800',
   },
@@ -576,7 +577,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: '#10B981',
     borderWidth: 2,
-    borderColor: '#161922',
+    borderColor: '#FFFFFF',
   },
   profileMeta: {
     flex: 1,
@@ -592,17 +593,17 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
   },
   tierPill: {
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    backgroundColor: '#FEF3C7',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.4)',
+    borderColor: '#FDE68A',
   },
   tierPillText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#FBBF24',
+    color: '#B45309',
   },
   profileRoom: {
     fontSize: 12,
@@ -619,11 +620,11 @@ const styles = StyleSheet.create({
   // Metrics Grid
   metricsGrid: {
     flexDirection: 'row',
-    backgroundColor: '#0D0F14',
+    backgroundColor: Colors.surfaceAlt,
     borderRadius: Radius.md,
     padding: 10,
     borderWidth: 1,
-    borderColor: '#1F2432',
+    borderColor: Colors.border,
     marginBottom: 14,
     gap: 8,
   },
@@ -648,12 +649,12 @@ const styles = StyleSheet.create({
   metricValueGreen: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#34D399',
+    color: '#059669',
   },
   metricValueGold: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#FBBF24',
+    color: '#D97706',
   },
   metricLabel: {
     fontSize: 10,
@@ -670,7 +671,7 @@ const styles = StyleSheet.create({
   // Badges container
   badgesContainer: {
     borderTopWidth: 1,
-    borderTopColor: '#1E2330',
+    borderTopColor: Colors.border,
     paddingTop: 12,
   },
   badgesTitle: {
@@ -688,11 +689,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1E2330',
+    backgroundColor: '#F8FAFC',
     padding: 8,
     borderRadius: Radius.md,
     borderWidth: 1,
-    borderColor: '#2A3245',
+    borderColor: Colors.border,
     gap: 8,
   },
   badgeEmoji: {
@@ -701,7 +702,7 @@ const styles = StyleSheet.create({
   badgeName: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#E2E8F0',
+    color: Colors.textPrimary,
   },
   badgeDesc: {
     fontSize: 9,
@@ -727,12 +728,12 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   weeklyResetPill: {
-    backgroundColor: '#1E2330',
+    backgroundColor: '#F1F5F9',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: '#2A3245',
+    borderColor: Colors.border,
   },
   weeklyResetText: {
     fontSize: 10,
@@ -740,27 +741,28 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
   },
   hostelRankingsCard: {
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.card,
     borderRadius: Radius.lg,
     padding: Spacing.base,
     borderWidth: 1,
     borderColor: Colors.border,
     marginBottom: Spacing.lg,
     gap: 12,
+    ...Colors.shadowSm,
   },
   hostelRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#11141D',
+    backgroundColor: '#F8FAFC',
     padding: 10,
     borderRadius: Radius.md,
     borderWidth: 1,
-    borderColor: '#1E2433',
+    borderColor: Colors.border,
     gap: 10,
   },
   hostelRowHighlighted: {
-    backgroundColor: 'rgba(16, 185, 129, 0.08)',
-    borderColor: 'rgba(16, 185, 129, 0.4)',
+    backgroundColor: '#ECFDF5',
+    borderColor: '#10B981',
   },
   hostelRankCol: {
     width: 28,
@@ -786,21 +788,21 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
   },
   yourHostelTag: {
-    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    backgroundColor: '#DCFCE7',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: Radius.sm,
     borderWidth: 1,
-    borderColor: '#10B981',
+    borderColor: '#86EFAC',
   },
   yourHostelText: {
     fontSize: 9,
     fontWeight: '800',
-    color: '#34D399',
+    color: '#059669',
   },
   hostelBarBg: {
     height: 6,
-    backgroundColor: '#1F2432',
+    backgroundColor: '#E2E8F0',
     borderRadius: 3,
     overflow: 'hidden',
     marginVertical: 3,
@@ -820,7 +822,7 @@ const styles = StyleSheet.create({
   hostelPointsText: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#FBBF24',
+    color: '#D97706',
   },
   hostelPointsLabel: {
     fontSize: 9,
@@ -830,20 +832,21 @@ const styles = StyleSheet.create({
 
   // Runners List Card
   runnersCard: {
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.card,
     borderRadius: Radius.lg,
     padding: Spacing.base,
     borderWidth: 1,
     borderColor: Colors.border,
     marginBottom: Spacing.lg,
     gap: 8,
+    ...Colors.shadowSm,
   },
   runnerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#1E2330',
+    borderBottomColor: Colors.border,
     gap: 10,
   },
   runnerRankCol: {
@@ -859,11 +862,11 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: '#1E2330',
+    backgroundColor: '#F1F5F9',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#2A3245',
+    borderColor: '#CBD5E1',
   },
   runnerAvatarText: {
     fontSize: 11,
@@ -890,7 +893,7 @@ const styles = StyleSheet.create({
   runnerBadge: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#F59E0B',
+    color: '#D97706',
     marginTop: 2,
   },
   runnerQPCol: {
@@ -899,7 +902,7 @@ const styles = StyleSheet.create({
   runnerQPAmount: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#FBBF24',
+    color: '#D97706',
   },
   runnerQuestCount: {
     fontSize: 10,
@@ -909,27 +912,28 @@ const styles = StyleSheet.create({
 
   // 3. Redeem QP Store
   storeWalletPill: {
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    backgroundColor: '#FEF3C7',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.4)',
+    borderColor: '#FDE68A',
   },
   storeWalletText: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#FBBF24',
+    color: '#B45309',
   },
   storeContainer: {
     gap: 12,
   },
   perkCard: {
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.card,
     borderRadius: Radius.lg,
     padding: Spacing.base,
     borderWidth: 1,
     borderColor: Colors.border,
+    ...Colors.shadowSm,
   },
   perkTopRow: {
     flexDirection: 'row',
@@ -939,11 +943,11 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: Radius.md,
-    backgroundColor: '#1E2330',
+    backgroundColor: '#F1F5F9',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#2A3245',
+    borderColor: Colors.border,
   },
   perkEmoji: {
     fontSize: 20,
@@ -963,17 +967,17 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
   },
   perkTagBadge: {
-    backgroundColor: '#1E2330',
+    backgroundColor: '#FEF3C7',
     paddingHorizontal: 7,
     paddingVertical: 2,
     borderRadius: Radius.sm,
     borderWidth: 1,
-    borderColor: '#2A3245',
+    borderColor: '#FDE68A',
   },
   perkTagText: {
     fontSize: 9,
     fontWeight: '700',
-    color: '#F59E0B',
+    color: '#B45309',
   },
   perkDesc: {
     fontSize: 11,
@@ -982,7 +986,7 @@ const styles = StyleSheet.create({
   },
   perkDivider: {
     height: 1,
-    backgroundColor: '#1E2330',
+    backgroundColor: Colors.border,
     marginVertical: 12,
   },
   perkFooter: {
@@ -1001,7 +1005,7 @@ const styles = StyleSheet.create({
   perkCostAmount: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#FBBF24',
+    color: '#D97706',
   },
   redeemBtn: {
     backgroundColor: Colors.lazyMode, // Purple store button
@@ -1010,7 +1014,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
   },
   redeemedBtn: {
-    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    backgroundColor: '#DCFCE7',
     borderWidth: 1,
     borderColor: '#10B981',
   },
@@ -1020,25 +1024,26 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   redeemedBtnText: {
-    color: '#34D399',
+    color: '#059669',
   },
 
   // Modals
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(5, 7, 10, 0.88)',
+    backgroundColor: 'rgba(15, 23, 42, 0.65)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: Spacing.base,
   },
   voucherCard: {
     width: '100%',
-    backgroundColor: '#161922',
+    backgroundColor: '#FFFFFF',
     borderRadius: Radius.xl,
     padding: Spacing.xl,
     borderWidth: 1.5,
     borderColor: '#F59E0B',
     alignItems: 'center',
+    ...Colors.shadowLg,
   },
   voucherEmoji: {
     fontSize: 40,
@@ -1047,7 +1052,7 @@ const styles = StyleSheet.create({
   voucherTitle: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#FBBF24',
+    color: '#D97706',
     marginBottom: 6,
   },
   voucherSubtitle: {
@@ -1059,11 +1064,11 @@ const styles = StyleSheet.create({
   },
   voucherCodeBox: {
     width: '100%',
-    backgroundColor: '#0D0F14',
+    backgroundColor: '#F8FAFC',
     borderRadius: Radius.md,
     padding: 14,
     borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.35)',
+    borderColor: '#FDE68A',
     alignItems: 'center',
     marginBottom: 14,
   },
@@ -1077,7 +1082,7 @@ const styles = StyleSheet.create({
   voucherCodeText: {
     fontSize: 20,
     fontWeight: '900',
-    color: '#F9FAFB',
+    color: '#0F172A',
     letterSpacing: 2,
     marginBottom: 4,
   },
@@ -1100,11 +1105,11 @@ const styles = StyleSheet.create({
   summaryBalance: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#FBBF24',
+    color: '#D97706',
   },
   earnMoreText: {
     fontSize: 12,
-    color: '#FDE68A',
+    color: '#B45309',
     textAlign: 'center',
     lineHeight: 17,
   },

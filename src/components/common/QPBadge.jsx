@@ -1,11 +1,11 @@
 /**
  * QPBadge — Quest Points display pill
- * Gold pill badge showing QP balance for dark theme (#0D0F14 / #161922).
+ * Gold pill badge showing QP balance for light theme (#FFFFFF background).
  */
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Colors, Typography, Spacing, Radius } from '../../constants';
+import { Colors, Spacing, Radius } from '../../constants';
 
 export default function QPBadge({ amount = 450, size = 'md', style }) {
   const isLarge = size === 'lg';
@@ -25,12 +25,12 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(245, 158, 11, 0.14)',
+    backgroundColor: '#FEF3C7',
     borderRadius: Radius.full,
     paddingHorizontal: Spacing.md,
     paddingVertical: 5,
     borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.45)',
+    borderColor: '#FCD34D',
     alignSelf: 'flex-start',
   },
   containerLg: {
@@ -46,9 +46,9 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   amount: {
-    color: '#FBBF24',
+    color: '#B45309',
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: '800',
     letterSpacing: 0.2,
   },
   amountLg: {
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   label: {
-    color: '#F59E0B',
+    color: '#D97706',
     fontWeight: '700',
     fontSize: 11,
     marginLeft: 2,

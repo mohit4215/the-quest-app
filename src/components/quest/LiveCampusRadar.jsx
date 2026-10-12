@@ -1,10 +1,6 @@
 /**
  * LiveCampusRadar — Pulsing live campus hotspot radar
- * Displays real-time peer count near college hubs:
- * - "8 peers at Night Canteen"
- * - "5 peers at Main Gate"
- * - "2 peers at Stationery Shop"
- * - "4 peers at Nescafe Corner"
+ * Light theme (#FFFFFF background)
  */
 
 import React, { useEffect, useRef } from 'react';
@@ -174,16 +170,16 @@ export default function LiveCampusRadar({ onSelectSpot }) {
         </View>
 
         {/* Interactive hotspot blips on the scope */}
-        <View style={[styles.blip, { top: 18, left: 32 }]}>
+        <View style={[styles.blip, { top: 16, left: 32 }]}>
           <Text style={styles.blipText}>🌙 8</Text>
         </View>
-        <View style={[styles.blip, { top: 28, right: 36 }]}>
+        <View style={[styles.blip, { top: 26, right: 36 }]}>
           <Text style={styles.blipText}>🚪 5</Text>
         </View>
-        <View style={[styles.blip, { bottom: 20, left: 45 }]}>
+        <View style={[styles.blip, { bottom: 18, left: 45 }]}>
           <Text style={styles.blipText}>🖨️ 2</Text>
         </View>
-        <View style={[styles.blip, { bottom: 22, right: 40 }]}>
+        <View style={[styles.blip, { bottom: 20, right: 40 }]}>
           <Text style={styles.blipText}>☕ 4</Text>
         </View>
       </View>
@@ -221,13 +217,18 @@ export default function LiveCampusRadar({ onSelectSpot }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.surface, // #161922
+    backgroundColor: '#FFFFFF', // White
     borderRadius: Radius.lg,
     padding: Spacing.base,
     borderWidth: 1,
-    borderColor: Colors.border, // #232838
+    borderColor: '#E2E8F0',
     marginBottom: Spacing.lg,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
   },
   headerRow: {
     flexDirection: 'row',
@@ -263,34 +264,34 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '800',
     letterSpacing: 1.2,
-    color: '#10B981',
+    color: '#059669',
   },
   activeCounter: {
-    backgroundColor: '#1E2330',
+    backgroundColor: '#F1F5F9',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: '#2A3245',
+    borderColor: '#E2E8F0',
   },
   activeCounterText: {
     fontSize: 10,
     fontWeight: '700',
-    color: Colors.textSecondary,
+    color: '#475569',
   },
   radarSubtitle: {
     fontSize: 12,
-    color: Colors.textMuted,
+    color: '#64748B',
     marginBottom: 12,
   },
 
   // Radar scope
   radarScope: {
     height: 110,
-    backgroundColor: '#0D0F14',
+    backgroundColor: '#F8FAFC',
     borderRadius: Radius.md,
     borderWidth: 1,
-    borderColor: '#1F2432',
+    borderColor: '#E2E8F0',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 14,
@@ -300,7 +301,7 @@ const styles = StyleSheet.create({
   scopeRing: {
     position: 'absolute',
     borderWidth: 1,
-    borderColor: 'rgba(34, 197, 94, 0.15)',
+    borderColor: 'rgba(16, 185, 129, 0.25)',
   },
   scopeSweep: {
     position: 'absolute',
@@ -320,17 +321,17 @@ const styles = StyleSheet.create({
   },
   blip: {
     position: 'absolute',
-    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    backgroundColor: 'rgba(16, 185, 129, 0.15)',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.5)',
+    borderColor: 'rgba(16, 185, 129, 0.45)',
   },
   blipText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#A7F3D0',
+    color: '#047857',
   },
 
   // Spot cards
@@ -339,12 +340,12 @@ const styles = StyleSheet.create({
     paddingRight: 4,
   },
   spotCard: {
-    backgroundColor: '#1A1F2C',
+    backgroundColor: '#F8FAFC',
     borderRadius: Radius.md,
     padding: 10,
     width: 136,
     borderWidth: 1,
-    borderColor: '#242B3C',
+    borderColor: '#E2E8F0',
   },
   spotTop: {
     flexDirection: 'row',
@@ -359,10 +360,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#12151E',
+    backgroundColor: '#FFFFFF',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   onlineMiniDot: {
     width: 5,
@@ -373,16 +376,16 @@ const styles = StyleSheet.create({
   peerCount: {
     fontSize: 9,
     fontWeight: '700',
-    color: Colors.textSecondary,
+    color: '#059669',
   },
   spotName: {
     fontSize: 12,
     fontWeight: '700',
-    color: Colors.textPrimary,
+    color: '#0F172A',
     marginBottom: 2,
   },
   spotStatus: {
     fontSize: 10,
-    color: Colors.textMuted,
+    color: '#64748B',
   },
 });

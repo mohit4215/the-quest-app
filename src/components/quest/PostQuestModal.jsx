@@ -1,13 +1,6 @@
 /**
  * PostQuestModal — Interactive "Post a Quest" bottom sheet modal
- * Triggered by the floating action button in Lazy Mode.
- *
- * Features:
- * 1. Quick-fill template chips ("Gate Zomato Pickup", "2x Maggi from Canteen", "Lab File Printout")
- * 2. Input fields for Item Details, Pickup Location, and Drop-off Room
- * 3. Interactive slider for Bounty Tip (₹10 to ₹100) that automatically calculates bonus QP
- * 4. Toggle for "Drop at Door" vs "4-Digit OTP Handover"
- * 5. On submit: constructs quest object & prepends to Home Feed list
+ * White UI Theme
  */
 
 import React, { useState, useRef } from 'react';
@@ -66,9 +59,7 @@ const TEMPLATES = [
   },
 ];
 
-// Helper to calculate bonus QP from tip
 export function calculateBonusQP(tipAmount) {
-  // Gamified formula: tip * 1.5 + 5 (e.g. ₹10 -> 20 QP, ₹30 -> 50 QP, ₹100 -> 155 QP)
   return Math.round(tipAmount * 1.5 + 5);
 }
 
@@ -79,7 +70,6 @@ export default function PostQuestModal({
 }) {
   const { userProfile } = useQuestMode();
 
-  // Form State
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [itemTitle, setItemTitle] = useState('');
   const [pickupSpot, setPickupSpot] = useState('');
@@ -89,21 +79,14 @@ export default function PostQuestModal({
   const [category, setCategory] = useState('Night Canteen');
   const [categoryIcon, setCategoryIcon] = useState('🌙');
   const [notes, setNotes] = useState('');
-
-  // 3. Bounty Tip (₹10 to ₹100)
   const [tip, setTip] = useState(30);
-
-  // 4. Toggle: "Drop at Door" vs "4-Digit OTP Handover"
-  // 'door' or 'otp'
   const [deliveryMethod, setDeliveryMethod] = useState('otp');
 
-  // Slider interaction
   const sliderWidth = useRef(260).current;
   const trackRef = useRef(null);
 
   const bonusQP = calculateBonusQP(tip);
 
-  // Template pre-fill handler
   const handleSelectTemplate = (template) => {
     setSelectedTemplate(template.id);
     setItemTitle(template.item);
@@ -115,12 +98,10 @@ export default function PostQuestModal({
     setNotes(template.notes);
   };
 
-  // Slider tap / drag logic
   const handleSliderTouch = (evt) => {
     const { locationX } = evt.nativeEvent;
     const clampedX = Math.max(0, Math.min(sliderWidth, locationX));
     const percentage = clampedX / sliderWidth;
-    // Range 10 to 100, step 5
     const rawVal = 10 + percentage * 90;
     const steppedVal = Math.round(rawVal / 5) * 5;
     setTip(Math.max(10, Math.min(100, steppedVal)));
@@ -174,7 +155,6 @@ export default function PostQuestModal({
     setNotes('');
   };
 
-  // Slider percentage for progress visual
   const sliderPercent = ((tip - 10) / 90) * 100;
 
   return (
@@ -189,10 +169,8 @@ export default function PostQuestModal({
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <View style={styles.sheetContainer}>
-          {/* Top Grab Handle */}
           <View style={styles.dragHandle} />
 
-          {/* Header */}
           <View style={styles.header}>
             <View>
               <Text style={styles.title}>🛋️ Post a Quest</Text>
@@ -214,7 +192,7 @@ export default function PostQuestModal({
             contentContainerStyle={styles.scrollBody}
             keyboardShouldPersistTaps="handled"
           >
-            {/* 1. Quick-Fill Template Chips */}
+            {/* Quick-Fill Templates */}
             <View style={styles.section}>
               <Text style={styles.sectionLabel}>⚡ Quick-Fill Templates</Text>
               <ScrollView
@@ -249,7 +227,7 @@ export default function PostQuestModal({
               </ScrollView>
             </View>
 
-            {/* 2. Input Fields: Item Details, Pickup Spot, Drop-Off Room */}
+            {/* Input Fields */}
             <View style={styles.section}>
               <Text style={styles.inputTitle}>
                 Item Details <Text style={styles.required}>*</Text>
@@ -257,7 +235,7 @@ export default function PostQuestModal({
               <TextInput
                 style={styles.textInput}
                 placeholder="e.g. 2x Maggi & Cold Coffee, Stationery, Zomato Bag"
-                placeholderTextColor="#64748B"
+                placeholderTextColor="#94A3B8"
                 value={itemTitle}
                 onChangeText={(text) => {
                   setItemTitle(text);
@@ -269,7 +247,7 @@ export default function PostQuestModal({
               <TextInput
                 style={styles.textInput}
                 placeholder="e.g. Night Canteen Nescafe, Main Gate, Xerox Shop"
-                placeholderTextColor="#64748B"
+                placeholderTextColor="#94A3B8"
                 value={pickupSpot}
                 onChangeText={setPickupSpot}
               />
@@ -278,7 +256,7 @@ export default function PostQuestModal({
               <TextInput
                 style={styles.textInput}
                 placeholder="e.g. BH-2 • Room 214"
-                placeholderTextColor="#64748B"
+                placeholderTextColor="#94A3B8"
                 value={dropOffRoom}
                 onChangeText={setDropOffRoom}
               />
@@ -287,7 +265,7 @@ export default function PostQuestModal({
               <TextInput
                 style={[styles.textInput, styles.notesInput]}
                 placeholder="e.g. Call when entering BH-2 2nd floor, extra ketchup"
-                placeholderTextColor="#64748B"
+                placeholderTextColor="#94A3B8"
                 value={notes}
                 onChangeText={setNotes}
                 multiline
@@ -295,7 +273,7 @@ export default function PostQuestModal({
               />
             </View>
 
-            {/* 3. Interactive Slider for Bounty Tip (₹10 to ₹100) */}
+            {/* Bounty Tip Slider */}
             <View style={styles.section}>
               <View style={styles.sliderHeaderRow}>
                 <Text style={styles.sectionLabel}>💰 Bounty Cash Tip</Text>
@@ -304,7 +282,6 @@ export default function PostQuestModal({
                 </View>
               </View>
 
-              {/* Real-time bonus QP calculation preview */}
               <View style={styles.qpRewardBox}>
                 <View style={styles.qpRewardLeft}>
                   <Text style={styles.qpCoinIcon}>🪙</Text>
@@ -327,9 +304,7 @@ export default function PostQuestModal({
                   ref={trackRef}
                   {...panResponder.panHandlers}
                 >
-                  {/* Background Track */}
                   <View style={styles.sliderTrackBg}>
-                    {/* Active Track */}
                     <View
                       style={[
                         styles.sliderTrackActive,
@@ -338,7 +313,6 @@ export default function PostQuestModal({
                     />
                   </View>
 
-                  {/* Scrubber Thumb */}
                   <View
                     style={[
                       styles.sliderThumb,
@@ -349,45 +323,19 @@ export default function PostQuestModal({
                   </View>
                 </View>
 
-                {/* Min / Max Labels */}
                 <View style={styles.sliderLimitsRow}>
                   <Text style={styles.limitLabel}>₹10 (Min)</Text>
                   <Text style={styles.limitLabel}>₹50</Text>
                   <Text style={styles.limitLabel}>₹100 (Max)</Text>
                 </View>
-
-                {/* Quick Tip Pill Presets */}
-                <View style={styles.quickPresetRow}>
-                  {[10, 25, 30, 50, 75, 100].map((val) => (
-                    <TouchableOpacity
-                      key={val}
-                      style={[
-                        styles.presetChip,
-                        tip === val && styles.presetChipActive,
-                      ]}
-                      onPress={() => setTip(val)}
-                      activeOpacity={0.8}
-                    >
-                      <Text
-                        style={[
-                          styles.presetChipText,
-                          tip === val && styles.presetChipTextActive,
-                        ]}
-                      >
-                        ₹{val}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
               </View>
             </View>
 
-            {/* 4. Toggle: "Drop at Door" vs "4-Digit OTP Handover" */}
+            {/* Handover Method Toggle */}
             <View style={styles.section}>
               <Text style={styles.sectionLabel}>📦 Delivery Handover Method</Text>
 
               <View style={styles.methodToggleTrack}>
-                {/* Option A: Drop at Door */}
                 <TouchableOpacity
                   style={[
                     styles.methodOption,
@@ -397,7 +345,7 @@ export default function PostQuestModal({
                   activeOpacity={0.8}
                 >
                   <Text style={styles.methodEmoji}>🚪</Text>
-                  <View style={styles.methodTextGroup}>
+                  <View>
                     <Text
                       style={[
                         styles.methodTitle,
@@ -410,7 +358,6 @@ export default function PostQuestModal({
                   </View>
                 </TouchableOpacity>
 
-                {/* Option B: 4-Digit OTP Handover */}
                 <TouchableOpacity
                   style={[
                     styles.methodOption,
@@ -420,7 +367,7 @@ export default function PostQuestModal({
                   activeOpacity={0.8}
                 >
                   <Text style={styles.methodEmoji}>🔐</Text>
-                  <View style={styles.methodTextGroup}>
+                  <View>
                     <Text
                       style={[
                         styles.methodTitle,
@@ -432,15 +379,6 @@ export default function PostQuestModal({
                     <Text style={styles.methodDesc}>Secure handoff</Text>
                   </View>
                 </TouchableOpacity>
-              </View>
-
-              {/* Delivery method helper info */}
-              <View style={styles.methodInfoCard}>
-                <Text style={styles.methodInfoText}>
-                  {deliveryMethod === 'otp'
-                    ? '🔒 Quester will request your 4-digit security code before completing delivery to prevent wrong room handoffs.'
-                    : '🚪 Quester will drop your order right outside your room door and tap confirmation.'}
-                </Text>
               </View>
             </View>
 
@@ -471,23 +409,28 @@ export default function PostQuestModal({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(5, 7, 10, 0.82)',
+    backgroundColor: 'rgba(15, 23, 42, 0.65)',
     justifyContent: 'flex-end',
   },
   sheetContainer: {
-    backgroundColor: '#161922',
+    backgroundColor: '#FFFFFF', // White
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     maxHeight: '90%',
     borderWidth: 1,
-    borderColor: '#232838',
+    borderColor: '#E2E8F0',
     paddingTop: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 8,
   },
   dragHandle: {
     width: 44,
     height: 5,
     borderRadius: 3,
-    backgroundColor: '#2D3448',
+    backgroundColor: '#CBD5E1',
     alignSelf: 'center',
     marginBottom: 12,
   },
@@ -498,30 +441,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.base,
     paddingBottom: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: '#1F2432',
+    borderBottomColor: '#F1F5F9',
   },
   title: {
     fontSize: 20,
     fontWeight: '800',
-    color: Colors.textPrimary,
+    color: '#0F172A',
   },
   subtitle: {
     fontSize: 12,
-    color: Colors.textSecondary,
+    color: '#64748B',
     marginTop: 2,
   },
   closeBtn: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#1E2330',
+    backgroundColor: '#F1F5F9',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#2A3245',
   },
   closeBtnText: {
-    color: Colors.textSecondary,
+    color: '#64748B',
     fontSize: 13,
     fontWeight: '700',
   },
@@ -534,12 +475,11 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: 13,
     fontWeight: '700',
-    color: Colors.textPrimary,
+    color: '#0F172A',
     marginBottom: 10,
-    letterSpacing: 0.3,
   },
 
-  // 1. Templates
+  // Templates
   templatesScroll: {
     gap: 8,
     paddingRight: 6,
@@ -547,16 +487,16 @@ const styles = StyleSheet.create({
   templateChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1C212E',
+    backgroundColor: '#F8FAFC',
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: '#262D3E',
+    borderColor: '#E2E8F0',
     gap: 6,
   },
   templateChipSelected: {
-    backgroundColor: 'rgba(124, 58, 237, 0.25)',
+    backgroundColor: '#F5F3FF',
     borderColor: Colors.lazyMode,
   },
   templateEmoji: {
@@ -564,19 +504,19 @@ const styles = StyleSheet.create({
   },
   templateText: {
     fontSize: 12,
-    color: Colors.textSecondary,
+    color: '#475569',
     fontWeight: '600',
   },
   templateTextSelected: {
-    color: '#DDD6FE',
+    color: Colors.lazyMode,
     fontWeight: '700',
   },
 
-  // 2. Inputs
+  // Inputs
   inputTitle: {
     fontSize: 12,
     fontWeight: '600',
-    color: Colors.textSecondary,
+    color: '#475569',
     marginBottom: 6,
     marginTop: 4,
   },
@@ -584,13 +524,13 @@ const styles = StyleSheet.create({
     color: '#EF4444',
   },
   textInput: {
-    backgroundColor: '#0D0F14',
+    backgroundColor: '#F8FAFC',
     borderRadius: Radius.md,
     borderWidth: 1,
-    borderColor: '#232838',
+    borderColor: '#E2E8F0',
     paddingHorizontal: 14,
     paddingVertical: 10,
-    color: Colors.textPrimary,
+    color: '#0F172A',
     fontSize: 14,
     marginBottom: 10,
   },
@@ -600,7 +540,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
 
-  // 3. Tip Slider & QP Calculation
+  // Tip Slider
   sliderHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -608,15 +548,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   tipBadge: {
-    backgroundColor: 'rgba(16, 185, 129, 0.18)',
+    backgroundColor: '#DCFCE7',
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.4)',
+    borderColor: '#86EFAC',
   },
   tipBadgeText: {
-    color: '#34D399',
+    color: '#15803D',
     fontSize: 15,
     fontWeight: '800',
   },
@@ -624,11 +564,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: 'rgba(245, 158, 11, 0.12)',
+    backgroundColor: '#FEF3C7',
     padding: 12,
     borderRadius: Radius.md,
     borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.35)',
+    borderColor: '#FDE68A',
     marginBottom: 16,
   },
   qpRewardLeft: {
@@ -643,28 +583,25 @@ const styles = StyleSheet.create({
   qpBonusTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#FBBF24',
+    color: '#B45309',
   },
   qpBonusSubtitle: {
     fontSize: 11,
-    color: '#FDE68A',
-    opacity: 0.85,
+    color: '#92400E',
   },
   qpPill: {
-    backgroundColor: 'rgba(245, 158, 11, 0.25)',
+    backgroundColor: '#FDE68A',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: Radius.full,
-    borderWidth: 1,
-    borderColor: '#F59E0B',
   },
   qpPillText: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#FBBF24',
+    color: '#92400E',
   },
 
-  // Interactive slider track
+  // Slider track
   sliderContainer: {
     paddingHorizontal: 6,
     paddingVertical: 4,
@@ -676,15 +613,13 @@ const styles = StyleSheet.create({
   },
   sliderTrackBg: {
     height: 8,
-    backgroundColor: '#0D0F14',
+    backgroundColor: '#F1F5F9',
     borderRadius: 4,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#232838',
   },
   sliderTrackActive: {
     height: '100%',
-    backgroundColor: Colors.lazyMode, // Purple slider track
+    backgroundColor: Colors.lazyMode,
     borderRadius: 4,
   },
   sliderThumb: {
@@ -696,11 +631,11 @@ const styles = StyleSheet.create({
     marginLeft: -13,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 6,
+    elevation: 4,
     shadowColor: Colors.lazyMode,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.6,
-    shadowRadius: 6,
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
     borderWidth: 2,
     borderColor: Colors.lazyMode,
   },
@@ -717,43 +652,18 @@ const styles = StyleSheet.create({
   },
   limitLabel: {
     fontSize: 11,
-    color: Colors.textMuted,
+    color: '#64748B',
     fontWeight: '600',
   },
-  quickPresetRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 12,
-  },
-  presetChip: {
-    backgroundColor: '#1E2330',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: Radius.sm,
-    borderWidth: 1,
-    borderColor: '#2A3245',
-  },
-  presetChipActive: {
-    backgroundColor: Colors.lazyMode,
-    borderColor: Colors.lazyMode,
-  },
-  presetChipText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: Colors.textSecondary,
-  },
-  presetChipTextActive: {
-    color: '#FFFFFF',
-  },
 
-  // 4. Delivery Method Toggle
+  // Handover method
   methodToggleTrack: {
     flexDirection: 'row',
-    backgroundColor: '#0D0F14',
+    backgroundColor: '#F8FAFC',
     borderRadius: Radius.lg,
     padding: 4,
     borderWidth: 1,
-    borderColor: '#232838',
+    borderColor: '#E2E8F0',
     gap: 6,
   },
   methodOption: {
@@ -766,51 +676,37 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   methodOptionActive: {
-    backgroundColor: 'rgba(59, 130, 246, 0.16)',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#3B82F6',
+    elevation: 2,
   },
   methodOptionActiveOtp: {
-    backgroundColor: 'rgba(124, 58, 237, 0.22)',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: Colors.lazyMode,
+    elevation: 2,
   },
   methodEmoji: {
     fontSize: 18,
   },
-  methodTextGroup: {
-    flex: 1,
-  },
   methodTitle: {
     fontSize: 12,
     fontWeight: '600',
-    color: Colors.textMuted,
+    color: '#64748B',
   },
   methodTitleActive: {
-    color: '#93C5FD',
+    color: '#2563EB',
     fontWeight: '700',
   },
   methodTitleActiveOtp: {
-    color: '#DDD6FE',
+    color: Colors.lazyMode,
     fontWeight: '700',
   },
   methodDesc: {
     fontSize: 10,
-    color: Colors.textMuted,
+    color: '#94A3B8',
     marginTop: 1,
-  },
-  methodInfoCard: {
-    backgroundColor: '#141822',
-    borderRadius: Radius.md,
-    padding: 10,
-    marginTop: 10,
-    borderWidth: 1,
-    borderColor: '#1F2432',
-  },
-  methodInfoText: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-    lineHeight: 16,
   },
 
   // Submit button
@@ -823,11 +719,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
     gap: 8,
     marginTop: 8,
-    elevation: 4,
-    shadowColor: Colors.lazyMode,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
+    elevation: 3,
   },
   submitBtnDisabled: {
     opacity: 0.5,
@@ -839,6 +731,5 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '800',
-    letterSpacing: 0.2,
   },
 });

@@ -1,6 +1,6 @@
 /**
  * RootNavigator — Top-level stack navigator
- * Dark theme configuration for Quest app
+ * Light theme configuration for Quest app
  */
 
 import React from 'react';
@@ -19,13 +19,13 @@ export default function RootNavigator() {
   return (
     <NavigationContainer
       theme={{
-        dark: true,
+        dark: false,
         colors: {
           primary: accentColor,
-          background: Colors.background, // #0D0F14
-          card: Colors.surface,          // #161922
-          text: Colors.textPrimary,      // #F9FAFB
-          border: Colors.border,         // #232838
+          background: Colors.background, // #FFFFFF
+          card: Colors.surface,          // #FFFFFF
+          text: Colors.textPrimary,      // #0F172A
+          border: Colors.border,         // #E2E8F0
           notification: Colors.error,
         },
       }}
