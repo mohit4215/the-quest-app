@@ -1,6 +1,6 @@
 /**
  * RootNavigator — Top-level stack navigator
- * Stack wraps the tab bar to allow modal/push screens (e.g. QuestDetail, SeniorChat).
+ * Dark theme configuration for Quest app
  */
 
 import React from 'react';
@@ -9,20 +9,23 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import TabNavigator from './TabNavigator';
 import { Colors } from '../constants';
+import { useQuestMode } from '../context/QuestModeContext';
 
 const Stack = createNativeStackNavigator();
 
 export default function RootNavigator() {
+  const { accentColor } = useQuestMode();
+
   return (
     <NavigationContainer
       theme={{
-        dark: false,
+        dark: true,
         colors: {
-          primary: Colors.primary,
-          background: Colors.background,
-          card: Colors.surface,
-          text: Colors.textPrimary,
-          border: Colors.border,
+          primary: accentColor,
+          background: Colors.background, // #0D0F14
+          card: Colors.surface,          // #161922
+          text: Colors.textPrimary,      // #F9FAFB
+          border: Colors.border,         // #232838
           notification: Colors.error,
         },
       }}

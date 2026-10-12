@@ -1,84 +1,76 @@
 /**
- * TabNavigator — Bottom tab bar for Quest app
- * 5 tabs: Home, Do a Quest, Post a Quest, Rewards, Forum
+ * TabNavigator — Bottom navigation bar for "Quest"
+ * 4 tabs: Home Feed, Active Quest, Senior Connect, and Leaderboard
+ * Dark theme (#0D0F14 background, #161922 card surface)
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Colors, Layout, Shadow } from '../constants';
+import { Colors, Spacing, Radius } from '../constants';
+import { useQuestMode } from '../context/QuestModeContext';
 
-// Screens
-import HomeScreen from '../screens/HomeScreen';
-import DoQuestScreen from '../screens/DoQuestScreen';
-import PostQuestScreen from '../screens/PostQuestScreen';
-import RewardsScreen from '../screens/RewardsScreen';
-import ForumScreen from '../screens/ForumScreen';
+// 4 Screens
+import HomeFeedScreen from '../screens/HomeFeedScreen';
+import ActiveQuestScreen from '../screens/ActiveQuestScreen';
+import SeniorConnectScreen from '../screens/SeniorConnectScreen';
+import LeaderboardScreen from '../screens/LeaderboardScreen';
 
 const Tab = createBottomTabNavigator();
 
-// Tab config
 const TABS = [
   {
-    name: 'Home',
-    component: HomeScreen,
+    name: 'HomeFeed',
+    component: HomeFeedScreen,
     icon: '🏠',
-    activeIcon: '🏠',
-    label: 'Home',
+    label: 'Home Feed',
   },
   {
-    name: 'DoQuest',
-    component: DoQuestScreen,
-    icon: '🗺️',
-    activeIcon: '🗺️',
-    label: 'Do Quest',
+    name: 'ActiveQuest',
+    component: ActiveQuestScreen,
+    icon: '⚔️',
+    label: 'Active Quest',
   },
   {
-    name: 'PostQuest',
-    component: PostQuestScreen,
-    icon: '➕',
-    activeIcon: '➕',
-    label: 'Post Quest',
-    isFAB: true, // center FAB-style tab
+    name: 'SeniorConnect',
+    component: SeniorConnectScreen,
+    icon: '🎓',
+    label: 'Senior Connect',
   },
   {
-    name: 'Rewards',
-    component: RewardsScreen,
+    name: 'Leaderboard',
+    component: LeaderboardScreen,
     icon: '🏆',
-    activeIcon: '🏆',
-    label: 'Rewards',
-  },
-  {
-    name: 'Forum',
-    component: ForumScreen,
-    icon: '💬',
-    activeIcon: '💬',
-    label: 'Forum',
+    label: 'Leaderboard',
   },
 ];
 
-function TabIcon({ icon, label, focused, isFAB }) {
-  if (isFAB) {
-    return (
-      <View style={[styles.fab, focused && styles.fabActive]}>
-        <Text style={styles.fabIcon}>➕</Text>
-      </View>
-    );
-  }
-
+function TabIcon({ icon, label, focused, activeColor }) {
   return (
     <View style={styles.tabItem}>
-      <Text style={[styles.tabIcon, focused && styles.tabIconActive]}>{icon}</Text>
-      <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>{label}</Text>
-      {focused && <View style={styles.activePill} />}
+      <Text style={[styles.tabIcon, focused && styles.tabIconActive]}>
+        {icon}
+      </Text>
+      <Text
+        style={[
+          styles.tabLabel,
+          focused && { color: activeColor, fontWeight: '700' },
+        ]}
+      >
+        {label}
+      </Text>
+      {focused && (
+        <View style={[styles.activePill, { backgroundColor: activeColor }]} />
+      )}
     </View>
   );
 }
 
 export default function TabNavigator() {
   const insets = useSafeAreaInsets();
+  const { accentColor } = useQuestMode();
 
   return (
     <Tab.Navigator
@@ -87,8 +79,8 @@ export default function TabNavigator() {
         tabBarStyle: [
           styles.tabBar,
           {
-            height: Layout.tabBarHeight + insets.bottom,
-            paddingBottom: insets.bottom,
+            height: 64 + insets.bottom,
+            paddingBottom: Math.max(insets.bottom, 8),
           },
         ],
         tabBarShowLabel: false,
@@ -102,13 +94,12 @@ export default function TabNavigator() {
           options={{
             tabBarIcon: ({ focused }) => (
               <TabIcon
-                icon={focused ? tab.activeIcon : tab.icon}
+                icon={tab.icon}
                 label={tab.label}
                 focused={focused}
-                isFAB={tab.isFAB}
+                activeColor={accentColor}
               />
             ),
-            tabBarItemStyle: tab.isFAB ? styles.fabTabItem : undefined,
           }}
         />
       ))}
@@ -118,69 +109,45 @@ export default function TabNavigator() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: Colors.tabBackground,
+    backgroundColor: '#12151E', // Dark navigation surface
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    ...Shadow.md,
-    paddingTop: 8,
+    borderTopColor: '#202636',
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    paddingTop: 6,
   },
   tabItem: {
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
-    paddingTop: 4,
-    minWidth: 56,
+    paddingTop: 2,
+    minWidth: 72,
   },
   tabIcon: {
-    fontSize: 22,
-    opacity: 0.5,
+    fontSize: 20,
+    opacity: 0.6,
   },
   tabIconActive: {
     opacity: 1,
   },
   tabLabel: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '500',
-    color: Colors.tabInactive,
-    marginTop: 2,
-  },
-  tabLabelActive: {
-    color: Colors.tabActive,
-    fontWeight: '700',
+    color: '#64748B',
+    marginTop: 3,
   },
   activePill: {
     position: 'absolute',
-    bottom: -8,
-    width: 20,
+    bottom: -6,
+    width: 22,
     height: 3,
-    borderRadius: 2,
-    backgroundColor: Colors.primary,
-  },
-
-  // FAB center tab
-  fabTabItem: {
-    marginTop: -20,
-  },
-  fab: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    backgroundColor: Colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...Shadow.lg,
-    borderWidth: 3,
-    borderColor: Colors.background,
-  },
-  fabActive: {
-    backgroundColor: Colors.primaryDark,
-  },
-  fabIcon: {
-    fontSize: 22,
-    color: Colors.textInverse,
+    borderRadius: Radius.full,
   },
 });

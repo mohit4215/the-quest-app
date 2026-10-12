@@ -5,10 +5,10 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "splash": {
       "resizeMode": "contain",
-      "backgroundColor": "#0D47A1"
+      "backgroundColor": "#0D0F14"
     },
     "ios": {
       "supportsTablet": false,
@@ -17,7 +17,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0D47A1"
+        "backgroundColor": "#0D0F14"
       },
       "package": "com.akgec.quest"
     },

@@ -1,64 +1,75 @@
 /**
  * Quest App — Design System: Colors
- * Theme: Light Mode (Blue & White)
+ * Theme: Dark Mode (Gamified College Hostel Micro-Delivery)
  */
 
 export const Colors = {
-  // Backgrounds
-  background: '#F4F7FB',
-  surface: '#FFFFFF',
-  surfaceAlt: '#EEF3FA',
+  // Theme Backgrounds
+  background: '#0D0F14',
+  surface: '#161922',
+  surfaceAlt: '#1E2330',
+  surfaceElevated: '#252B3B',
 
-  // Primary brand
-  primary: '#0D47A1',
-  primaryDark: '#002171',
-  primaryLight: '#5472D3',
+  // Mode Accents
+  lazyMode: '#7C3AED',         // Purple accent for Lazy Mode (Ordering / Requesting)
+  lazyModeLight: '#A78BFA',
+  lazyModeBg: 'rgba(124, 58, 237, 0.16)',
+  lazyModeBorder: 'rgba(124, 58, 237, 0.4)',
 
-  // Accents
-  accent: '#E3F2FD',
-  accentBorder: '#BBDEFB',
+  questerMode: '#10B981',      // Green accent for Quester Mode (Delivering / Earning)
+  questerModeLight: '#34D399',
+  questerModeBg: 'rgba(16, 185, 129, 0.16)',
+  questerModeBorder: 'rgba(16, 185, 129, 0.4)',
+
+  // Brand Primaries (Fallback / General)
+  primary: '#7C3AED',
+  primaryDark: '#5B21B6',
+  primaryLight: '#A78BFA',
 
   // Quest Points Gold
-  gold: '#FFB300',
-  goldLight: '#FFF8E1',
-  goldDark: '#FF8F00',
+  gold: '#F59E0B',
+  goldLight: 'rgba(245, 158, 11, 0.15)',
+  goldDark: '#D97706',
+  goldBorder: '#F59E0B',
+  goldText: '#FBBF24',
 
   // Status colors
-  success: '#2E7D32',
-  successLight: '#E8F5E9',
-  warning: '#F57C00',
-  warningLight: '#FFF3E0',
-  error: '#C62828',
-  errorLight: '#FFEBEE',
-  info: '#0277BD',
-  infoLight: '#E1F5FE',
+  success: '#10B981',
+  successLight: 'rgba(16, 185, 129, 0.15)',
+  warning: '#F59E0B',
+  warningLight: 'rgba(245, 158, 11, 0.15)',
+  error: '#EF4444',
+  errorLight: 'rgba(239, 68, 68, 0.15)',
+  info: '#3B82F6',
+  infoLight: 'rgba(59, 130, 246, 0.15)',
 
-  // Neutrals
-  textPrimary: '#1A1A2E',
-  textSecondary: '#5C6B8A',
-  textMuted: '#9EA8BF',
-  textInverse: '#FFFFFF',
+  // Neutrals (Dark Theme)
+  textPrimary: '#F9FAFB',
+  textSecondary: '#94A3B8',
+  textMuted: '#64748B',
+  textInverse: '#0D0F14',
 
   // Borders & Dividers
-  border: '#E0E0E0',
-  borderLight: '#F0F0F0',
-  divider: '#EBEBEB',
+  border: '#232838',
+  borderLight: '#1B202D',
+  divider: '#1F2432',
 
   // Radar / map colors
-  radarRing: 'rgba(13, 71, 161, 0.12)',
-  radarPulse: 'rgba(13, 71, 161, 0.25)',
-  radarCenter: '#0D47A1',
-  hotspot: '#FF6B35',
-  hotspotLight: 'rgba(255, 107, 53, 0.15)',
+  radarRing: 'rgba(124, 58, 237, 0.15)',
+  radarPulse: 'rgba(124, 58, 237, 0.3)',
+  radarCenter: '#7C3AED',
+  hotspot: '#F59E0B',
+  hotspotLight: 'rgba(245, 158, 11, 0.2)',
 
   // Overlay
-  overlay: 'rgba(0, 0, 0, 0.45)',
-  overlayLight: 'rgba(0, 0, 0, 0.08)',
+  overlay: 'rgba(0, 0, 0, 0.75)',
+  overlayLight: 'rgba(0, 0, 0, 0.3)',
 
   // Tab bar
-  tabActive: '#0D47A1',
-  tabInactive: '#9EA8BF',
-  tabBackground: '#FFFFFF',
+  tabActive: '#7C3AED',
+  tabInactive: '#64748B',
+  tabBackground: '#12151E',
+  tabBorder: '#202636',
 };
 
 export default Colors;
