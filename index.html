@@ -3,1487 +3,1867 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Quest — Campus peer-to-peer micro-delivery and community app for AKGEC students." />
-  <meta property="og:title" content="Quest App — AKGEC" />
-  <meta property="og:description" content="Campus P2P micro-delivery & 'Talk to a Senior' community platform built for Ajay Kumar Garg Engineering College." />
-  <meta property="og:type" content="website" />
-  <title>Quest — AKGEC Campus App</title>
-
+  <title>Quest — Gamified College Hostel Micro-Delivery</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <style>
-    /* ── Reset & Base ──────────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:           #F4F7FB;
-      --surface:      #FFFFFF;
-      --primary:      #0D47A1;
-      --primary-dark: #002171;
-      --primary-light:#5472D3;
-      --accent:       #E3F2FD;
-      --gold:         #FFB300;
-      --gold-light:   #FFF8E1;
-      --gold-dark:    #FF8F00;
-      --text:         #1A1A2E;
-      --text-sec:     #5C6B8A;
-      --text-muted:   #9EA8BF;
-      --border:       #E0E0E0;
-      --success:      #2E7D32;
-      --radius-md:    12px;
-      --radius-lg:    16px;
-      --radius-xl:    24px;
-      --shadow-sm:    0 2px 8px rgba(0,0,0,.07);
-      --shadow-md:    0 4px 16px rgba(0,0,0,.10);
-      --shadow-lg:    0 8px 32px rgba(13,71,161,.15);
+      --bg: #0D0F14;
+      --surface: #161922;
+      --surface-alt: #1E2330;
+      --surface-elevated: #242B3C;
+      --border: #232838;
+      --border-light: #1B202D;
+      --lazy: #7C3AED;
+      --lazy-light: #A78BFA;
+      --lazy-bg: rgba(124, 58, 237, 0.18);
+      --quester: #10B981;
+      --quester-light: #34D399;
+      --quester-bg: rgba(16, 185, 129, 0.18);
+      --gold: #F59E0B;
+      --gold-light: rgba(245, 158, 11, 0.16);
+      --gold-text: #FBBF24;
+      --text: #F9FAFB;
+      --text-sec: #94A3B8;
+      --text-muted: #64748B;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --radius-xl: 24px;
+      --accent: var(--lazy);
     }
-
-    html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    a { color: inherit; text-decoration: none; }
-    img { display: block; max-width: 100%; }
-
-    /* ── Layout helpers ────────────────────────────────────────────────── */
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    section { padding: 80px 0; }
-
-    /* ── NAV ───────────────────────────────────────────────────────────── */
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(255,255,255,.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .nav-inner {
       display: flex;
+      justify-content: center;
       align-items: center;
-      justify-content: space-between;
-      height: 64px;
-      gap: 16px;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px 10px;
+      overflow-x: hidden;
     }
 
-    .nav-brand {
+    /* ── App Shell / Device Frame ───────────────────────────────────── */
+    .app-device {
+      width: 100%;
+      max-width: 440px;
+      height: 920px;
+      background: var(--bg);
+      border-radius: 40px;
+      border: 8px solid #202636;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(124, 58, 237, 0.15);
       display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 800;
-      font-size: 20px;
-      color: var(--primary);
-      letter-spacing: -.4px;
-    }
-
-    .nav-logo {
-      width: 36px; height: 36px;
-      background: var(--primary);
-      border-radius: 10px;
-      display: grid;
-      place-items: center;
-      color: #fff;
-      font-size: 18px;
-      font-weight: 900;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      list-style: none;
-    }
-
-    .nav-links a {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-sec);
-      padding: 6px 12px;
-      border-radius: 8px;
-      transition: background .15s, color .15s;
-    }
-
-    .nav-links a:hover { background: var(--accent); color: var(--primary); }
-
-    .btn-nav {
-      background: var(--primary);
-      color: #fff !important;
-      padding: 8px 16px !important;
-      border-radius: 8px !important;
-      font-weight: 600 !important;
-      transition: background .15s !important;
-    }
-
-    .btn-nav:hover { background: var(--primary-dark) !important; }
-
-    /* ── HERO ──────────────────────────────────────────────────────────── */
-    .hero {
-      padding: 100px 0 80px;
+      flex-direction: column;
       position: relative;
       overflow: hidden;
     }
 
-    .hero::before {
-      content: '';
+    /* Device Speaker / Notch */
+    .device-notch {
+      width: 120px;
+      height: 22px;
+      background: #202636;
+      border-bottom-left-radius: 14px;
+      border-bottom-right-radius: 14px;
       position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 60% -10%, rgba(13,71,161,.10) 0%, transparent 70%),
-        radial-gradient(ellipse 50% 40% at 10% 80%, rgba(255,179,0,.08) 0%, transparent 60%);
-      pointer-events: none;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
     }
 
-    .hero-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 60px;
-      align-items: center;
-      position: relative;
-    }
-
-    .hero-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--accent);
-      color: var(--primary);
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: .8px;
-      text-transform: uppercase;
-      padding: 4px 12px;
-      border-radius: 999px;
-      margin-bottom: 16px;
-      border: 1px solid #BBDEFB;
-    }
-
-    .hero h1 {
-      font-size: clamp(36px, 5vw, 56px);
-      font-weight: 900;
-      line-height: 1.1;
-      letter-spacing: -1.5px;
-      color: var(--text);
-      margin-bottom: 20px;
-    }
-
-    .hero h1 span { color: var(--primary); }
-
-    .hero p {
-      font-size: 17px;
-      color: var(--text-sec);
-      line-height: 1.75;
-      margin-bottom: 36px;
-      max-width: 440px;
-    }
-
-    .hero-ctas {
+    /* ── TOP APP BAR ─────────────────────────────────────────────────── */
+    .top-app-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 30px 16px 14px;
       display: flex;
+      flex-direction: column;
       gap: 12px;
-      flex-wrap: wrap;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
 
-    .btn {
-      display: inline-flex;
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hostel-badge {
+      display: flex;
       align-items: center;
       gap: 8px;
-      padding: 13px 24px;
+      background: var(--surface-alt);
+      padding: 6px 12px;
       border-radius: var(--radius-md);
-      font-size: 15px;
+      border: 1px solid #2B3346;
+    }
+
+    .hostel-badge .icon-box {
+      width: 24px;
+      height: 24px;
+      background: #141822;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+    }
+
+    .hostel-badge .label {
+      font-size: 8px;
+      font-weight: 800;
+      color: var(--text-muted);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .hostel-badge .value {
+      font-size: 12px;
       font-weight: 700;
-      cursor: pointer;
-      transition: transform .12s, box-shadow .12s;
-      border: none;
+      color: var(--text);
     }
 
-    .btn:hover { transform: translateY(-2px); }
-
-    .btn-primary {
-      background: var(--primary);
-      color: #fff;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .btn-primary:hover { box-shadow: 0 12px 40px rgba(13,71,161,.25); }
-
-    .btn-outline {
-      background: var(--surface);
-      color: var(--primary);
-      border: 2px solid var(--primary);
-      box-shadow: var(--shadow-sm);
-    }
-
-    /* ── Phone mockup ──────────────────────────────────────────────────── */
-    .phone-wrap {
+    .qp-pill {
       display: flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--gold-light);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      padding: 6px 14px;
+      border-radius: 999px;
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.2);
+    }
+
+    .qp-pill .coin { font-size: 13px; }
+    .qp-pill .amount { font-size: 13px; font-weight: 800; color: var(--gold-text); }
+    .qp-pill .unit { font-size: 11px; font-weight: 700; color: var(--gold); }
+
+    /* Mode Switcher */
+    .mode-switch-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mode-switch-track {
+      flex: 1;
+      display: flex;
+      background: #0D0F14;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 3px;
+    }
+
+    .mode-switch-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
       justify-content: center;
-      position: relative;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
     }
 
-    .phone {
-      width: 260px;
-      background: var(--primary-dark);
-      border-radius: 40px;
+    .mode-switch-btn.active-lazy {
+      background: rgba(124, 58, 237, 0.25);
+      border: 1px solid var(--lazy);
+      color: #DDD6FE;
+      font-weight: 700;
+    }
+
+    .mode-switch-btn.active-quester {
+      background: rgba(16, 185, 129, 0.25);
+      border: 1px solid var(--quester);
+      color: #A7F3D0;
+      font-weight: 700;
+    }
+
+    .mode-slider-pill {
+      width: 48px;
+      height: 28px;
+      border-radius: 14px;
+      background: var(--lazy);
+      display: flex;
+      align-items: center;
+      padding: 2px;
+      cursor: pointer;
+      transition: background 0.25s;
+    }
+
+    .mode-slider-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 12px;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      transition: transform 0.25s;
+      transform: translateX(0);
+    }
+
+    /* ── SCROLLABLE APP BODY ─────────────────────────────────────────── */
+    .app-body {
+      flex: 1;
+      overflow-y: auto;
       padding: 16px;
-      box-shadow: 0 32px 80px rgba(13,71,161,.35), 0 0 0 8px rgba(13,71,161,.08);
+      padding-bottom: 90px;
+      scroll-behavior: smooth;
+    }
+
+    .app-body::-webkit-scrollbar { width: 4px; }
+    .app-body::-webkit-scrollbar-thumb { background: #262D3E; border-radius: 2px; }
+
+    /* ── TAB PANELS ──────────────────────────────────────────────────── */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── 1. HOME FEED: CAMPUS RADAR ──────────────────────────────────── */
+    .radar-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 16px;
       position: relative;
     }
 
-    .phone-notch {
-      width: 80px; height: 24px;
-      background: var(--primary-dark);
-      border-radius: 0 0 16px 16px;
-      margin: 0 auto 12px;
+    .radar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .live-pulse {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pulse-dot-wrap {
       position: relative;
+      width: 12px;
+      height: 12px;
+      display: grid;
+      place-items: center;
+    }
+
+    .pulse-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: #10B981;
+      animation: pulseAnim 1.6s infinite ease-out;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10B981;
       z-index: 2;
     }
 
-    .phone-screen {
-      background: var(--bg);
-      border-radius: 28px;
+    @keyframes pulseAnim {
+      0% { transform: scale(1); opacity: 0.8; }
+      100% { transform: scale(2.4); opacity: 0; }
+    }
+
+    .radar-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: #10B981;
+      letter-spacing: 1px;
+    }
+
+    .radar-peers-count {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-sec);
+      background: var(--surface-alt);
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid #2B3346;
+    }
+
+    .radar-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    /* Radar Visual Scope */
+    .radar-scope {
+      height: 100px;
+      background: #090B0F;
+      border: 1px solid #1E2332;
+      border-radius: var(--radius-md);
+      position: relative;
       overflow: hidden;
-      min-height: 420px;
-    }
-
-    /* Mini screen UI simulation */
-    .pscreen-header {
-      background: var(--surface);
-      padding: 12px 14px 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .pscreen-logo {
-      width: 28px; height: 28px;
-      background: var(--primary);
-      border-radius: 8px;
       display: grid;
       place-items: center;
-      color: #fff;
-      font-size: 13px;
-      font-weight: 900;
+      margin-bottom: 12px;
     }
 
-    .pscreen-qp {
-      background: var(--gold-light);
-      border: 1px solid #FFE082;
-      border-radius: 999px;
-      padding: 3px 8px;
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--gold-dark);
-    }
-
-    .pscreen-hero {
-      background: linear-gradient(135deg, #1565C0, #002171);
-      margin: 10px;
-      border-radius: 14px;
-      padding: 14px;
-      color: #fff;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .pscreen-hero::after {
-      content: '';
+    .scope-ring {
       position: absolute;
-      width: 100px; height: 100px;
+      border: 1px solid rgba(16, 185, 129, 0.15);
       border-radius: 50%;
-      background: rgba(255,255,255,.06);
-      top: -30px; right: -20px;
+    }
+    .scope-ring.r1 { width: 130px; height: 130px; }
+    .scope-ring.r2 { width: 80px; height: 80px; }
+    .scope-ring.r3 { width: 40px; height: 40px; }
+
+    .scope-sweep {
+      position: absolute;
+      width: 110px;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(16,185,129,0.7), transparent);
+      transform-origin: left center;
+      left: 50%;
+      top: 50%;
+      animation: sweepAnim 3.5s infinite linear;
     }
 
-    .pscreen-hero-tag {
-      font-size: 8px;
-      font-weight: 700;
-      letter-spacing: .8px;
-      color: rgba(255,255,255,.65);
-      margin-bottom: 4px;
+    @keyframes sweepAnim {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
-    .pscreen-hero-title {
-      font-size: 14px;
-      font-weight: 800;
-      line-height: 1.3;
-      margin-bottom: 8px;
-    }
-
-    .pscreen-hero-btn {
-      display: inline-block;
-      background: var(--gold);
-      color: var(--text);
-      font-size: 8px;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 6px;
-    }
-
-    .pscreen-grid {
+    .scope-center-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      padding: 0 10px 10px;
-    }
-
-    .pscreen-tile {
-      border-radius: 12px;
-      padding: 12px 10px;
-      color: #fff;
-      min-height: 80px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .pscreen-tile-a { background: linear-gradient(135deg, #1565C0, #5472D3); }
-    .pscreen-tile-b { background: linear-gradient(135deg, #FF8F00, #FFB300); }
-
-    .pscreen-tile-icon { font-size: 20px; margin-bottom: 5px; }
-    .pscreen-tile-label {
+      place-items: center;
       font-size: 10px;
+      z-index: 10;
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .blip {
+      position: absolute;
+      background: rgba(16, 185, 129, 0.25);
+      border: 1px solid rgba(16, 185, 129, 0.6);
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 9px;
       font-weight: 700;
-      line-height: 1.3;
-      color: rgba(255,255,255,.9);
+      color: #A7F3D0;
+      z-index: 5;
     }
 
-    .pscreen-card {
-      background: var(--surface);
-      margin: 0 10px 8px;
-      border-radius: 12px;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
+    /* Spot Cards Carousel */
+    .radar-spots {
       display: flex;
-      align-items: center;
       gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
     }
+    .radar-spots::-webkit-scrollbar { display: none; }
 
-    .pcard-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: #4CAF50;
+    .spot-pill {
+      background: var(--surface-alt);
+      border: 1px solid #242B3C;
+      border-radius: var(--radius-md);
+      padding: 8px 12px;
+      min-width: 130px;
+      cursor: pointer;
+      transition: all 0.2s;
       flex-shrink: 0;
     }
+    .spot-pill:hover { border-color: var(--accent); }
 
-    .pcard-text { flex: 1; }
-    .pcard-title { font-size: 9px; font-weight: 700; color: var(--text); }
-    .pcard-sub   { font-size: 8px; color: var(--text-muted); margin-top: 1px; }
-
-    .pcard-badge {
-      background: var(--gold-light);
-      border-radius: 999px;
-      padding: 2px 6px;
-      font-size: 8px;
+    .spot-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .spot-peers {
+      font-size: 9px;
       font-weight: 700;
-      color: var(--gold-dark);
-      white-space: nowrap;
+      color: #34D399;
+      background: rgba(16, 185, 129, 0.15);
+      padding: 2px 6px;
+      border-radius: 999px;
     }
-
-    /* ── STATS BAR ─────────────────────────────────────────────────────── */
-    .stats-bar {
-      background: var(--primary);
-      padding: 40px 0;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
-      text-align: center;
-    }
-
-    .stat-item { color: #fff; }
-
-    .stat-number {
-      font-size: 36px;
-      font-weight: 900;
-      letter-spacing: -1px;
-      line-height: 1;
-      margin-bottom: 6px;
-    }
-
-    .stat-label {
-      font-size: 13px;
-      font-weight: 500;
-      color: rgba(255,255,255,.7);
-    }
-
-    /* ── FEATURES ──────────────────────────────────────────────────────── */
-    .section-label {
-      display: inline-block;
+    .spot-name {
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      color: var(--primary);
+      color: var(--text);
+    }
+    .spot-desc {
+      font-size: 9px;
+      color: var(--text-muted);
+    }
+
+    /* ── CATEGORY FILTER CHIPS ───────────────────────────────────────── */
+    .filter-chips-wrap {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin-bottom: 16px;
+      padding-bottom: 4px;
+    }
+    .filter-chips-wrap::-webkit-scrollbar { display: none; }
+
+    .category-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-sec);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .category-chip.active {
+      background: rgba(124, 58, 237, 0.2);
+      border-color: var(--accent);
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    /* ── BOUNTY CARDS ────────────────────────────────────────────────── */
+    .bounty-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .bounty-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      transition: all 0.25s ease;
+    }
+    .bounty-card:hover {
+      border-color: #2D364C;
+      transform: translateY(-2px);
+    }
+
+    .bounty-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 10px;
     }
 
-    .section-title {
-      font-size: clamp(26px, 3.5vw, 36px);
-      font-weight: 800;
-      letter-spacing: -.5px;
-      color: var(--text);
-      margin-bottom: 14px;
-      line-height: 1.2;
-    }
-
-    .section-sub {
-      font-size: 16px;
-      color: var(--text-sec);
-      max-width: 560px;
-      line-height: 1.7;
-      margin-bottom: 52px;
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-    }
-
-    .feature-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      padding: 28px 24px;
-      transition: box-shadow .2s, transform .2s;
-    }
-
-    .feature-card:hover {
-      box-shadow: var(--shadow-lg);
-      transform: translateY(-4px);
-    }
-
-    .feature-icon {
-      width: 52px; height: 52px;
-      border-radius: var(--radius-md);
-      display: grid;
-      place-items: center;
-      font-size: 24px;
-      margin-bottom: 16px;
-    }
-
-    .feature-card h3 {
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 8px;
-    }
-
-    .feature-card p {
-      font-size: 14px;
-      color: var(--text-sec);
-      line-height: 1.65;
-    }
-
-    .icon-blue   { background: var(--accent); }
-    .icon-gold   { background: var(--gold-light); }
-    .icon-green  { background: #E8F5E9; }
-    .icon-purple { background: #F3E5F5; }
-    .icon-red    { background: #FFEBEE; }
-    .icon-teal   { background: #E0F2F1; }
-
-    /* ── TECH STACK ────────────────────────────────────────────────────── */
-    .tech-section { background: var(--surface); }
-
-    .tech-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-    }
-
-    .tech-card {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-    }
-
-    .tech-card-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .tech-badge {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: .6px;
-      text-transform: uppercase;
-      padding: 3px 8px;
+    .bounty-category-tag {
+      background: var(--surface-alt);
+      border: 1px solid #2B3346;
       border-radius: 999px;
-    }
-
-    .badge-frontend { background: #E3F2FD; color: var(--primary); }
-    .badge-backend  { background: #E8F5E9; color: var(--success); }
-
-    .tech-card h3 {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--text);
-    }
-
-    .tech-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .tech-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      font-size: 14px;
-      color: var(--text-sec);
-      line-height: 1.5;
-    }
-
-    .tech-list li::before {
-      content: '→';
-      color: var(--primary);
-      font-weight: 700;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-
-    .tech-list strong { color: var(--text); font-weight: 600; }
-
-    /* ── API ENDPOINTS ─────────────────────────────────────────────────── */
-    .api-section { background: var(--primary-dark); }
-
-    .api-section .section-label { color: var(--gold); }
-    .api-section .section-title { color: #fff; }
-    .api-section .section-sub   { color: rgba(255,255,255,.65); }
-
-    .endpoints-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .endpoint {
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: var(--radius-md);
-      padding: 14px 16px;
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      transition: background .15s;
-    }
-
-    .endpoint:hover { background: rgba(255,255,255,.1); }
-
-    .ep-method {
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: .5px;
-      padding: 3px 7px;
-      border-radius: 6px;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-
-    .ep-get    { background: rgba(100,221,100,.15); color: #81C784; }
-    .ep-post   { background: rgba(100,150,255,.15); color: #90CAF9; }
-
-    .ep-path {
-      font-family: 'SFMono-Regular', 'Consolas', monospace;
-      font-size: 12px;
-      color: #fff;
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-
-    .ep-desc {
-      font-size: 11px;
-      color: rgba(255,255,255,.5);
-      line-height: 1.4;
-    }
-
-    .ep-star {
-      margin-left: auto;
-      flex-shrink: 0;
-      font-size: 14px;
-    }
-
-    /* ── FLOW DIAGRAM ──────────────────────────────────────────────────── */
-    .flow-section { background: var(--bg); }
-
-    .flow-container {
-      background: var(--primary-dark);
-      border-radius: var(--radius-xl);
-      padding: 40px;
-      color: #fff;
-    }
-
-    .flow-title {
-      font-size: 18px;
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 8px;
-    }
-
-    .flow-subtitle {
-      font-size: 13px;
-      color: rgba(255,255,255,.55);
-      margin-bottom: 32px;
-    }
-
-    .flow-steps {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 0;
-      position: relative;
-    }
-
-    .flow-steps::before {
-      content: '';
-      position: absolute;
-      top: 28px;
-      left: 10%;
-      right: 10%;
-      height: 2px;
-      background: rgba(255,255,255,.15);
-    }
-
-    .flow-step {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      padding: 0 8px;
-      position: relative;
-    }
-
-    .flow-step-num {
-      width: 56px; height: 56px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      font-size: 22px;
-      margin-bottom: 12px;
-      position: relative;
-      z-index: 1;
-      border: 2px solid rgba(255,255,255,.2);
-      background: rgba(255,255,255,.07);
-    }
-
-    .flow-step.highlight .flow-step-num {
-      background: var(--gold);
-      border-color: var(--gold);
-    }
-
-    .flow-step-label {
+      padding: 4px 10px;
       font-size: 11px;
       font-weight: 700;
-      color: rgba(255,255,255,.9);
-      margin-bottom: 4px;
-    }
-
-    .flow-step-sub {
-      font-size: 10px;
-      color: rgba(255,255,255,.45);
-      line-height: 1.4;
-    }
-
-    /* ── TEAM / SEED DATA ──────────────────────────────────────────────── */
-    .seed-section { background: var(--surface); }
-
-    .seed-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-
-    .seed-card {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-    }
-
-    .seed-card h4 {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .seed-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .seed-list li {
-      font-size: 12px;
       color: var(--text-sec);
+    }
+
+    .bounty-timer {
       display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .seed-list li::before {
-      content: '';
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--primary);
-      flex-shrink: 0;
-    }
-
-    /* ── CTA BANNER ────────────────────────────────────────────────────── */
-    .cta-banner {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      padding: 80px 0;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .cta-banner::before {
-      content: '';
-      position: absolute;
-      width: 400px; height: 400px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.04);
-      top: -150px; left: -100px;
-    }
-
-    .cta-banner::after {
-      content: '';
-      position: absolute;
-      width: 300px; height: 300px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.04);
-      bottom: -100px; right: -50px;
-    }
-
-    .cta-banner h2 {
-      font-size: clamp(28px, 4vw, 42px);
-      font-weight: 900;
-      color: #fff;
-      letter-spacing: -.5px;
-      margin-bottom: 12px;
-      position: relative;
-    }
-
-    .cta-banner p {
-      font-size: 16px;
-      color: rgba(255,255,255,.72);
-      margin-bottom: 36px;
-      position: relative;
-    }
-
-    .cta-btns {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      position: relative;
-    }
-
-    .btn-white {
-      background: #fff;
-      color: var(--primary);
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: #fff;
-      border: 2px solid rgba(255,255,255,.4);
-    }
-
-    .btn-ghost:hover { border-color: #fff; background: rgba(255,255,255,.08); }
-
-    /* ── FOOTER ────────────────────────────────────────────────────────── */
-    footer {
-      background: var(--text);
-      color: rgba(255,255,255,.5);
-      padding: 40px 0;
-    }
-
-    .footer-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .footer-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: #fff;
-      font-weight: 700;
-      font-size: 16px;
-    }
-
-    .footer-logo {
-      width: 32px; height: 32px;
-      background: var(--primary);
-      border-radius: 8px;
-      display: grid;
-      place-items: center;
-      color: #fff;
-      font-size: 15px;
-      font-weight: 900;
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 20px;
-      list-style: none;
-      flex-wrap: wrap;
-    }
-
-    .footer-links a {
-      font-size: 13px;
-      color: rgba(255,255,255,.5);
-      transition: color .15s;
-    }
-
-    .footer-links a:hover { color: #fff; }
-
-    .footer-copy { font-size: 13px; }
-
-    /* ── CHIP / BADGE ──────────────────────────────────────────────────── */
-    .chip {
-      display: inline-flex;
       align-items: center;
       gap: 4px;
-      font-size: 11px;
-      font-weight: 600;
-      padding: 3px 9px;
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.35);
       border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #60A5FA;
+    }
+    .bounty-timer.urgent {
+      background: rgba(239, 68, 68, 0.14);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #F87171;
     }
 
-    .chip-blue { background: var(--accent); color: var(--primary); border: 1px solid #BBDEFB; }
-    .chip-gold { background: var(--gold-light); color: var(--gold-dark); border: 1px solid #FFE082; }
-    .chip-green { background: #E8F5E9; color: var(--success); border: 1px solid #C8E6C9; }
-
-    /* ── RESPONSIVE ────────────────────────────────────────────────────── */
-    @media (max-width: 900px) {
-      .hero-inner       { grid-template-columns: 1fr; text-align: center; }
-      .hero p           { margin: 0 auto 36px; }
-      .hero-ctas        { justify-content: center; }
-      .phone-wrap       { display: none; }
-      .stats-grid       { grid-template-columns: repeat(2, 1fr); }
-      .features-grid    { grid-template-columns: repeat(2, 1fr); }
-      .tech-grid        { grid-template-columns: 1fr; }
-      .endpoints-grid   { grid-template-columns: 1fr; }
-      .flow-steps       { grid-template-columns: repeat(3, 1fr); row-gap: 24px; }
-      .flow-steps::before { display: none; }
-      .seed-grid        { grid-template-columns: 1fr; }
+    .bounty-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 10px;
+      line-height: 1.35;
     }
 
-    @media (max-width: 600px) {
-      .nav-links        { display: none; }
-      .features-grid    { grid-template-columns: 1fr; }
-      .stats-grid       { grid-template-columns: 1fr 1fr; }
-      .flow-steps       { grid-template-columns: repeat(2, 1fr); }
+    .route-box {
+      background: #0F121A;
+      border: 1px solid #1E2332;
+      border-radius: var(--radius-md);
+      padding: 10px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
+
+    .route-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+    }
+    .route-label { color: var(--text-muted); font-weight: 600; }
+    .route-val { color: var(--text-sec); font-weight: 600; }
+    .route-val.highlight { color: #fff; font-weight: 700; }
+
+    .bounty-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border-light);
+      padding-top: 12px;
+    }
+
+    .rewards-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tip-pill {
+      background: rgba(16, 185, 129, 0.14);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #34D399;
+    }
+
+    .qp-reward-pill {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--gold-light);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--gold-text);
+    }
+
+    .accept-btn {
+      background: var(--quester);
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+    .accept-btn:hover { background: #059669; }
+
+    /* ── FLOATING POST BUTTON ────────────────────────────────────────── */
+    .fab-post {
+      position: absolute;
+      bottom: 84px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--lazy);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 90;
+      transition: all 0.25s;
+    }
+    .fab-post:hover { transform: translateX(-50%) scale(1.04); }
+
+    /* ── 2. ACTIVE QUEST SCREEN ──────────────────────────────────────── */
+    .tracker-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .tracker-title-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .stepper-nav {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin-bottom: 18px;
+      padding: 0 8px;
+    }
+
+    .stepper-progress-bg {
+      position: absolute;
+      top: 14px;
+      left: 20px;
+      right: 20px;
+      height: 2px;
+      background: #242B3C;
+      z-index: 1;
+    }
+
+    .stepper-progress-bar {
+      height: 100%;
+      background: #10B981;
+      width: 33%;
+      transition: width 0.3s;
+    }
+
+    .step-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 2;
+      cursor: pointer;
+    }
+
+    .step-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--surface-alt);
+      border: 2px solid #2B3346;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .step-node.active .step-circle {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: #10B981;
+      color: #10B981;
+    }
+    .step-node.completed .step-circle {
+      background: #10B981;
+      border-color: #10B981;
+      color: #fff;
+    }
+    .step-label {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-align: center;
+      width: 58px;
+    }
+    .step-node.active .step-label { color: #fff; font-weight: 700; }
+
+    /* Step Action Box */
+    .step-action-box {
+      background: #0D1017;
+      border: 1px solid #1E2332;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+    .step-action-title { font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 3px; }
+    .step-action-sub { font-size: 11px; color: var(--text-sec); }
+
+    .advance-btn {
+      width: 100%;
+      background: #10B981;
+      color: #fff;
+      border: none;
+      padding: 13px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* OTP Box */
+    .otp-wrapper {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .otp-boxes {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    .otp-cell {
+      width: 48px;
+      height: 52px;
+      border-radius: var(--radius-md);
+      background: #090B0F;
+      border: 1.5px solid #2B3346;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 800;
+      text-align: center;
+      outline: none;
+    }
+    .otp-cell:focus { border-color: #10B981; }
+
+    .demo-otp-chip {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px dashed rgba(245, 158, 11, 0.5);
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      font-size: 11px;
+      color: #FBBF24;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    /* Quick Chat */
+    .chat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+    }
+    .chat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-light);
+      margin-bottom: 10px;
+    }
+    .chat-messages {
+      max-height: 110px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .msg-bubble {
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      font-size: 11px;
+      max-width: 85%;
+    }
+    .msg-bubble.recipient {
+      background: var(--surface-alt);
+      color: #E2E8F0;
+      align-self: flex-start;
+    }
+    .msg-bubble.me {
+      background: rgba(16, 185, 129, 0.25);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      color: #A7F3D0;
+      align-self: flex-end;
+    }
+
+    .preset-chips-row {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      margin-bottom: 10px;
+    }
+    .preset-chips-row::-webkit-scrollbar { display: none; }
+    .preset-btn {
+      background: #10141D;
+      border: 1px solid #232838;
+      color: #CBD5E1;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 10px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .preset-btn:hover { border-color: #10B981; }
+
+    /* ── 3. SENIOR CONNECT ───────────────────────────────────────────── */
+    .subtabs-nav {
+      display: flex;
+      background: #090B0F;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px;
+      margin-bottom: 16px;
+      gap: 6px;
+    }
+    .subtab-btn {
+      flex: 1;
+      padding: 8px;
+      border-radius: 999px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .subtab-btn.active {
+      background: var(--surface-alt);
+      color: #fff;
+      border: 1px solid var(--lazy);
+    }
+
+    .senior-card, .gear-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .skill-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 10px 0 14px;
+    }
+    .skill-pill {
+      background: var(--surface-alt);
+      border: 1px solid #283042;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 10px;
+      font-weight: 600;
+      color: #E2E8F0;
+    }
+
+    /* ── 4. LEADERBOARD ──────────────────────────────────────────────── */
+    .profile-card {
+      background: var(--surface);
+      border: 1px solid #2B3346;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      background: #0B0E14;
+      border: 1px solid #1E2332;
+      border-radius: var(--radius-md);
+      padding: 10px;
+      margin: 12px 0;
+      text-align: center;
+    }
+    .metric-num { font-size: 16px; font-weight: 800; color: #fff; }
+    .metric-num.green { color: #34D399; }
+    .metric-num.gold { color: #FBBF24; }
+    .metric-lbl { font-size: 9px; font-weight: 700; color: var(--text-sec); }
+
+    .hostel-leader-row {
+      display: flex;
+      align-items: center;
+      background: #0E121A;
+      border: 1px solid #1F2534;
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      gap: 12px;
+    }
+    .hostel-leader-row.highlight {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    /* ── BOTTOM NAVIGATION BAR ───────────────────────────────────────── */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 68px;
+      background: #11141D;
+      border-top: 1px solid #202636;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+      padding-bottom: 4px;
+    }
+
+    .nav-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      position: relative;
+      width: 70px;
+    }
+    .nav-tab.active { color: var(--accent); }
+    .nav-tab .icon { font-size: 18px; }
+    .nav-tab .label { font-size: 10px; font-weight: 600; }
+    .nav-tab.active .label { font-weight: 800; }
+    .nav-tab .active-pill {
+      position: absolute;
+      bottom: -6px;
+      width: 20px;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--accent);
+      display: none;
+    }
+    .nav-tab.active .active-pill { display: block; }
+
+    /* ── MODALS ──────────────────────────────────────────────────────── */
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(4, 6, 9, 0.82);
+      z-index: 500;
+      display: none;
+      align-items: flex-end;
+    }
+    .modal-overlay.active { display: flex; }
+
+    .bottom-sheet {
+      width: 100%;
+      background: #161922;
+      border-top-left-radius: 28px;
+      border-top-right-radius: 28px;
+      border: 1px solid var(--border);
+      padding: 20px 18px;
+      max-height: 85%;
+      overflow-y: auto;
+      animation: slideUp 0.25s ease-out;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .form-group { margin-bottom: 12px; }
+    .form-label { font-size: 11px; font-weight: 700; color: var(--text-sec); margin-bottom: 6px; display: block; }
+    .form-input {
+      width: 100%;
+      background: #090B0F;
+      border: 1px solid #232838;
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+    }
+    .form-input:focus { border-color: var(--lazy); }
+
+    .template-chips {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      margin-bottom: 12px;
+    }
+    .template-chip {
+      background: #1E2330;
+      border: 1px solid #2B3346;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 11px;
+      color: #CBD5E1;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .template-chip:hover { border-color: var(--lazy); color: #fff; }
+
+    .toast-msg {
+      position: absolute;
+      top: 110px;
+      left: 20px;
+      right: 20px;
+      background: #10B981;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      z-index: 1000;
+      display: none;
+      animation: fadeIn 0.2s;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   </style>
 </head>
-
 <body>
 
-  <!-- ── NAV ─────────────────────────────────────────────────────────────── -->
-  <nav>
-    <div class="container">
-      <div class="nav-inner">
-        <a href="#" class="nav-brand">
-          <div class="nav-logo">Q</div>
-          Quest
-        </a>
-        <ul class="nav-links">
-          <li><a href="#features">Features</a></li>
-          <li><a href="#tech">Tech Stack</a></li>
-          <li><a href="#api">API</a></li>
-          <li><a href="#flow">Architecture</a></li>
-          <li>
-            <a href="https://github.com/mohit4215/the-quest-app"
-               target="_blank" rel="noopener"
-               class="btn-nav">GitHub →</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+  <!-- MOBILE DEVICE FRAME -->
+  <div class="app-device">
+    <div class="device-notch"></div>
 
-  <!-- ── HERO ────────────────────────────────────────────────────────────── -->
-  <section class="hero">
-    <div class="container">
-      <div class="hero-inner">
-
-        <div class="hero-text">
-          <div class="hero-tag">
-            🎓 Built for AKGEC Campus
-          </div>
-          <h1>
-            Campus errands,<br/>
-            <span>done together.</span>
-          </h1>
-          <p>
-            Quest is a peer-to-peer micro-delivery and community app for
-            Ajay Kumar Garg Engineering College. Post a Quest, pick one up
-            from Sachi Street, earn QP — and get real guidance from seniors.
-          </p>
-          <div class="hero-ctas">
-            <a href="https://github.com/mohit4215/the-quest-app"
-               target="_blank" rel="noopener"
-               class="btn btn-primary">
-              ⭐ View on GitHub
-            </a>
-            <a href="#features" class="btn btn-outline">
-              Explore Features
-            </a>
+    <!-- ── TOP APP BAR ─────────────────────────────────────────── -->
+    <header class="top-app-bar">
+      <div class="top-row">
+        <!-- 1. User Hostel Badge -->
+        <div class="hostel-badge">
+          <div class="icon-box">🏢</div>
+          <div>
+            <div class="label">HOSTEL</div>
+            <div class="value">BH-2 • Room 214</div>
           </div>
         </div>
 
-        <!-- Phone mockup -->
-        <div class="phone-wrap">
-          <div class="phone">
-            <div class="phone-notch"></div>
-            <div class="phone-screen">
-
-              <div class="pscreen-header">
-                <div style="display:flex;align-items:center;gap:6px">
-                  <div class="pscreen-logo">Q</div>
-                  <span style="font-size:12px;font-weight:700;color:#1A1A2E">Quest</span>
-                </div>
-                <div class="pscreen-qp">🪙 1,240 QP</div>
-              </div>
-
-              <div style="padding:10px 10px 0">
-                <div style="background:var(--accent);border-radius:10px;padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;gap:6px">
-                  <div style="width:6px;height:6px;border-radius:50%;background:var(--primary)"></div>
-                  <span style="font-size:9px;color:var(--primary);font-weight:600">5 quests live near Sachi Street</span>
-                </div>
-              </div>
-
-              <div class="pscreen-hero">
-                <div class="pscreen-hero-tag">LIVE · ACADEMIC HELP</div>
-                <div class="pscreen-hero-title">Talk to a<br/>Senior 🎓</div>
-                <div class="pscreen-hero-btn">Ask Now →</div>
-              </div>
-
-              <div style="padding:8px 10px 4px;font-size:9px;font-weight:700;color:var(--text-sec)">WHAT'S YOUR QUEST TODAY?</div>
-
-              <div class="pscreen-grid">
-                <div class="pscreen-tile pscreen-tile-a">
-                  <div class="pscreen-tile-icon">🗺️</div>
-                  <div class="pscreen-tile-label">Do a Quest</div>
-                </div>
-                <div class="pscreen-tile pscreen-tile-b">
-                  <div class="pscreen-tile-icon">📋</div>
-                  <div class="pscreen-tile-label">Post a Quest</div>
-                </div>
-              </div>
-
-              <div class="pscreen-card">
-                <div class="pcard-dot"></div>
-                <div class="pcard-text">
-                  <div class="pcard-title">2× Maggi + Cold Coffee</div>
-                  <div class="pcard-sub">Sachi Street → H-1, Rm 214</div>
-                </div>
-                <div class="pcard-badge">60 QP</div>
-              </div>
-
-              <div class="pscreen-card">
-                <div class="pcard-dot"></div>
-                <div class="pcard-text">
-                  <div class="pcard-title">Samosa × 4 + Chai × 2</div>
-                  <div class="pcard-sub">Sachi Street → H-1, Rm 302</div>
-                </div>
-                <div class="pcard-badge">35 QP</div>
-              </div>
-
-            </div><!-- /phone-screen -->
-          </div><!-- /phone -->
-        </div><!-- /phone-wrap -->
-
-      </div><!-- /hero-inner -->
-    </div>
-  </section>
-
-  <!-- ── STATS BAR ────────────────────────────────────────────────────────── -->
-  <div class="stats-bar">
-    <div class="container">
-      <div class="stats-grid">
-        <div class="stat-item">
-          <div class="stat-number">15+</div>
-          <div class="stat-label">Seed users across hostels</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">12</div>
-          <div class="stat-label">Campus quest templates</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">31</div>
-          <div class="stat-label">Backend source files</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">5</div>
-          <div class="stat-label">Real-time Socket.io events</div>
+        <!-- 2. Gold Pill Badge showing "450 QP" -->
+        <div class="qp-pill">
+          <span class="coin">🪙</span>
+          <span class="amount" id="qp-display">450</span>
+          <span class="unit">QP</span>
         </div>
       </div>
+
+      <!-- 3. Mode Switcher: Lazy Mode (#7C3AED) vs Quester Mode (#10B981) -->
+      <div class="mode-switch-wrapper">
+        <div class="mode-switch-track">
+          <button class="mode-switch-btn active-lazy" id="btn-lazy-mode" onclick="setMode('lazy')">
+            <span>🛋️</span> Lazy Mode
+          </button>
+          <button class="mode-switch-btn" id="btn-quester-mode" onclick="setMode('quester')">
+            <span>⚡</span> Quester Mode
+          </button>
+        </div>
+
+        <div class="mode-slider-pill" id="mode-slider" onclick="toggleMode()">
+          <div class="mode-slider-thumb" id="mode-thumb">💤</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="toast-msg" id="toast"></div>
+
+    <!-- ── APP BODY CONTENT ────────────────────────────────────── -->
+    <main class="app-body">
+
+      <!-- TAB 1: HOME FEED -->
+      <section class="tab-panel active" id="tab-home">
+        <!-- Live Campus Radar -->
+        <div class="radar-card">
+          <div class="radar-header">
+            <div class="live-pulse">
+              <div class="pulse-dot-wrap">
+                <div class="pulse-ring"></div>
+                <div class="pulse-dot"></div>
+              </div>
+              <span class="radar-title">LIVE CAMPUS RADAR</span>
+            </div>
+            <span class="radar-peers-count">26 Peers Active</span>
+          </div>
+          <div class="radar-subtitle">Active peers spotted near campus spots</div>
+
+          <!-- Radar Scope -->
+          <div class="radar-scope">
+            <div class="scope-ring r1"></div>
+            <div class="scope-ring r2"></div>
+            <div class="scope-ring r3"></div>
+            <div class="scope-sweep"></div>
+            <div class="scope-center-dot">📍</div>
+            <div class="blip" style="top: 15px; left: 30px;">🌙 8 Canteen</div>
+            <div class="blip" style="top: 25px; right: 35px;">🚪 5 Gate</div>
+            <div class="blip" style="bottom: 18px; left: 45px;">🖨️ 2 Xerox</div>
+            <div class="blip" style="bottom: 20px; right: 40px;">☕ 4 Nescafe</div>
+          </div>
+
+          <!-- Spot Cards -->
+          <div class="radar-spots">
+            <div class="spot-pill" onclick="filterCategory('Night Canteen')">
+              <div class="spot-top"><span>🌙</span><span class="spot-peers">8 peers</span></div>
+              <div class="spot-name">Night Canteen</div>
+              <div class="spot-desc">High Activity</div>
+            </div>
+            <div class="spot-pill" onclick="filterCategory('Gate Parcel')">
+              <div class="spot-top"><span>🚪</span><span class="spot-peers">5 peers</span></div>
+              <div class="spot-name">Main Gate</div>
+              <div class="spot-desc">Parcels Waiting</div>
+            </div>
+            <div class="spot-pill" onclick="filterCategory('Printouts')">
+              <div class="spot-top"><span>🖨️</span><span class="spot-peers">2 peers</span></div>
+              <div class="spot-name">Stationery Shop</div>
+              <div class="spot-desc">Xerox Open</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Horizontal Category Filter Chips -->
+        <div class="filter-chips-wrap">
+          <button class="category-chip active" onclick="filterCategory('all', this)">⚡ All</button>
+          <button class="category-chip" onclick="filterCategory('Night Canteen', this)">🌙 Night Canteen</button>
+          <button class="category-chip" onclick="filterCategory('Gate Parcel', this)">🚪 Gate Parcel</button>
+          <button class="category-chip" onclick="filterCategory('Printouts', this)">🖨️ Printouts</button>
+          <button class="category-chip" onclick="filterCategory('Borrow Item', this)">🤝 Borrow Item</button>
+        </div>
+
+        <!-- List of realistic Quest Bounty Cards -->
+        <div class="bounty-list" id="bounty-container">
+          <!-- Injected via JS -->
+        </div>
+      </section>
+
+      <!-- TAB 2: ACTIVE QUEST -->
+      <section class="tab-panel" id="tab-active">
+        <div class="tracker-card">
+          <div class="tracker-title-row">
+            <span style="font-size: 15px; font-weight: 800; color: #fff;">📍 Live Delivery Tracker</span>
+            <span style="font-size: 11px; font-weight: 700; color: #10B981;" id="active-step-label">Step 1 of 4</span>
+          </div>
+
+          <!-- 4-Step Progress Tracker -->
+          <div class="stepper-nav">
+            <div class="stepper-progress-bg">
+              <div class="stepper-progress-bar" id="stepper-bar"></div>
+            </div>
+            <div class="step-node active" id="node-0" onclick="setTrackerStep(0)">
+              <div class="step-circle">1</div>
+              <div class="step-label">Claimed</div>
+            </div>
+            <div class="step-node" id="node-1" onclick="setTrackerStep(1)">
+              <div class="step-circle">2</div>
+              <div class="step-label">At Shop/Gate</div>
+            </div>
+            <div class="step-node" id="node-2" onclick="setTrackerStep(2)">
+              <div class="step-circle">3</div>
+              <div class="step-label">Walking</div>
+            </div>
+            <div class="step-node" id="node-3" onclick="setTrackerStep(3)">
+              <div class="step-circle">4</div>
+              <div class="step-label">Delivered</div>
+            </div>
+          </div>
+
+          <!-- Current Step Box -->
+          <div class="step-action-box" id="step-desc-box">
+            <div class="step-action-title" id="step-title">1. Quest Claimed & Locked</div>
+            <div class="step-action-sub" id="step-desc">Head to Night Canteen (Nescafe Booth) to collect 2× Butter Maggi & Cold Coffee.</div>
+          </div>
+
+          <!-- Advance Button or OTP -->
+          <div id="tracker-action-area">
+            <button class="advance-btn" id="advance-step-btn" onclick="advanceTracker()">
+              📍 I've Arrived at Shop/Gate →
+            </button>
+          </div>
+        </div>
+
+        <!-- Compact Quick-Chat Box -->
+        <div class="chat-card">
+          <div class="chat-header">
+            <div style="font-size: 12px; font-weight: 700; color: #fff;">💬 Chat with Recipient (Aman • Room 214)</div>
+            <span style="font-size: 10px; color: #10B981; font-weight: 700;">● Online</span>
+          </div>
+
+          <div class="chat-messages" id="chat-stream">
+            <div class="msg-bubble recipient">
+              Hey! Thanks for picking this up. Extra ketchup in Maggi please 🙏
+            </div>
+          </div>
+
+          <!-- 1-Tap Preset Replies -->
+          <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">⚡ 1-Tap Replies:</div>
+          <div class="preset-chips-row">
+            <button class="preset-btn" onclick="sendQuickReply('At your hostel gate')">💬 At your hostel gate</button>
+            <button class="preset-btn" onclick="sendQuickReply('Item out of stock, want an alternative?')">💬 Item out of stock, alternative?</button>
+            <button class="preset-btn" onclick="sendQuickReply('Send UPI on delivery')">💬 Send UPI on delivery</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: SENIOR CONNECT -->
+      <section class="tab-panel" id="tab-seniors">
+        <!-- Sub-tabs: Mentorship vs Borrow Gear -->
+        <div class="subtabs-nav">
+          <button class="subtab-btn active" id="subtab-mentor" onclick="switchSeniorSubtab('mentorship')">🎓 1-on-1 Mentorship</button>
+          <button class="subtab-btn" id="subtab-gear" onclick="switchSeniorSubtab('gear')">🛠️ Borrow Gear</button>
+        </div>
+
+        <div id="senior-content">
+          <!-- Injected via JS -->
+        </div>
+      </section>
+
+      <!-- TAB 4: LEADERBOARD -->
+      <section class="tab-panel" id="tab-leaderboard">
+        <!-- 1. Top Section: User Profile Card -->
+        <div class="profile-card">
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <div style="width: 44px; height: 44px; border-radius: 22px; background: #1E2330; display: grid; place-items: center; border: 2px solid #F59E0B; font-weight: 800; color: #FBBF24;">M</div>
+            <div>
+              <div style="font-size: 15px; font-weight: 800; color: #fff;">Mohit (BH-2 • Room 214)</div>
+              <div style="font-size: 11px; color: #A78BFA; font-weight: 600;">Rank #14 in BH-2 • Silver Quester</div>
+            </div>
+          </div>
+
+          <div class="metrics-row">
+            <div>
+              <div class="metric-num green">98%</div>
+              <div class="metric-lbl">Reliability Score</div>
+            </div>
+            <div>
+              <div class="metric-num">24</div>
+              <div class="metric-lbl">Quests Done</div>
+            </div>
+            <div>
+              <div class="metric-num gold" id="lead-qp-display">450</div>
+              <div class="metric-lbl">Quest Points</div>
+            </div>
+          </div>
+
+          <div style="font-size: 10px; font-weight: 800; color: var(--text-muted); margin-bottom: 6px;">UNLOCKED BADGES</div>
+          <div style="display: flex; gap: 8px;">
+            <div style="background: var(--surface-alt); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; color: #E2E8F0; border: 1px solid #2B3346;">
+              🦉 Night Owl Runner
+            </div>
+            <div style="background: var(--surface-alt); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; color: #E2E8F0; border: 1px solid #2B3346;">
+              🦸‍♂️ Hostel Saviour
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Middle Section: Inter-Hostel Leaderboard -->
+        <div style="font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 8px;">🏰 Inter-Hostel Leaderboard</div>
+        <div class="hostel-leader-row highlight">
+          <span style="font-size: 18px;">🥇</span>
+          <div style="flex: 1;">
+            <div style="font-size: 13px; font-weight: 800; color: #fff;">BH-2 (Your Hostel)</div>
+            <div style="font-size: 10px; color: #10B981; font-weight: 700;">412 deliveries • Leading Rank 1</div>
+          </div>
+          <div style="font-size: 15px; font-weight: 800; color: #FBBF24;">18,450 QP</div>
+        </div>
+        <div class="hostel-leader-row">
+          <span style="font-size: 18px;">🥈</span>
+          <div style="flex: 1;">
+            <div style="font-size: 13px; font-weight: 800; color: #fff;">BH-1</div>
+            <div style="font-size: 10px; color: var(--text-muted);">380 deliveries</div>
+          </div>
+          <div style="font-size: 15px; font-weight: 800; color: #FBBF24;">16,820 QP</div>
+        </div>
+        <div class="hostel-leader-row">
+          <span style="font-size: 18px;">🥉</span>
+          <div style="flex: 1;">
+            <div style="font-size: 13px; font-weight: 800; color: #fff;">GH-1</div>
+            <div style="font-size: 10px; color: var(--text-muted);">325 deliveries</div>
+          </div>
+          <div style="font-size: 15px; font-weight: 800; color: #FBBF24;">14,310 QP</div>
+        </div>
+        <div class="hostel-leader-row">
+          <span style="font-size: 18px;">4</span>
+          <div style="flex: 1;">
+            <div style="font-size: 13px; font-weight: 800; color: #fff;">BH-3</div>
+            <div style="font-size: 10px; color: var(--text-muted);">268 deliveries</div>
+          </div>
+          <div style="font-size: 15px; font-weight: 800; color: #FBBF24;">11,940 QP</div>
+        </div>
+
+        <!-- 3. Bottom Section: Redeem QP Store -->
+        <div style="font-size: 15px; font-weight: 800; color: #fff; margin: 18px 0 8px;">🎁 Redeem QP Store</div>
+        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <div style="font-size: 14px; font-weight: 800; color: #fff;">🎫 Free Delivery Pass</div>
+            <div style="font-size: 12px; font-weight: 800; color: #FBBF24;">150 QP</div>
+          </div>
+          <div style="font-size: 11px; color: var(--text-sec); margin-bottom: 10px;">Waives runner tip fee on your next 3 Lazy Mode snack orders.</div>
+          <button class="advance-btn" style="background: var(--lazy); padding: 9px;" onclick="redeemPerk('Free Delivery Pass', 150)">
+            Redeem (150 QP)
+          </button>
+        </div>
+
+        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <div style="font-size: 14px; font-weight: 800; color: #fff;">🌙 Night Canteen ₹50 Voucher</div>
+            <div style="font-size: 12px; font-weight: 800; color: #FBBF24;">500 QP</div>
+          </div>
+          <div style="font-size: 11px; color: var(--text-sec); margin-bottom: 10px;">Valid on orders above ₹100 at Nescafe & Maggi counters.</div>
+          <button class="advance-btn" style="background: var(--lazy); padding: 9px;" onclick="redeemPerk('Night Canteen ₹50 Voucher', 500)">
+            Redeem (500 QP)
+          </button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- FLOATING ACTION BUTTON (Visible in Lazy Mode) -->
+    <button class="fab-post" id="fab-post-btn" onclick="openPostModal()">
+      <span>➕</span> Post New Quest
+    </button>
+
+    <!-- ── BOTTOM NAVIGATION TABS ──────────────────────────────── -->
+    <nav class="bottom-nav">
+      <button class="nav-tab active" onclick="switchTab('home', this)">
+        <span class="icon">🏠</span>
+        <span class="label">Home Feed</span>
+        <div class="active-pill"></div>
+      </button>
+      <button class="nav-tab" onclick="switchTab('active', this)">
+        <span class="icon">⚔️</span>
+        <span class="label">Active Quest</span>
+        <div class="active-pill"></div>
+      </button>
+      <button class="nav-tab" onclick="switchTab('seniors', this)">
+        <span class="icon">🎓</span>
+        <span class="label">Senior Connect</span>
+        <div class="active-pill"></div>
+      </button>
+      <button class="nav-tab" onclick="switchTab('leaderboard', this)">
+        <span class="icon">🏆</span>
+        <span class="label">Leaderboard</span>
+        <div class="active-pill"></div>
+      </button>
+    </nav>
+
+    <!-- ── POST A QUEST MODAL ──────────────────────────────────── -->
+    <div class="modal-overlay" id="post-modal" onclick="closeModalOnBg(event)">
+      <div class="bottom-sheet">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <div style="font-size: 18px; font-weight: 800; color: #fff;">🛋️ Post a Quest</div>
+          <button onclick="closePostModal()" style="background: var(--surface-alt); border: none; color: #fff; width: 28px; height: 28px; border-radius: 14px; cursor: pointer;">✕</button>
+        </div>
+
+        <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">⚡ Quick-Fill Templates:</div>
+        <div class="template-chips">
+          <div class="template-chip" onclick="fillTemplate('Gate Zomato Pickup', 'Main Gate Security', 40, 'Gate Parcel')">🚪 Gate Zomato Pickup</div>
+          <div class="template-chip" onclick="fillTemplate('2x Maggi from Canteen', 'Night Canteen Nescafe', 25, 'Night Canteen')">🍜 2x Maggi from Canteen</div>
+          <div class="template-chip" onclick="fillTemplate('Lab File Printout (10 pgs)', 'Stationery Xerox Shop', 20, 'Printouts')">🖨️ Lab File Printout</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Item Details</label>
+          <input class="form-input" id="post-item" placeholder="e.g. 2x Butter Maggi & Cold Coffee" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Pickup Location</label>
+          <input class="form-input" id="post-pickup" placeholder="e.g. Night Canteen Nescafe" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Drop-off Room</label>
+          <input class="form-input" id="post-dropoff" value="BH-2 • Room 214" />
+        </div>
+
+        <!-- Tip Slider -->
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <label class="form-label">Bounty Cash Tip</label>
+            <span style="font-size: 13px; font-weight: 800; color: #34D399;" id="slider-tip-val">₹30</span>
+          </div>
+          <input type="range" min="10" max="100" step="5" value="30" style="width: 100%; accent-color: var(--lazy);" id="tip-slider" oninput="updateTipSlider(this.value)" />
+          <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-top: 4px;">
+            <span>₹10 (Min)</span>
+            <span style="color: #FBBF24; font-weight: 700;" id="calc-bonus-qp">+50 QP Auto-Bonus</span>
+            <span>₹100 (Max)</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Handover Method</label>
+          <div style="display: flex; gap: 8px;">
+            <button class="preset-btn" style="flex: 1; padding: 9px; text-align: center; border-color: var(--lazy);" id="btn-otp-mode" onclick="toggleHandover('otp')">🔐 4-Digit OTP</button>
+            <button class="preset-btn" style="flex: 1; padding: 9px; text-align: center;" id="btn-door-mode" onclick="toggleHandover('door')">🚪 Drop at Door</button>
+          </div>
+        </div>
+
+        <button class="advance-btn" style="background: var(--lazy); margin-top: 10px;" onclick="submitNewQuest()">
+          🚀 Launch Quest to Feed
+        </button>
+      </div>
     </div>
+
   </div>
 
-  <!-- ── FEATURES ─────────────────────────────────────────────────────────── -->
-  <section id="features">
-    <div class="container">
-      <div class="section-label">Core Features</div>
-      <h2 class="section-title">Everything the campus needs,<br/>in one app.</h2>
-      <p class="section-sub">
-        Designed around the real daily friction of hostel life at AKGEC —
-        from Sachi Street errands to placement prep anxiety.
-      </p>
+  <!-- ── JAVASCRIPT LOGIC ────────────────────────────────────────── -->
+  <script>
+    // State
+    let currentMode = 'lazy'; // 'lazy' or 'quester'
+    let qpBalance = 450;
+    let trackerStep = 0;
+    let activeCategory = 'all';
+    let handoverMethod = 'otp';
 
-      <div class="features-grid">
+    // Mock Quest Bounties
+    let bounties = [
+      {
+        id: 'q1',
+        category: 'Night Canteen',
+        item: '2× Cheese Butter Maggi & Cold Coffee',
+        pickup: 'Night Canteen (Nescafe Booth)',
+        drop: 'BH-2 • Room 214',
+        timer: '15 mins left',
+        urgent: false,
+        cash: '₹30',
+        qp: '+50 QP',
+        isClaimed: false
+      },
+      {
+        id: 'q2',
+        category: 'Gate Parcel',
+        item: 'Amazon Package (Myntra Shoe Box)',
+        pickup: 'Main Gate Security Post 1',
+        drop: 'BH-2 • Room 308',
+        timer: '8 mins left',
+        urgent: true,
+        cash: '₹40',
+        qp: '+65 QP',
+        isClaimed: false
+      },
+      {
+        id: 'q3',
+        category: 'Printouts',
+        item: 'Compiler Design Lab Manual (14 pgs B&W)',
+        pickup: 'Stationery Shop (Xerox Counter)',
+        drop: 'BH-2 • Room 104',
+        timer: '25 mins left',
+        urgent: false,
+        cash: '₹20',
+        qp: '+35 QP',
+        isClaimed: false
+      },
+      {
+        id: 'q4',
+        category: 'Borrow Item',
+        item: 'Electric Steam Iron for Interview',
+        pickup: 'BH-1 • Room 204',
+        drop: 'BH-2 • Room 214',
+        timer: '35 mins left',
+        urgent: false,
+        cash: '₹30',
+        qp: '+50 QP',
+        isClaimed: false
+      }
+    ];
 
-        <div class="feature-card">
-          <div class="feature-icon icon-blue">🗺️</div>
-          <h3>Live Campus Radar</h3>
-          <p>Animated hotspot map shows open quests near Sachi Street, Main Canteen, and hostels in real time via Socket.io broadcasts.</p>
-        </div>
+    // Tracker steps configuration
+    const stepConfigs = [
+      {
+        title: '1. Quest Claimed & Locked',
+        desc: 'Head to pickup location to collect order.',
+        btn: "📍 I've Arrived at Shop/Gate →"
+      },
+      {
+        title: '2. At Shop/Gate',
+        desc: 'Collecting item from vendor or security gate.',
+        btn: '🚶 Order Collected, Walking to Hostel →'
+      },
+      {
+        title: '3. Walking to Hostel',
+        desc: 'En route to recipient room in BH-2.',
+        btn: '🏠 Arrived at Room Door →'
+      },
+      {
+        title: '4. Delivered — Enter OTP',
+        desc: 'Ask recipient for their 4-digit verification code.',
+        btn: '🔐 Verify & Complete Delivery'
+      }
+    ];
 
-        <div class="feature-card">
-          <div class="feature-icon icon-gold">📋</div>
-          <h3>Post a Quest</h3>
-          <p>5-step form with item description, AKGEC pickup/drop-off locations, a QP/cash bounty slider, and a live preview card before posting.</p>
-        </div>
+    // Initialize
+    function init() {
+      renderBounties();
+      renderSeniorContent('mentorship');
+      updateWallet();
+    }
 
-        <div class="feature-card">
-          <div class="feature-icon icon-green">⚡</div>
-          <h3>Race-safe Claiming</h3>
-          <p>
-            <code style="font-size:12px;background:var(--bg);padding:1px 5px;border-radius:4px">SELECT FOR UPDATE SKIP LOCKED</code>
-            ensures only the first courier wins. All others receive an instant 409 — no queuing, no double-assigns.
-          </p>
-        </div>
+    // Mode Toggle
+    function setMode(mode) {
+      currentMode = mode;
+      const btnLazy = document.getElementById('btn-lazy-mode');
+      const btnQuester = document.getElementById('btn-quester-mode');
+      const thumb = document.getElementById('mode-thumb');
+      const slider = document.getElementById('mode-slider');
+      const fab = document.getElementById('fab-post-btn');
 
-        <div class="feature-card">
-          <div class="feature-icon icon-purple">🎓</div>
-          <h3>Talk to a Senior</h3>
-          <p>Q&A forum with tag filters (Placements, DSA, GATE, Backlog…), nested replies, upvote toggles, and a 25 QP bonus at 10 upvotes.</p>
-        </div>
+      if (mode === 'lazy') {
+        btnLazy.className = 'mode-switch-btn active-lazy';
+        btnQuester.className = 'mode-switch-btn';
+        thumb.innerText = '💤';
+        thumb.style.transform = 'translateX(0)';
+        slider.style.background = '#7C3AED';
+        document.documentElement.style.setProperty('--accent', '#7C3AED');
+        fab.style.display = 'flex';
+        showToast('Switched to Lazy Mode (Purple #7C3AED)');
+      } else {
+        btnLazy.className = 'mode-switch-btn';
+        btnQuester.className = 'mode-switch-btn active-quester';
+        thumb.innerText = '🏃';
+        thumb.style.transform = 'translateX(20px)';
+        slider.style.background = '#10B981';
+        document.documentElement.style.setProperty('--accent', '#10B981');
+        fab.style.display = 'none';
+        showToast('Switched to Quester Mode (Green #10B981)');
+      }
+      renderBounties();
+    }
 
-        <div class="feature-card">
-          <div class="feature-icon icon-gold">🪙</div>
-          <h3>Quest Points Economy</h3>
-          <p>Append-only QP ledger, 6-tier level system (Freshman → Campus Legend), and redeemable perks at real Sachi Street shops.</p>
-        </div>
+    function toggleMode() {
+      setMode(currentMode === 'lazy' ? 'quester' : 'lazy');
+    }
 
-        <div class="feature-card">
-          <div class="feature-icon icon-teal">🏆</div>
-          <h3>Gamification</h3>
-          <p>Level progress bars, day streaks, campus rank, and animated reward cards. QP tier auto-recalculates via PostgreSQL trigger on every update.</p>
-        </div>
+    // Wallet Update
+    function updateWallet() {
+      document.getElementById('qp-display').innerText = qpBalance;
+      document.getElementById('lead-qp-display').innerText = qpBalance;
+    }
 
-      </div>
-    </div>
-  </section>
+    // Render Bounties
+    function renderBounties() {
+      const container = document.getElementById('bounty-container');
+      container.innerHTML = '';
 
-  <!-- ── TECH STACK ────────────────────────────────────────────────────────── -->
-  <section id="tech" class="tech-section">
-    <div class="container">
-      <div class="section-label">Tech Stack</div>
-      <h2 class="section-title">Production-grade architecture,<br/>campus-scale scope.</h2>
-      <p class="section-sub">
-        Every layer chosen to solve a specific problem — not just assembled from defaults.
-      </p>
+      const filtered = activeCategory === 'all'
+        ? bounties
+        : bounties.filter(b => b.category === activeCategory);
 
-      <div class="tech-grid">
-
-        <div class="tech-card">
-          <div class="tech-card-header">
-            <span class="tech-badge badge-frontend">Frontend</span>
-            <h3>React Native (Expo ~51)</h3>
+      filtered.forEach(b => {
+        const card = document.createElement('div');
+        card.className = 'bounty-card';
+        card.innerHTML = `
+          <div class="bounty-top">
+            <span class="bounty-category-tag">${b.category}</span>
+            <span class="bounty-timer ${b.urgent ? 'urgent' : ''}">⏱️ ${b.timer}</span>
           </div>
-          <ul class="tech-list">
-            <li><strong>React Navigation v6</strong> — NativeStack + custom 5-tab bar with FAB center button</li>
-            <li><strong>expo-linear-gradient</strong> — gradient tiles for action grid and hero banner</li>
-            <li><strong>Animated API</strong> — PanResponder slider, spring claim animation, radar sweep rotation</li>
-            <li><strong>Design system</strong> — tokens for color, typography, spacing, shadow (Blue & White theme, QP Gold accent)</li>
-            <li><strong>State management</strong> — local useState per screen; no external store needed at this scale</li>
-          </ul>
-        </div>
-
-        <div class="tech-card">
-          <div class="tech-card-header">
-            <span class="tech-badge badge-backend">Backend</span>
-            <h3>Node.js + Express + Socket.io</h3>
+          <div class="bounty-title">${b.item}</div>
+          <div class="route-box">
+            <div class="route-line"><span class="route-label">📍 Pickup:</span> <span class="route-val">${b.pickup}</span></div>
+            <div class="route-line"><span class="route-label">🏠 Drop:</span> <span class="route-val highlight">${b.drop}</span></div>
           </div>
-          <ul class="tech-list">
-            <li><strong>PostgreSQL (pg pool)</strong> — single shared Pool, withTransaction() helper, idempotent migration runner</li>
-            <li><strong>SELECT FOR UPDATE SKIP LOCKED</strong> — non-blocking row-level lock for concurrent quest claiming</li>
-            <li><strong>Socket.io rooms</strong> — quests:open (radar), quest:id (per-quest), user:id (private QP updates), forum</li>
-            <li><strong>JWT + bcryptjs</strong> — stateless auth with role-based access (student / senior / admin)</li>
-            <li><strong>Append-only transactions table</strong> — mutation-block triggers prevent ledger tampering</li>
-          </ul>
-        </div>
-
-        <div class="tech-card">
-          <div class="tech-card-header">
-            <span class="tech-badge badge-backend">Database</span>
-            <h3>PostgreSQL Schema Design</h3>
+          <div class="bounty-bottom">
+            <div class="rewards-group">
+              <span class="tip-pill">💵 ${b.cash}</span>
+              <span class="qp-reward-pill">🪙 ${b.qp}</span>
+            </div>
+            ${currentMode === 'quester' ? `
+              <button class="accept-btn" onclick="acceptQuest('${b.id}')">
+                ${b.isClaimed ? '✓ Claimed' : '⚡ Accept Quest'}
+              </button>
+            ` : `
+              <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">Posted in BH-2</span>
+            `}
           </div>
-          <ul class="tech-list">
-            <li><strong>Enum types</strong> — quest_status, user_role, gamification_tier, bounty_type, thread_tag</li>
-            <li><strong>Status guard trigger</strong> — rejects illegal quest state jumps (e.g. open → completed) at DB level</li>
-            <li><strong>Auto-tier trigger</strong> — recalculates gamification tier on every qp_balance update</li>
-            <li><strong>Partial index</strong> — <code style="font-size:11px">WHERE status = 'open'</code> for fast radar feed queries</li>
-            <li><strong>pg_trgm GIN index</strong> — full-text thread search without a search engine dependency</li>
-          </ul>
-        </div>
+        `;
+        container.appendChild(card);
+      });
+    }
 
-        <div class="tech-card">
-          <div class="tech-card-header">
-            <span class="tech-badge badge-frontend">Security & Ops</span>
-            <h3>Middleware & Reliability</h3>
+    function filterCategory(cat, btn) {
+      activeCategory = cat;
+      document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderBounties();
+    }
+
+    // Accept Quest -> Navigate to Active Quest Tab
+    function acceptQuest(questId) {
+      const quest = bounties.find(q => q.id === questId);
+      if (quest) quest.isClaimed = true;
+      trackerStep = 0;
+      updateTrackerView();
+      switchTab('active', document.querySelectorAll('.nav-tab')[1]);
+      showToast('⚡ Quest accepted! Switched to Active Quest tracker.');
+    }
+
+    // Tab Navigation
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+      if (btn) btn.classList.add('active');
+    }
+
+    // Active Quest Tracker
+    function setTrackerStep(step) {
+      trackerStep = step;
+      updateTrackerView();
+    }
+
+    function advanceTracker() {
+      if (trackerStep < 3) {
+        trackerStep++;
+        updateTrackerView();
+      }
+    }
+
+    function updateTrackerView() {
+      document.getElementById('active-step-label').innerText = `Step ${trackerStep + 1} of 4`;
+      document.getElementById('stepper-bar').style.width = `${(trackerStep / 3) * 100}%`;
+
+      for (let i = 0; i < 4; i++) {
+        const node = document.getElementById(`node-${i}`);
+        node.className = 'step-node';
+        if (i < trackerStep) node.classList.add('completed');
+        if (i === trackerStep) node.classList.add('active');
+      }
+
+      const conf = stepConfigs[trackerStep];
+      document.getElementById('step-title').innerText = conf.title;
+      document.getElementById('step-desc').innerText = conf.desc;
+
+      const area = document.getElementById('tracker-action-area');
+      if (trackerStep < 3) {
+        area.innerHTML = `
+          <button class="advance-btn" onclick="advanceTracker()">
+            ${conf.btn}
+          </button>
+        `;
+      } else {
+        // Step 4: OTP Box
+        area.innerHTML = `
+          <div class="otp-wrapper">
+            <div class="otp-boxes">
+              <input class="otp-cell" maxlength="1" id="otp-1" value="4" />
+              <input class="otp-cell" maxlength="1" id="otp-2" value="8" />
+              <input class="otp-cell" maxlength="1" id="otp-3" value="2" />
+              <input class="otp-cell" maxlength="1" id="otp-4" value="1" />
+            </div>
+            <div class="demo-otp-chip" onclick="fillDemoOtp()">
+              💡 Recipient OTP: <strong>4821</strong> (Tap to verify)
+            </div>
+            <button class="advance-btn" style="background: #10B981;" onclick="completeDelivery()">
+              🎉 Verify OTP & Claim +50 QP
+            </button>
           </div>
-          <ul class="tech-list">
-            <li><strong>Helmet</strong> — sets 11 security response headers automatically</li>
-            <li><strong>3-tier rate limiting</strong> — general (100/min), auth (10/min), claim (5/min, keyed per user)</li>
-            <li><strong>Global error handler</strong> — maps pg error codes (23505, 23514…) to typed HTTP responses</li>
-            <li><strong>Graceful shutdown</strong> — SIGTERM drains HTTP + Socket.io + DB pool before exit</li>
-            <li><strong>asyncHandler wrapper</strong> — eliminates try/catch boilerplate in every controller</li>
-          </ul>
-        </div>
+        `;
+      }
+    }
 
-      </div>
-    </div>
-  </section>
+    function fillDemoOtp() {
+      document.getElementById('otp-1').value = '4';
+      document.getElementById('otp-2').value = '8';
+      document.getElementById('otp-3').value = '2';
+      document.getElementById('otp-4').value = '1';
+    }
 
-  <!-- ── API ENDPOINTS ─────────────────────────────────────────────────────── -->
-  <section id="api" class="api-section">
-    <div class="container">
-      <div class="section-label">REST API</div>
-      <h2 class="section-title">Clean, versioned endpoints.</h2>
-      <p class="section-sub">All routes under <code style="font-size:14px;opacity:.8">/api/v1</code>. Authenticated endpoints require <code style="font-size:14px;opacity:.8">Authorization: Bearer &lt;token&gt;</code>.</p>
+    function completeDelivery() {
+      qpBalance += 50;
+      updateWallet();
+      showToast('🎉 Delivery verified! +50 QP added to your wallet.');
+      setTimeout(() => {
+        trackerStep = 0;
+        updateTrackerView();
+        switchTab('home', document.querySelectorAll('.nav-tab')[0]);
+      }, 1500);
+    }
 
-      <div class="endpoints-grid">
+    // Quick Chat
+    function sendQuickReply(text) {
+      const stream = document.getElementById('chat-stream');
+      const bubble = document.createElement('div');
+      bubble.className = 'msg-bubble me';
+      bubble.innerText = `${text} ✓✓`;
+      stream.appendChild(bubble);
+      stream.scrollTop = stream.scrollHeight;
+    }
 
-        <div class="endpoint">
-          <span class="ep-method ep-post">POST</span>
-          <div>
-            <div class="ep-path">/auth/register</div>
-            <div class="ep-desc">Create account with AKGEC email + bcrypt password</div>
+    // Senior Connect Subtabs
+    function switchSeniorSubtab(type) {
+      document.getElementById('subtab-mentor').classList.toggle('active', type === 'mentorship');
+      document.getElementById('subtab-gear').classList.toggle('active', type === 'gear');
+      renderSeniorContent(type);
+    }
+
+    function renderSeniorContent(type) {
+      const target = document.getElementById('senior-content');
+      if (type === 'mentorship') {
+        target.innerHTML = `
+          <div class="senior-card">
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <div style="width: 40px; height: 40px; border-radius: 20px; background: #1E2330; display: grid; place-items: center; border: 1px solid var(--lazy); font-weight: 800; color: #DDD6FE;">AS</div>
+              <div>
+                <div style="font-size: 14px; font-weight: 800; color: #fff;">Abhinav Sharma ⭐ 4.9</div>
+                <div style="font-size: 11px; color: var(--text-sec);">4th Year • CSE (BH-2 Room 418) • Amazon SDE</div>
+              </div>
+            </div>
+            <div class="skill-pills">
+              <span class="skill-pill">Flutter</span>
+              <span class="skill-pill">DSA</span>
+              <span class="skill-pill">Resume Review</span>
+              <span class="skill-pill">MLOps</span>
+            </div>
+            <button class="advance-btn" style="background: var(--lazy); padding: 9px;" onclick="bookSenior(100, 'Abhinav Sharma')">
+              ⚡ Book 15-min Chat (100 QP)
+            </button>
           </div>
-        </div>
-
-        <div class="endpoint">
-          <span class="ep-method ep-post">POST</span>
-          <div>
-            <div class="ep-path">/auth/login</div>
-            <div class="ep-desc">Issue JWT, update last_seen_at</div>
+          <div class="senior-card">
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <div style="width: 40px; height: 40px; border-radius: 20px; background: #1E2330; display: grid; place-items: center; border: 1px solid var(--lazy); font-weight: 800; color: #DDD6FE;">SJ</div>
+              <div>
+                <div style="font-size: 14px; font-weight: 800; color: #fff;">Sakshi Jain ⭐ 5.0</div>
+                <div style="font-size: 11px; color: var(--text-sec);">4th Year • IT (BH-1 Room 302) • Microsoft SWE</div>
+              </div>
+            </div>
+            <div class="skill-pills">
+              <span class="skill-pill">MLOps</span>
+              <span class="skill-pill">Python</span>
+              <span class="skill-pill">Mock Interviews</span>
+            </div>
+            <button class="advance-btn" style="background: var(--lazy); padding: 9px;" onclick="bookSenior(100, 'Sakshi Jain')">
+              ⚡ Book 15-min Chat (100 QP)
+            </button>
           </div>
-        </div>
-
-        <div class="endpoint">
-          <span class="ep-method ep-get">GET</span>
-          <div>
-            <div class="ep-path">/quests?status=open</div>
-            <div class="ep-desc">Paginated open quest radar feed with requester JSON</div>
+        `;
+      } else {
+        target.innerHTML = `
+          <div class="gear-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <div style="font-size: 14px; font-weight: 800; color: #fff;">🥼 Standard White Lab Coat</div>
+              <span style="font-size: 11px; font-weight: 800; color: #FBBF24;">30 QP</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-sec); margin-bottom: 10px;">Size L • Cotton • Cleaned • Senior Kunal (BH-2 Room 314)</div>
+            <button class="advance-btn" style="background: #3B82F6; padding: 9px;" onclick="requestGear(30, 'White Lab Coat')">
+              📦 Request Item (30 QP)
+            </button>
           </div>
-        </div>
-
-        <div class="endpoint">
-          <span class="ep-method ep-post">POST</span>
-          <div>
-            <div class="ep-path">/quests</div>
-            <div class="ep-desc">Create quest, broadcast quest:created to all radar clients</div>
+          <div class="gear-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <div style="font-size: 14px; font-weight: 800; color: #fff;">🔢 Casio fx-991EX Calculator</div>
+              <span style="font-size: 11px; font-weight: 800; color: #FBBF24;">30 QP</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-sec); margin-bottom: 10px;">ClassWiz • Allowed in Exams • Senior Aditya (BH-2 Room 104)</div>
+            <button class="advance-btn" style="background: #3B82F6; padding: 9px;" onclick="requestGear(30, 'fx-991EX Calculator')">
+              📦 Request Item (30 QP)
+            </button>
           </div>
-        </div>
-
-        <div class="endpoint">
-          <span class="ep-method ep-post">POST</span>
-          <div>
-            <div class="ep-path">/quests/:id/claim</div>
-            <div class="ep-desc">Atomic claim via SELECT FOR UPDATE SKIP LOCKED + QP escrow</div>
+          <div class="gear-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <div style="font-size: 14px; font-weight: 800; color: #fff;">📐 Mini Drafter & Clips</div>
+              <span style="font-size: 11px; font-weight: 800; color: #FBBF24;">30 QP</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-sec); margin-bottom: 10px;">Steel Arm with Table Clamps • Senior Tushar (BH-2 Room 405)</div>
+            <button class="advance-btn" style="background: #3B82F6; padding: 9px;" onclick="requestGear(30, 'Mini Drafter')">
+              📦 Request Item (30 QP)
+            </button>
           </div>
-          <span class="ep-star">⭐</span>
-        </div>
+        `;
+      }
+    }
 
-        <div class="endpoint">
-          <span class="ep-method ep-post">POST</span>
-          <div>
-            <div class="ep-path">/quests/:id/complete</div>
-            <div class="ep-desc">Settle QP to courier, write ledger, emit user:qp_updated</div>
-          </div>
-        </div>
+    function bookSenior(cost, name) {
+      if (qpBalance < cost) {
+        alert('Insufficient QP! Earn more in Home Feed.');
+        return;
+      }
+      qpBalance -= cost;
+      updateWallet();
+      showToast(`🎉 15-min session booked with ${name}! -${cost} QP`);
+    }
 
-        <div class="endpoint">
-          <span class="ep-method ep-get">GET</span>
-          <div>
-            <div class="ep-path">/rewards/balance</div>
-            <div class="ep-desc">QP balance, tier, level progress, QP to next level</div>
-          </div>
-        </div>
+    function requestGear(cost, item) {
+      if (qpBalance < cost) {
+        alert('Insufficient QP! Earn more in Home Feed.');
+        return;
+      }
+      qpBalance -= cost;
+      updateWallet();
+      showToast(`📦 Borrow request sent for "${item}"! -${cost} QP`);
+    }
 
-        <div class="endpoint">
-          <span class="ep-method ep-post">POST</span>
-          <div>
-            <div class="ep-path">/rewards/redeem</div>
-            <div class="ep-desc">Atomic QP deduction (FOR UPDATE) + receipt code generation</div>
-          </div>
-          <span class="ep-star">⭐</span>
-        </div>
+    function redeemPerk(title, cost) {
+      if (qpBalance < cost) {
+        alert('Insufficient QP! Earn more points by doing deliveries.');
+        return;
+      }
+      qpBalance -= cost;
+      updateWallet();
+      const code = 'VOUCH-' + Math.floor(1000 + Math.random() * 9000);
+      alert(`🎉 Reward Redeemed: ${title}\nCode: ${code}\n-${cost} QP deducted.`);
+      showToast(`Voucher ${code} unlocked!`);
+    }
 
-        <div class="endpoint">
-          <span class="ep-method ep-get">GET</span>
-          <div>
-            <div class="ep-path">/community/threads</div>
-            <div class="ep-desc">Paginated threads with tag / sort / full-text search filters</div>
-          </div>
-        </div>
+    // Modal
+    function openPostModal() { document.getElementById('post-modal').classList.add('active'); }
+    function closePostModal() { document.getElementById('post-modal').classList.remove('active'); }
+    function closeModalOnBg(e) { if (e.target.id === 'post-modal') closePostModal(); }
 
-        <div class="endpoint">
-          <span class="ep-method ep-post">POST</span>
-          <div>
-            <div class="ep-path">/community/threads/:id/upvote</div>
-            <div class="ep-desc">Toggle upvote; awards 25 QP bonus at 10 upvotes threshold</div>
-          </div>
-        </div>
+    function fillTemplate(item, pickup, tip, cat) {
+      document.getElementById('post-item').value = item;
+      document.getElementById('post-pickup').value = pickup;
+      document.getElementById('tip-slider').value = tip;
+      updateTipSlider(tip);
+    }
 
-        <div class="endpoint">
-          <span class="ep-method ep-get">GET</span>
-          <div>
-            <div class="ep-path">/community/seniors</div>
-            <div class="ep-desc">Senior list with live online status (last_seen_at window)</div>
-          </div>
-        </div>
+    function updateTipSlider(val) {
+      document.getElementById('slider-tip-val').innerText = `₹${val}`;
+      const bonus = Math.round(val * 1.5 + 5);
+      document.getElementById('calc-bonus-qp').innerText = `+${bonus} QP Auto-Bonus`;
+    }
 
-        <div class="endpoint">
-          <span class="ep-method ep-get">GET</span>
-          <div>
-            <div class="ep-path">/health</div>
-            <div class="ep-desc">Service health check — no auth required</div>
-          </div>
-        </div>
+    function toggleHandover(method) {
+      handoverMethod = method;
+      document.getElementById('btn-otp-mode').style.borderColor = method === 'otp' ? 'var(--lazy)' : '#232838';
+      document.getElementById('btn-door-mode').style.borderColor = method === 'door' ? 'var(--lazy)' : '#232838';
+    }
 
-      </div>
-    </div>
-  </section>
+    function submitNewQuest() {
+      const item = document.getElementById('post-item').value.trim();
+      const pickup = document.getElementById('post-pickup').value.trim() || 'Campus Hub';
+      const drop = document.getElementById('post-dropoff').value.trim();
+      const tip = document.getElementById('tip-slider').value;
+      const bonusQP = Math.round(tip * 1.5 + 5);
 
-  <!-- ── CLAIM FLOW DIAGRAM ────────────────────────────────────────────────── -->
-  <section id="flow" class="flow-section">
-    <div class="container">
-      <div class="section-label">Architecture Deep-Dive</div>
-      <h2 class="section-title">How the claim race condition<br/>is actually solved.</h2>
-      <p class="section-sub">
-        50 couriers tap "Claim" simultaneously. Here's exactly what happens at the database level.
-      </p>
+      if (!item) {
+        alert('Please enter item details!');
+        return;
+      }
 
-      <div class="flow-container">
-        <div class="flow-title">POST /quests/:id/claim — Concurrency Flow</div>
-        <div class="flow-subtitle">SELECT FOR UPDATE SKIP LOCKED — non-blocking, database-native</div>
+      const newQ = {
+        id: 'q_' + Date.now(),
+        category: 'Night Canteen',
+        item: item,
+        pickup: pickup,
+        drop: drop,
+        timer: '30 mins left',
+        urgent: false,
+        cash: `₹${tip}`,
+        qp: `+${bonusQP} QP`,
+        isClaimed: false
+      };
 
-        <div class="flow-steps">
+      bounties.unshift(newQ);
+      renderBounties();
+      closePostModal();
+      showToast(`🚀 "${item}" posted live to Home Feed!`);
+    }
 
-          <div class="flow-step">
-            <div class="flow-step-num">🚀</div>
-            <div class="flow-step-label">BEGIN TX</div>
-            <div class="flow-step-sub">Transaction opened on dedicated PG client</div>
-          </div>
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 3200);
+    }
 
-          <div class="flow-step highlight">
-            <div class="flow-step-num">🔒</div>
-            <div class="flow-step-label">SKIP LOCKED</div>
-            <div class="flow-step-sub">Try to lock row WHERE status='open'. Returns 0 rows if already locked.</div>
-          </div>
-
-          <div class="flow-step">
-            <div class="flow-step-num">🔍</div>
-            <div class="flow-step-label">Discriminate</div>
-            <div class="flow-step-sub">0 rows = race lost (409) or not found (404) or unavailable (409)</div>
-          </div>
-
-          <div class="flow-step">
-            <div class="flow-step-num">✅</div>
-            <div class="flow-step-label">UPDATE + Escrow</div>
-            <div class="flow-step-sub">Set courier_id, status='claimed', debit QP from requester</div>
-          </div>
-
-          <div class="flow-step">
-            <div class="flow-step-num">📡</div>
-            <div class="flow-step-label">COMMIT + Broadcast</div>
-            <div class="flow-step-sub">emitQuestClaimed() removes card from all radar clients instantly</div>
-          </div>
-
-        </div>
-
-        <div style="margin-top:28px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);display:flex;gap:12px;flex-wrap:wrap">
-          <span class="chip chip-blue">No application-level mutex</span>
-          <span class="chip chip-blue">No Redis lock</span>
-          <span class="chip chip-green">DB is single source of truth</span>
-          <span class="chip chip-gold">All losers get instant 409</span>
-          <span class="chip chip-green">Crash-safe (ROLLBACK on error)</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── SEED DATA ─────────────────────────────────────────────────────────── -->
-  <section class="seed-section">
-    <div class="container">
-      <div class="section-label">Seed Data</div>
-      <h2 class="section-title">Realistic AKGEC campus data,<br/>ready on day one.</h2>
-      <p class="section-sub">
-        Run <code style="font-size:14px;background:var(--bg);padding:2px 8px;border-radius:6px">npm run migrate:seed</code> and get a fully populated database.
-      </p>
-
-      <div class="seed-grid">
-
-        <div class="seed-card">
-          <h4>👥 15 Users</h4>
-          <ul class="seed-list">
-            <li>1 admin account</li>
-            <li>4 seniors (CSE/IT/ECE, 3rd–4th year)</li>
-            <li>10 students across H-1, H-2, H-3, Girls Hostel</li>
-            <li>Real AKGEC roll number format</li>
-            <li>Pre-set QP balances for all 6 tiers</li>
-          </ul>
-        </div>
-
-        <div class="seed-card">
-          <h4>📦 12 Quests</h4>
-          <ul class="seed-list">
-            <li>Maggi + Cold Coffee from Sachi Tea Stall</li>
-            <li>Xerox of 12-page assignment (Gate 2)</li>
-            <li>Red Bull + Parle-G for night-out</li>
-            <li>Samosa × 4 + Chai × 2</li>
-            <li>Statuses: open / claimed / in_transit / completed</li>
-            <li>Mix of QP and cash bounties</li>
-          </ul>
-        </div>
-
-        <div class="seed-card">
-          <h4>💬 6 Community Threads</h4>
-          <ul class="seed-list">
-            <li>"How to crack AKGEC placement for product cos?"</li>
-            <li>"Best DSA resources in 7th semester?"</li>
-            <li>"Skip morning practical or not?"</li>
-            <li>"Clearing Engineering Physics backlog"</li>
-            <li>"Getting internships in 2nd year"</li>
-            <li>Replies + upvotes + accepted answers seeded</li>
-          </ul>
-        </div>
-
-        <div class="seed-card">
-          <h4>🏪 7 Shop Perks</h4>
-          <ul class="seed-list">
-            <li>Sachi Dhaba — ₹30 off above ₹100 (50 QP)</li>
-            <li>Tea Stall — 1 free Cutting Chai (20 QP)</li>
-            <li>Gate 2 Xerox — 20 pages free (30 QP)</li>
-            <li>Juice Corner — Buy 1 Get 1 (40 QP)</li>
-            <li>Samosa Corner — 4 for price of 2 (25 QP)</li>
-          </ul>
-        </div>
-
-        <div class="seed-card">
-          <h4>🏠 Drop-off Locations</h4>
-          <ul class="seed-list">
-            <li>Hostel H-1 / H-2 / H-3 (room numbers)</li>
-            <li>Girls Hostel (Common Room)</li>
-            <li>CSE Block — Lab 2 (3rd Floor)</li>
-            <li>IT Block — Seminar Hall</li>
-            <li>Library Back Gate</li>
-            <li>Main Gate / Admin Block</li>
-          </ul>
-        </div>
-
-        <div class="seed-card">
-          <h4>🔑 Test Credentials</h4>
-          <ul class="seed-list">
-            <li>admin@quest.akgec.ac.in · Admin@1234</li>
-            <li>rohit.verma@akgec.ac.in · Senior@1234</li>
-            <li>rahul.verma@akgec.ac.in · Student@1234</li>
-            <li>arjun.sharma@akgec.ac.in · Student@1234</li>
-            <li>All passwords follow same pattern</li>
-          </ul>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ── CTA ───────────────────────────────────────────────────────────────── -->
-  <section class="cta-banner">
-    <div class="container">
-      <h2>Ready to run Quest locally?</h2>
-      <p>Clone the repo, add your Postgres connection string, and you're live in under 5 minutes.</p>
-
-      <div class="cta-btns">
-        <a href="https://github.com/mohit4215/the-quest-app"
-           target="_blank" rel="noopener"
-           class="btn btn-white">
-          ⭐ Star on GitHub
-        </a>
-        <a href="https://github.com/mohit4215/the-quest-app/tree/main/backend"
-           target="_blank" rel="noopener"
-           class="btn btn-ghost">
-          📂 Backend Folder
-        </a>
-      </div>
-
-      <div style="margin-top:36px;background:rgba(0,0,0,.25);border-radius:var(--radius-lg);padding:20px 24px;display:inline-block;text-align:left;max-width:520px">
-        <div style="color:rgba(255,255,255,.5);font-size:11px;margin-bottom:10px;letter-spacing:.8px">QUICK START</div>
-        <pre style="font-family:'SFMono-Regular',Consolas,monospace;font-size:12px;line-height:1.8;color:rgba(255,255,255,.85);white-space:pre-wrap">git clone https://github.com/mohit4215/the-quest-app
-cd the-quest-app/backend
-cp .env.example .env        # add DATABASE_URL + JWT_SECRET
-npm install
-npm run migrate:seed        # run migrations + seed AKGEC data
-npm run dev                 # nodemon on :4000</pre>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── FOOTER ────────────────────────────────────────────────────────────── -->
-  <footer>
-    <div class="container">
-      <div class="footer-inner">
-        <div class="footer-brand">
-          <div class="footer-logo">Q</div>
-          Quest · AKGEC
-        </div>
-
-        <ul class="footer-links">
-          <li><a href="https://github.com/mohit4215/the-quest-app" target="_blank" rel="noopener">GitHub</a></li>
-          <li><a href="https://github.com/mohit4215/the-quest-app/tree/main/src" target="_blank" rel="noopener">Frontend</a></li>
-          <li><a href="https://github.com/mohit4215/the-quest-app/tree/main/backend" target="_blank" rel="noopener">Backend</a></li>
-          <li><a href="https://github.com/mohit4215/the-quest-app/blob/main/backend/src/db/migrations" target="_blank" rel="noopener">Schema</a></li>
-        </ul>
-
-        <div class="footer-copy">
-          Built with React Native + Node.js + PostgreSQL
-        </div>
-      </div>
-    </div>
-  </footer>
-
+    init();
+  </script>
 </body>
 </html>
