@@ -78,6 +78,18 @@ export function QuestModeProvider({ children }) {
     }));
   };
 
+  // Deduct QP from top wallet (returns true if successful, false if insufficient)
+  const deductQP = (amount) => {
+    if ((userProfile?.qpBalance || 0) < amount) {
+      return false;
+    }
+    setUserProfile((prev) => ({
+      ...prev,
+      qpBalance: (prev.qpBalance || 0) - amount,
+    }));
+    return true;
+  };
+
   // Advance tracker step
   const advanceStep = () => {
     setActiveStep((prev) => Math.min(3, prev + 1));
@@ -109,6 +121,7 @@ export function QuestModeProvider({ children }) {
       acceptQuest,
       advanceStep,
       addQP,
+      deductQP,
       clearActiveQuest,
     }),
     [
