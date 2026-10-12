@@ -17,6 +17,7 @@ import {
   Pressable,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius } from '../../constants';
 import { useQuestMode } from '../../context/QuestModeContext';
 import QPBadge from './QPBadge';
@@ -51,7 +52,7 @@ export default function TopAppBar({
 
           {/* User Hostel Badge */}
           <View style={styles.hostelBadgeContainer}>
-            <Text style={styles.hostelIcon}>🏢</Text>
+            <Ionicons name="business" size={16} color={Colors.textSecondary} style={{ marginRight: 6 }} />
             <View>
               <Text style={styles.hostelLabel}>HOSTEL</Text>
               <Text style={styles.hostelText}>{hostelText}</Text>
@@ -77,7 +78,12 @@ export default function TopAppBar({
             accessibilityRole="button"
             accessibilityLabel="Switch to Lazy Mode"
           >
-            <Text style={styles.optionIcon}>🛋️</Text>
+            <Ionicons
+              name="bed"
+              size={15}
+              color={isLazyMode ? Colors.lazyMode : Colors.textMuted}
+              style={{ marginRight: 5 }}
+            />
             <Text
               style={[
                 styles.optionText,
@@ -100,7 +106,12 @@ export default function TopAppBar({
             accessibilityRole="button"
             accessibilityLabel="Switch to Quester Mode"
           >
-            <Text style={styles.optionIcon}>⚡</Text>
+            <Ionicons
+              name="flash"
+              size={15}
+              color={isQuesterMode ? Colors.questerMode : Colors.textMuted}
+              style={{ marginRight: 5 }}
+            />
             <Text
               style={[
                 styles.optionText,
@@ -130,9 +141,11 @@ export default function TopAppBar({
               isQuesterMode ? styles.toggleThumbRight : styles.toggleThumbLeft,
             ]}
           >
-            <Text style={styles.miniThumbIcon}>
-              {isLazyMode ? '💤' : '🏃'}
-            </Text>
+            <Ionicons
+              name={isLazyMode ? 'moon' : 'walk'}
+              size={13}
+              color={isLazyMode ? Colors.lazyMode : Colors.questerMode}
+            />
           </View>
         </Pressable>
       </View>

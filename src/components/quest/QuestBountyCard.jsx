@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   Animated,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius } from '../../constants';
 import { useQuestMode } from '../../context/QuestModeContext';
 
@@ -43,13 +44,18 @@ export default function QuestBountyCard({
       <View style={styles.topRow}>
         <View style={styles.categoryBadge}>
           <Text style={styles.categoryBadgeText}>
-            {quest.categoryIcon || '📦'} {quest.category}
+            {quest.category}
           </Text>
         </View>
 
         {/* Countdown Timer ("15 mins left") */}
         <View style={[styles.timerBadge, isUrgent && styles.timerBadgeUrgent]}>
-          <Text style={styles.timerIcon}>⏱️</Text>
+          <Ionicons
+            name="time-outline"
+            size={12}
+            color={isUrgent ? '#DC2626' : '#2563EB'}
+            style={{ marginRight: 3 }}
+          />
           <Text style={[styles.timerText, isUrgent && styles.timerTextUrgent]}>
             {quest.countdown || '15 mins left'}
           </Text>
@@ -62,7 +68,7 @@ export default function QuestBountyCard({
       {/* Route: Pickup Spot -> Drop-off Hostel & Room */}
       <View style={styles.routeContainer}>
         <View style={styles.routeRow}>
-          <Text style={styles.routeIcon}>📍</Text>
+          <Ionicons name="location-outline" size={14} color={Colors.textMuted} style={{ marginRight: 6 }} />
           <Text style={styles.routeLabel}>Pickup:</Text>
           <Text style={styles.routeValue} numberOfLines={1}>{quest.pickupSpot}</Text>
         </View>
@@ -71,7 +77,7 @@ export default function QuestBountyCard({
           <Text style={styles.routeArrow}>↓</Text>
         </View>
         <View style={styles.routeRow}>
-          <Text style={styles.routeIcon}>🏠</Text>
+          <Ionicons name="home-outline" size={14} color="#10B981" style={{ marginRight: 6 }} />
           <Text style={styles.routeLabel}>Drop-off:</Text>
           <Text style={styles.routeValueHighlight} numberOfLines={1}>
             {quest.dropOffHostelRoom}
@@ -83,7 +89,7 @@ export default function QuestBountyCard({
       {quest.notes ? (
         <View style={styles.notesBox}>
           <Text style={styles.notesText} numberOfLines={2}>
-            💬 "{quest.notes}"
+            "{quest.notes}"
           </Text>
         </View>
       ) : null}
@@ -97,12 +103,13 @@ export default function QuestBountyCard({
         <View style={styles.rewardsGroup}>
           {/* Cash Tip */}
           <View style={styles.cashTipPill}>
-            <Text style={styles.cashTipText}>💵 {quest.cashTip || '₹30'}</Text>
+            <Ionicons name="cash-outline" size={13} color="#059669" style={{ marginRight: 4 }} />
+            <Text style={styles.cashTipText}>{quest.cashTip || '₹30'}</Text>
           </View>
 
           {/* QP Reward */}
           <View style={styles.qpRewardPill}>
-            <Text style={styles.qpCoin}>🪙</Text>
+            <Ionicons name="sparkles" size={12} color="#D97706" style={{ marginRight: 4 }} />
             <Text style={styles.qpText}>{quest.qpReward || '+50 QP'}</Text>
           </View>
         </View>
@@ -120,8 +127,14 @@ export default function QuestBountyCard({
             accessibilityRole="button"
             accessibilityLabel={accepted ? 'Quest Accepted' : 'Accept Quest'}
           >
+            <Ionicons
+              name={accepted ? "checkmark-circle" : "flash"}
+              size={14}
+              color="#FFFFFF"
+              style={{ marginRight: 4 }}
+            />
             <Text style={[styles.acceptBtnText, accepted && styles.acceptedBtnText]}>
-              {accepted ? '✓ Accepted' : '⚡ Accept Quest'}
+              {accepted ? 'Accepted' : 'Accept Quest'}
             </Text>
           </TouchableOpacity>
         )}

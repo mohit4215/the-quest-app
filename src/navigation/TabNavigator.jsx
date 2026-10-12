@@ -8,6 +8,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
 import { Colors, Spacing, Radius } from '../constants';
 import { useQuestMode } from '../context/QuestModeContext';
@@ -23,29 +24,34 @@ const TABS = [
   {
     name: 'HomeFeed',
     component: HomeFeedScreen,
-    icon: '🏠',
+    iconFocused: 'home',
+    iconUnfocused: 'home-outline',
     label: 'Home Feed',
   },
   {
     name: 'ActiveQuest',
     component: ActiveQuestScreen,
-    icon: '⚔️',
+    iconFocused: 'flash',
+    iconUnfocused: 'flash-outline',
     label: 'Active Quest',
   },
   {
     name: 'Leaderboard',
     component: LeaderboardScreen,
-    icon: '🏆',
+    iconFocused: 'trophy',
+    iconUnfocused: 'trophy-outline',
     label: 'Leaderboard',
   },
 ];
 
-function TabIcon({ icon, label, focused, activeColor }) {
+function TabIcon({ iconName, label, focused, activeColor }) {
   return (
     <View style={styles.tabItem}>
-      <Text style={[styles.tabIcon, focused && styles.tabIconActive]}>
-        {icon}
-      </Text>
+      <Ionicons
+        name={iconName}
+        size={22}
+        color={focused ? activeColor : Colors.textMuted}
+      />
       <Text
         style={[
           styles.tabLabel,
@@ -87,7 +93,7 @@ export default function TabNavigator() {
           options={{
             tabBarIcon: ({ focused }) => (
               <TabIcon
-                icon={tab.icon}
+                iconName={focused ? tab.iconFocused : tab.iconUnfocused}
                 label={tab.label}
                 focused={focused}
                 activeColor={accentColor}

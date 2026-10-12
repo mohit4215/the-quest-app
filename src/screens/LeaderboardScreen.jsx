@@ -19,6 +19,7 @@ import {
   TouchableOpacity,
   Modal,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius } from '../constants';
 import { useQuestMode } from '../context/QuestModeContext';
 import TopAppBar from '../components/common/TopAppBar';
@@ -32,7 +33,7 @@ const HOSTEL_RANKINGS = [
     points: 18450,
     deliveries: 412,
     rank: 1,
-    medal: '🥇',
+    medal: '#1',
     isUserHostel: true,
     sharePercent: 32,
   },
@@ -43,7 +44,7 @@ const HOSTEL_RANKINGS = [
     points: 16820,
     deliveries: 380,
     rank: 2,
-    medal: '🥈',
+    medal: '#2',
     isUserHostel: false,
     sharePercent: 29,
   },
@@ -54,7 +55,7 @@ const HOSTEL_RANKINGS = [
     points: 14310,
     deliveries: 325,
     rank: 3,
-    medal: '🥉',
+    medal: '#3',
     isUserHostel: false,
     sharePercent: 24,
   },
@@ -65,7 +66,7 @@ const HOSTEL_RANKINGS = [
     points: 11940,
     deliveries: 268,
     rank: 4,
-    medal: '4',
+    medal: '#4',
     isUserHostel: false,
     sharePercent: 15,
   },
@@ -79,7 +80,7 @@ const TOP_RUNNERS = [
     room: 'BH-2 • Room 318',
     qp: 2150,
     quests: 48,
-    badge: '🥇 Campus Legend',
+    badge: 'Campus Legend',
     avatar: 'SV',
   },
   {
@@ -88,7 +89,7 @@ const TOP_RUNNERS = [
     room: 'BH-2 • Room 104',
     qp: 1890,
     quests: 41,
-    badge: '🥈 Speed Demon',
+    badge: 'Speed Demon',
     avatar: 'AR',
   },
   {
@@ -97,7 +98,7 @@ const TOP_RUNNERS = [
     room: 'BH-1 • Room 202',
     qp: 1640,
     quests: 36,
-    badge: '🥉 Midnight Hero',
+    badge: 'Midnight Hero',
     avatar: 'KM',
   },
   {
@@ -106,7 +107,7 @@ const TOP_RUNNERS = [
     room: 'BH-2 • Room 405',
     qp: 1220,
     quests: 29,
-    badge: '⚡ Gate Runner',
+    badge: 'Gate Runner',
     avatar: 'TG',
   },
   {
@@ -115,7 +116,7 @@ const TOP_RUNNERS = [
     room: 'BH-3 • Room 119',
     qp: 980,
     quests: 22,
-    badge: '📦 Lab Courier',
+    badge: 'Lab Courier',
     avatar: 'HJ',
   },
 ];
@@ -127,7 +128,7 @@ const STORE_PERKS = [
     title: 'Free Delivery Pass',
     desc: 'Waives platform & runner tip fees on your next 3 Lazy Mode snack orders.',
     costQP: 150,
-    emoji: '🎫',
+    iconName: 'ticket-outline',
     tag: 'Popular',
     codePrefix: 'PASS-FREE',
   },
@@ -136,7 +137,7 @@ const STORE_PERKS = [
     title: 'Night Canteen ₹50 Voucher',
     desc: 'Instant ₹50 off on orders above ₹100 at Nescafe, Maggi Booth or Roll Counter.',
     costQP: 500,
-    emoji: '🌙',
+    iconName: 'restaurant-outline',
     tag: 'Best Value',
     codePrefix: 'CANTEEN-50',
   },
@@ -145,7 +146,7 @@ const STORE_PERKS = [
     title: 'Stationery 25-Page Xerox Pass',
     desc: 'Free black & white photocopies or printouts at Central Stationery Shop.',
     costQP: 80,
-    emoji: '🖨️',
+    iconName: 'print-outline',
     tag: 'Academics',
     codePrefix: 'XEROX-25',
   },
@@ -200,11 +201,12 @@ export default function LeaderboardScreen() {
               <View style={styles.verifiedOnlineDot} />
             </View>
 
-            <View style={styles.profileMeta}>
+              <View style={styles.profileMeta}>
               <View style={styles.profileNameRow}>
                 <Text style={styles.profileName}>{userProfile?.name || 'Mohit'}</Text>
                 <View style={styles.tierPill}>
-                  <Text style={styles.tierPillText}>🏆 Silver Quester</Text>
+                  <Ionicons name="shield-outline" size={12} color="#B45309" style={{ marginRight: 4 }} />
+                  <Text style={styles.tierPillText}>Silver Quester</Text>
                 </View>
               </View>
               <Text style={styles.profileRoom}>{userProfile?.hostelBadge || 'BH-2 • Room 214'}</Text>
@@ -219,7 +221,7 @@ export default function LeaderboardScreen() {
             {/* Reliability Score */}
             <View style={styles.metricItem}>
               <View style={styles.metricTop}>
-                <Text style={styles.metricEmoji}>🎯</Text>
+                <Ionicons name="checkmark-circle-outline" size={14} color="#059669" style={{ marginRight: 4 }} />
                 <Text style={styles.metricValueGreen}>98%</Text>
               </View>
               <Text style={styles.metricLabel}>Reliability Score</Text>
@@ -229,7 +231,7 @@ export default function LeaderboardScreen() {
             {/* Quests Completed */}
             <View style={styles.metricItem}>
               <View style={styles.metricTop}>
-                <Text style={styles.metricEmoji}>⚡</Text>
+                <Ionicons name="flash-outline" size={14} color={Colors.textPrimary} style={{ marginRight: 4 }} />
                 <Text style={styles.metricValue}>24</Text>
               </View>
               <Text style={styles.metricLabel}>Quests Completed</Text>
@@ -239,7 +241,7 @@ export default function LeaderboardScreen() {
             {/* Total QP Wallet */}
             <View style={styles.metricItem}>
               <View style={styles.metricTop}>
-                <Text style={styles.metricEmoji}>🪙</Text>
+                <Ionicons name="sparkles" size={14} color="#D97706" style={{ marginRight: 4 }} />
                 <Text style={styles.metricValueGold}>{userProfile?.qpBalance ?? 450}</Text>
               </View>
               <Text style={styles.metricLabel}>Quest Points</Text>
@@ -253,7 +255,7 @@ export default function LeaderboardScreen() {
             <View style={styles.badgesRow}>
               {/* Badge 1: Night Owl Runner */}
               <View style={styles.badgePill}>
-                <Text style={styles.badgeEmoji}>🦉</Text>
+                <Ionicons name="moon-outline" size={18} color="#D97706" style={{ marginRight: 6 }} />
                 <View>
                   <Text style={styles.badgeName}>Night Owl Runner</Text>
                   <Text style={styles.badgeDesc}>10+ drops past 1 AM</Text>
@@ -262,7 +264,7 @@ export default function LeaderboardScreen() {
 
               {/* Badge 2: Hostel Saviour */}
               <View style={styles.badgePill}>
-                <Text style={styles.badgeEmoji}>🦸‍♂️</Text>
+                <Ionicons name="shield-checkmark-outline" size={18} color="#059669" style={{ marginRight: 6 }} />
                 <View>
                   <Text style={styles.badgeName}>Hostel Saviour</Text>
                   <Text style={styles.badgeDesc}>15+ exam week runs</Text>
@@ -275,7 +277,7 @@ export default function LeaderboardScreen() {
         {/* 2. MIDDLE SECTION: Inter-Hostel Leaderboard */}
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.sectionTitle}>🏰 Inter-Hostel Leaderboard</Text>
+            <Text style={styles.sectionTitle}>Inter-Hostel Leaderboard</Text>
             <Text style={styles.sectionSubtitle}>
               Total Quest Points accumulated this semester
             </Text>
@@ -340,7 +342,7 @@ export default function LeaderboardScreen() {
         {/* Top 5 Weekly Student Runners List */}
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.sectionTitle}>🏃 Top 5 Weekly Student Runners</Text>
+            <Text style={styles.sectionTitle}>Top 5 Weekly Student Runners</Text>
             <Text style={styles.sectionSubtitle}>
               Leading delivery heroes across campus
             </Text>
@@ -377,14 +379,15 @@ export default function LeaderboardScreen() {
         {/* 3. BOTTOM SECTION: Redeem QP Store */}
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.sectionTitle}>🎁 Redeem QP Store</Text>
+            <Text style={styles.sectionTitle}>Redeem QP Store</Text>
             <Text style={styles.sectionSubtitle}>
               Swap your hard-earned points for real campus perks
             </Text>
           </View>
           <View style={styles.storeWalletPill}>
+            <Ionicons name="sparkles" size={11} color="#B45309" style={{ marginRight: 4 }} />
             <Text style={styles.storeWalletText}>
-              🪙 {userProfile?.qpBalance ?? 450} Available
+              {userProfile?.qpBalance ?? 450} QP Available
             </Text>
           </View>
         </View>
@@ -397,7 +400,7 @@ export default function LeaderboardScreen() {
               <View key={perk.id} style={styles.perkCard}>
                 <View style={styles.perkTopRow}>
                   <View style={styles.perkIconWrapper}>
-                    <Text style={styles.perkEmoji}>{perk.emoji}</Text>
+                    <Ionicons name={perk.iconName} size={22} color={Colors.textPrimary} />
                   </View>
                   <View style={styles.perkInfo}>
                     <View style={styles.perkTitleRow}>
@@ -414,7 +417,7 @@ export default function LeaderboardScreen() {
 
                 <View style={styles.perkFooter}>
                   <View style={styles.perkCostGroup}>
-                    <Text style={styles.perkCostCoin}>🪙</Text>
+                    <Ionicons name="sparkles" size={13} color="#D97706" style={{ marginRight: 4 }} />
                     <Text style={styles.perkCostAmount}>{perk.costQP} QP</Text>
                   </View>
 
@@ -433,7 +436,7 @@ export default function LeaderboardScreen() {
                         isRedeemed && styles.redeemedBtnText,
                       ]}
                     >
-                      {isRedeemed ? '✓ Redeemed' : `Redeem (${perk.costQP} QP)`}
+                      {isRedeemed ? 'Redeemed' : `Redeem (${perk.costQP} QP)`}
                     </Text>
                   </TouchableOpacity>
                 </View>

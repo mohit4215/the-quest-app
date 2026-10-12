@@ -84,6 +84,17 @@
       }
     }
 
+    /* SVG Icon Helpers */
+    .icon-svg {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
+      width: 1em;
+      height: 1em;
+      fill: currentColor;
+    }
+
     /* ── TOP APP BAR ─────────────────────────────────────────────────── */
     .top-app-bar {
       background: var(--surface);
@@ -153,7 +164,11 @@
     }
 
     .hostel-badge .icon-box {
-      font-size: 13px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-sec);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .hostel-badge .value {
@@ -173,7 +188,11 @@
       box-shadow: 0 1px 3px rgba(217, 119, 6, 0.1);
     }
 
-    .qp-pill .coin { font-size: 13px; }
+    .qp-pill .sparkle {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--gold-text);
+    }
     .qp-pill .amount { font-size: 13px; font-weight: 800; color: var(--gold-text); }
     .qp-pill .unit { font-size: 10px; font-weight: 800; color: var(--gold-text); }
 
@@ -245,7 +264,8 @@
       background: #fff;
       display: grid;
       place-items: center;
-      font-size: 11px;
+      font-size: 10px;
+      font-weight: 800;
       transition: transform 0.25s;
       transform: translateX(0);
       box-shadow: 0 1px 3px rgba(0,0,0,0.2);
@@ -391,6 +411,8 @@
       display: grid;
       place-items: center;
       font-size: 10px;
+      font-weight: 800;
+      color: #059669;
       z-index: 10;
       box-shadow: 0 1px 4px rgba(0,0,0,0.1);
     }
@@ -639,7 +661,7 @@
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       z-index: 90;
       transition: all 0.25s;
     }
@@ -925,7 +947,7 @@
       padding: 8px 0;
     }
     .nav-tab.active { color: var(--accent); }
-    .nav-tab .icon { font-size: 20px; }
+    .nav-tab .icon { font-size: 12px; font-weight: 800; }
     .nav-tab .label { font-size: 11px; font-weight: 600; }
     .nav-tab.active .label { font-weight: 800; }
     .nav-tab .active-pill {
@@ -1037,14 +1059,14 @@
           </div>
 
           <div class="hostel-badge">
-            <span class="icon-box">🏢</span>
+            <span class="icon-box">HOSTEL</span>
             <span class="value">BH-2 • 214</span>
           </div>
         </div>
 
         <!-- Gold Pill Badge showing "450 QP" -->
         <div class="qp-pill">
-          <span class="coin">🪙</span>
+          <span class="sparkle">✦</span>
           <span class="amount" id="qp-display">450</span>
           <span class="unit">QP</span>
         </div>
@@ -1054,15 +1076,15 @@
       <div class="mode-switch-wrapper">
         <div class="mode-switch-track">
           <button class="mode-switch-btn active-lazy" id="btn-lazy-mode" onclick="setMode('lazy')">
-            <span>🛋️</span> Lazy Mode
+            Lazy Mode
           </button>
           <button class="mode-switch-btn" id="btn-quester-mode" onclick="setMode('quester')">
-            <span>⚡</span> Quester Mode
+            Quester Mode
           </button>
         </div>
 
         <div class="mode-slider-pill" id="mode-slider" onclick="toggleMode()">
-          <div class="mode-slider-thumb" id="mode-thumb">💤</div>
+          <div class="mode-slider-thumb" id="mode-thumb">L</div>
         </div>
       </div>
     </header>
@@ -1095,11 +1117,11 @@
             <div class="scope-ring r2"></div>
             <div class="scope-ring r3"></div>
             <div class="scope-sweep"></div>
-            <div class="scope-center-dot">📍</div>
-            <div class="blip" style="top: 15px; left: 30px;">🌙 8 Canteen</div>
-            <div class="blip" style="top: 25px; right: 35px;">🚪 5 Gate</div>
-            <div class="blip" style="bottom: 18px; left: 45px;">🖨️ 2 Xerox</div>
-            <div class="blip" style="bottom: 20px; right: 40px;">☕ 4 Nescafe</div>
+            <div class="scope-center-dot">✦</div>
+            <div class="blip" style="top: 15px; left: 30px;">Canteen • 8</div>
+            <div class="blip" style="top: 25px; right: 35px;">Gate • 5</div>
+            <div class="blip" style="bottom: 18px; left: 45px;">Print • 2</div>
+            <div class="blip" style="bottom: 20px; right: 40px;">Nescafe • 4</div>
           </div>
 
           <!-- Hotspots Carousel -->
@@ -1137,11 +1159,11 @@
 
         <!-- Category Filter Chips -->
         <div class="filter-chips-wrap">
-          <button class="category-chip active" onclick="filterCategory('all', this)">✨ All Bounties</button>
-          <button class="category-chip" onclick="filterCategory('Night Canteen', this)">🍜 Night Canteen</button>
-          <button class="category-chip" onclick="filterCategory('Gate Parcel', this)">📦 Gate Parcel</button>
-          <button class="category-chip" onclick="filterCategory('Printouts', this)">🖨️ Printouts</button>
-          <button class="category-chip" onclick="filterCategory('Borrow Item', this)">🤝 Borrow Item</button>
+          <button class="category-chip active" onclick="filterCategory('all', this)">All Bounties</button>
+          <button class="category-chip" onclick="filterCategory('Night Canteen', this)">Night Canteen</button>
+          <button class="category-chip" onclick="filterCategory('Gate Parcel', this)">Gate Parcel</button>
+          <button class="category-chip" onclick="filterCategory('Printouts', this)">Printouts</button>
+          <button class="category-chip" onclick="filterCategory('Borrow Item', this)">Borrow Item</button>
         </div>
 
         <!-- Quest Bounty Cards Container -->
@@ -1158,7 +1180,7 @@
               <div style="font-size: 11px; font-weight: 800; color: #059669; letter-spacing: 0.8px;">ACTIVE DELIVERY IN PROGRESS</div>
               <div style="font-size: 16px; font-weight: 800; color: var(--text); margin-top: 2px;">2× Cheese Butter Maggi & Coffee</div>
             </div>
-            <span class="bounty-timer" style="height: fit-content;">⏱️ 14 mins left</span>
+            <span class="bounty-timer" style="height: fit-content;">14 mins left</span>
           </div>
 
           <!-- 4-Step Interactive Progress Tracker -->
@@ -1193,7 +1215,7 @@
           <!-- Advance Button or OTP -->
           <div id="tracker-action-area">
             <button class="advance-btn" id="advance-step-btn" onclick="advanceTracker()">
-              📍 I've Arrived at Shop/Gate →
+              I've Arrived at Shop/Gate →
             </button>
           </div>
         </div>
@@ -1201,22 +1223,22 @@
         <!-- Compact Quick-Chat Box -->
         <div class="chat-card">
           <div class="chat-header">
-            <div style="font-size: 12px; font-weight: 700; color: var(--text);">💬 Chat with Recipient (Aman • Room 214)</div>
+            <div style="font-size: 12px; font-weight: 700; color: var(--text);">Chat with Recipient (Aman • Room 214)</div>
             <span style="font-size: 10px; color: #059669; font-weight: 700;">● Online</span>
           </div>
 
           <div class="chat-messages" id="chat-stream">
             <div class="msg-bubble recipient">
-              Hey! Thanks for picking this up. Extra ketchup in Maggi please 🙏
+              Hey! Thanks for picking this up. Extra seasoning in Maggi please.
             </div>
           </div>
 
           <!-- 1-Tap Preset Replies -->
-          <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">⚡ 1-Tap Replies:</div>
+          <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">1-Tap Replies:</div>
           <div class="preset-chips-row">
-            <button class="preset-btn" onclick="sendQuickReply('At your hostel gate')">💬 At your hostel gate</button>
-            <button class="preset-btn" onclick="sendQuickReply('Item out of stock, want an alternative?')">💬 Item out of stock, alternative?</button>
-            <button class="preset-btn" onclick="sendQuickReply('Send UPI on delivery')">💬 Send UPI on delivery</button>
+            <button class="preset-btn" onclick="sendQuickReply('At your hostel gate')">At your hostel gate</button>
+            <button class="preset-btn" onclick="sendQuickReply('Item out of stock, want an alternative?')">Item out of stock, alternative?</button>
+            <button class="preset-btn" onclick="sendQuickReply('Send UPI on delivery')">Send UPI on delivery</button>
           </div>
         </div>
       </section>
@@ -1251,18 +1273,18 @@
           <div style="font-size: 10px; font-weight: 800; color: var(--text-muted); margin-bottom: 6px;">UNLOCKED BADGES</div>
           <div style="display: flex; gap: 8px;">
             <div style="background: var(--surface-alt); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; color: var(--text); border: 1px solid var(--border);">
-              🦉 Night Owl Runner
+              Night Owl Runner
             </div>
             <div style="background: var(--surface-alt); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; color: var(--text); border: 1px solid var(--border);">
-              🦸‍♂️ Hostel Saviour
+              Hostel Saviour
             </div>
           </div>
         </div>
 
         <!-- 2. Middle Section: Inter-Hostel Leaderboard -->
-        <div style="font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 8px;">🏰 Inter-Hostel Leaderboard</div>
+        <div style="font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 8px;">Inter-Hostel Leaderboard</div>
         <div class="hostel-leader-row highlight">
-          <span style="font-size: 18px;">🥇</span>
+          <span style="font-size: 14px; font-weight: 800; color: #059669;">#1</span>
           <div style="flex: 1;">
             <div style="font-size: 13px; font-weight: 800; color: var(--text);">BH-2 (Your Hostel)</div>
             <div style="font-size: 10px; color: #059669; font-weight: 700;">412 deliveries • Leading Rank 1</div>
@@ -1270,7 +1292,7 @@
           <div style="font-size: 15px; font-weight: 800; color: #D97706;">18,450 QP</div>
         </div>
         <div class="hostel-leader-row">
-          <span style="font-size: 18px;">🥈</span>
+          <span style="font-size: 14px; font-weight: 800; color: var(--text-muted);">#2</span>
           <div style="flex: 1;">
             <div style="font-size: 13px; font-weight: 800; color: var(--text);">BH-1</div>
             <div style="font-size: 10px; color: var(--text-muted);">380 deliveries</div>
@@ -1278,7 +1300,7 @@
           <div style="font-size: 15px; font-weight: 800; color: #D97706;">16,820 QP</div>
         </div>
         <div class="hostel-leader-row">
-          <span style="font-size: 18px;">🥉</span>
+          <span style="font-size: 14px; font-weight: 800; color: var(--text-muted);">#3</span>
           <div style="flex: 1;">
             <div style="font-size: 13px; font-weight: 800; color: var(--text);">GH-1</div>
             <div style="font-size: 10px; color: var(--text-muted);">325 deliveries</div>
@@ -1286,7 +1308,7 @@
           <div style="font-size: 15px; font-weight: 800; color: #D97706;">14,310 QP</div>
         </div>
         <div class="hostel-leader-row">
-          <span style="font-size: 18px;">4</span>
+          <span style="font-size: 14px; font-weight: 800; color: var(--text-muted);">#4</span>
           <div style="flex: 1;">
             <div style="font-size: 13px; font-weight: 800; color: var(--text);">BH-3</div>
             <div style="font-size: 10px; color: var(--text-muted);">268 deliveries</div>
@@ -1295,10 +1317,10 @@
         </div>
 
         <!-- 3. Bottom Section: Redeem QP Store -->
-        <div style="font-size: 15px; font-weight: 800; color: var(--text); margin: 18px 0 8px;">🎁 Redeem QP Store</div>
+        <div style="font-size: 15px; font-weight: 800; color: var(--text); margin: 18px 0 8px;">Redeem QP Store</div>
         <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 10px; box-shadow: var(--shadow-sm);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <div style="font-size: 14px; font-weight: 800; color: var(--text);">🎫 Free Delivery Pass</div>
+            <div style="font-size: 14px; font-weight: 800; color: var(--text);">Free Delivery Pass</div>
             <div style="font-size: 12px; font-weight: 800; color: #D97706;">150 QP</div>
           </div>
           <div style="font-size: 11px; color: var(--text-sec); margin-bottom: 10px;">Waives runner tip fee on your next 3 Lazy Mode snack orders.</div>
@@ -1309,7 +1331,7 @@
 
         <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; box-shadow: var(--shadow-sm);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <div style="font-size: 14px; font-weight: 800; color: var(--text);">🌙 Night Canteen ₹50 Voucher</div>
+            <div style="font-size: 14px; font-weight: 800; color: var(--text);">Night Canteen ₹50 Voucher</div>
             <div style="font-size: 12px; font-weight: 800; color: #D97706;">500 QP</div>
           </div>
           <div style="font-size: 11px; color: var(--text-sec); margin-bottom: 10px;">Valid on orders above ₹100 at Nescafe & Maggi counters.</div>
@@ -1323,23 +1345,23 @@
 
     <!-- FLOATING ACTION BUTTON (Visible in Lazy Mode) -->
     <button class="fab-post" id="fab-post-btn" onclick="openPostModal()">
-      <span>➕</span> Post New Quest
+      <span>+</span> Post New Quest
     </button>
 
     <!-- ── BOTTOM NAVIGATION TABS (3 Tabs) ──────────────────────── -->
     <nav class="bottom-nav">
       <button class="nav-tab active" onclick="switchTab('home', this)">
-        <span class="icon">🏠</span>
+        <span class="icon">HOME</span>
         <span class="label">Home Feed</span>
         <div class="active-pill"></div>
       </button>
       <button class="nav-tab" onclick="switchTab('active', this)">
-        <span class="icon">⚔️</span>
+        <span class="icon">QUEST</span>
         <span class="label">Active Quest</span>
         <div class="active-pill"></div>
       </button>
       <button class="nav-tab" onclick="switchTab('leaderboard', this)">
-        <span class="icon">🏆</span>
+        <span class="icon">RANKS</span>
         <span class="label">Leaderboard</span>
         <div class="active-pill"></div>
       </button>
@@ -1349,15 +1371,15 @@
     <div class="modal-overlay" id="post-modal" onclick="closeModalOnBg(event)">
       <div class="bottom-sheet">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-          <div style="font-size: 18px; font-weight: 800; color: var(--text);">🛋️ Post a Quest</div>
+          <div style="font-size: 18px; font-weight: 800; color: var(--text);">Post a Quest</div>
           <button onclick="closePostModal()" style="background: var(--surface-alt); border: 1px solid var(--border); color: var(--text); width: 28px; height: 28px; border-radius: 14px; cursor: pointer;">✕</button>
         </div>
 
-        <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">⚡ Quick-Fill Templates:</div>
+        <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">Quick-Fill Templates:</div>
         <div class="template-chips">
-          <div class="template-chip" onclick="fillTemplate('Gate Zomato Pickup', 'Main Gate Security', 40, 'Gate Parcel')">🚪 Gate Zomato Pickup</div>
-          <div class="template-chip" onclick="fillTemplate('2x Maggi from Canteen', 'Night Canteen Nescafe', 25, 'Night Canteen')">🍜 2x Maggi from Canteen</div>
-          <div class="template-chip" onclick="fillTemplate('Lab File Printout (10 pgs)', 'Stationery Xerox Shop', 20, 'Printouts')">🖨️ Lab File Printout</div>
+          <div class="template-chip" onclick="fillTemplate('Gate Zomato Pickup', 'Main Gate Security', 40, 'Gate Parcel')">Gate Zomato Pickup</div>
+          <div class="template-chip" onclick="fillTemplate('2x Maggi from Canteen', 'Night Canteen Nescafe', 25, 'Night Canteen')">2x Maggi from Canteen</div>
+          <div class="template-chip" onclick="fillTemplate('Lab File Printout (10 pgs)', 'Stationery Xerox Shop', 20, 'Printouts')">Lab File Printout</div>
         </div>
 
         <div class="form-group">
@@ -1392,13 +1414,13 @@
         <div class="form-group">
           <label class="form-label">Handover Method</label>
           <div style="display: flex; gap: 8px;">
-            <button class="preset-btn" style="flex: 1; padding: 9px; text-align: center; border-color: var(--lazy); color: var(--lazy);" id="btn-otp-mode" onclick="toggleHandover('otp')">🔐 4-Digit OTP</button>
-            <button class="preset-btn" style="flex: 1; padding: 9px; text-align: center;" id="btn-door-mode" onclick="toggleHandover('door')">🚪 Drop at Door</button>
+            <button class="preset-btn" style="flex: 1; padding: 9px; text-align: center; border-color: var(--lazy); color: var(--lazy);" id="btn-otp-mode" onclick="toggleHandover('otp')">4-Digit OTP</button>
+            <button class="preset-btn" style="flex: 1; padding: 9px; text-align: center;" id="btn-door-mode" onclick="toggleHandover('door')">Drop at Door</button>
           </div>
         </div>
 
         <button class="advance-btn" style="background: var(--lazy); margin-top: 10px;" onclick="submitNewQuest()">
-          🚀 Launch Quest to Feed
+          Launch Quest to Feed
         </button>
       </div>
     </div>
@@ -1471,22 +1493,22 @@
       {
         title: '1. Quest Claimed & Locked',
         desc: 'Head to pickup location to collect order.',
-        btn: "📍 I've Arrived at Shop/Gate →"
+        btn: "I've Arrived at Shop/Gate →"
       },
       {
         title: '2. At Shop/Gate',
         desc: 'Collecting item from vendor or security gate.',
-        btn: '🚶 Order Collected, Walking to Hostel →'
+        btn: 'Order Collected, Walking to Hostel →'
       },
       {
         title: '3. Walking to Hostel',
         desc: 'En route to recipient room in BH-2.',
-        btn: '🏠 Arrived at Room Door →'
+        btn: 'Arrived at Room Door →'
       },
       {
         title: '4. Delivered — Enter OTP',
         desc: 'Ask recipient for their 4-digit verification code.',
-        btn: '🔐 Verify & Complete Delivery'
+        btn: 'Verify & Complete Delivery'
       }
     ];
 
@@ -1508,21 +1530,21 @@
       if (mode === 'lazy') {
         btnLazy.className = 'mode-switch-btn active-lazy';
         btnQuester.className = 'mode-switch-btn';
-        thumb.innerText = '💤';
+        thumb.innerText = 'L';
         thumb.style.transform = 'translateX(0)';
         slider.style.background = '#7C3AED';
         document.documentElement.style.setProperty('--accent', '#7C3AED');
         fab.style.display = 'flex';
-        showToast('Switched to Lazy Mode (Purple)');
+        showToast('Switched to Lazy Mode');
       } else {
         btnLazy.className = 'mode-switch-btn';
         btnQuester.className = 'mode-switch-btn active-quester';
-        thumb.innerText = '🏃';
+        thumb.innerText = 'Q';
         thumb.style.transform = 'translateX(20px)';
         slider.style.background = '#10B981';
         document.documentElement.style.setProperty('--accent', '#10B981');
         fab.style.display = 'none';
-        showToast('Switched to Quester Mode (Green)');
+        showToast('Switched to Quester Mode');
       }
       renderBounties();
     }
@@ -1552,21 +1574,21 @@
         card.innerHTML = `
           <div class="bounty-top">
             <span class="bounty-category-tag">${b.category}</span>
-            <span class="bounty-timer ${b.urgent ? 'urgent' : ''}">⏱️ ${b.timer}</span>
+            <span class="bounty-timer ${b.urgent ? 'urgent' : ''}">${b.timer}</span>
           </div>
           <div class="bounty-title">${b.item}</div>
           <div class="route-box">
-            <div class="route-line"><span class="route-label">📍 Pickup:</span> <span class="route-val">${b.pickup}</span></div>
-            <div class="route-line"><span class="route-label">🏠 Drop:</span> <span class="route-val highlight">${b.drop}</span></div>
+            <div class="route-line"><span class="route-label">Pickup:</span> <span class="route-val">${b.pickup}</span></div>
+            <div class="route-line"><span class="route-label">Drop:</span> <span class="route-val highlight">${b.drop}</span></div>
           </div>
           <div class="bounty-bottom">
             <div class="rewards-group">
-              <span class="tip-pill">💵 ${b.cash}</span>
-              <span class="qp-reward-pill">🪙 ${b.qp}</span>
+              <span class="tip-pill">${b.cash}</span>
+              <span class="qp-reward-pill">${b.qp}</span>
             </div>
             ${currentMode === 'quester' ? `
               <button class="accept-btn" onclick="acceptQuest('${b.id}')">
-                ${b.isClaimed ? '✓ Claimed' : '⚡ Accept Quest'}
+                ${b.isClaimed ? 'Accepted' : 'Accept Quest'}
               </button>
             ` : `
               <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">Posted in BH-2</span>
@@ -1596,7 +1618,7 @@
       trackerStep = 0;
       updateTrackerView();
       switchTab('active', document.querySelectorAll('.nav-tab')[1]);
-      showToast('⚡ Quest accepted! Switched to Active Quest tracker.');
+      showToast('Quest accepted! Switched to Active Quest tracker.');
     }
 
     // Tab Navigation
@@ -1652,10 +1674,10 @@
               <input class="otp-cell" maxlength="1" id="otp-4" value="1" />
             </div>
             <div class="demo-otp-chip" onclick="fillDemoOtp()">
-              💡 Recipient's OTP: <strong>4821</strong> (Tap to Auto-Fill)
+              Recipient OTP: <strong>4821</strong> (Tap to Auto-Fill)
             </div>
             <button class="advance-btn" style="background: #10B981;" onclick="completeQuest()">
-              🎉 Verify OTP & Collect +50 QP
+              Verify OTP & Collect +50 QP
             </button>
           </div>
         `;
@@ -1678,13 +1700,13 @@
       if (o1 === '4' && o2 === '8' && o3 === '2' && o4 === '1') {
         qpBalance += 50;
         updateWallet();
-        alert('🎉 Delivery Complete!\n+50 QP added to your wallet.\nCash tip ₹30 received.');
-        showToast('🎉 Quest Finished! +50 QP Earned.');
+        alert('Delivery Complete!\n+50 QP added to your wallet.\nCash tip ₹30 received.');
+        showToast('Quest Finished! +50 QP Earned.');
         trackerStep = 0;
         updateTrackerView();
         switchTab('home', document.querySelectorAll('.nav-tab')[0]);
       } else {
-        alert('❌ Invalid OTP! Recipient demo OTP is 4821');
+        alert('Invalid OTP! Recipient demo OTP is 4821');
       }
     }
 
@@ -1707,7 +1729,7 @@
       qpBalance -= cost;
       updateWallet();
       const code = 'VOUCH-' + Math.floor(1000 + Math.random() * 9000);
-      alert(`🎉 Reward Redeemed: ${title}\nCode: ${code}\n-${cost} QP deducted.`);
+      alert(`Reward Redeemed: ${title}\nCode: ${code}\n-${cost} QP deducted.`);
       showToast(`Voucher ${code} unlocked!`);
     }
 
@@ -1763,7 +1785,7 @@
       bounties.unshift(newQ);
       renderBounties();
       closePostModal();
-      showToast(`🚀 "${item}" posted live to Home Feed!`);
+      showToast(`"${item}" posted live to Home Feed!`);
     }
 
     function showToast(msg) {

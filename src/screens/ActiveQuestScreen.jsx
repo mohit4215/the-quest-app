@@ -26,6 +26,7 @@ import {
   Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius } from '../constants';
 import { useQuestMode, DEFAULT_ACTIVE_QUEST } from '../context/QuestModeContext';
 import TopAppBar from '../components/common/TopAppBar';
@@ -36,29 +37,29 @@ const TRACKER_STEPS = [
     step: 0,
     title: 'Quest Claimed',
     desc: 'Accepted & locked to you',
-    icon: '📋',
-    actionText: "📍 I've Arrived at Shop/Gate →",
+    iconName: 'clipboard-outline',
+    actionText: "I've Arrived at Shop/Gate →",
   },
   {
     step: 1,
     title: 'At Shop/Gate',
     desc: 'Picking up item from vendor/gate',
-    icon: '🏪',
-    actionText: '🚶 Order Collected, Walking to Hostel →',
+    iconName: 'storefront-outline',
+    actionText: 'Order Collected, Walking to Hostel →',
   },
   {
     step: 2,
     title: 'Walking to Hostel',
     desc: 'En route to recipient room',
-    icon: '🚶',
-    actionText: '🏠 Arrived at Room Door →',
+    iconName: 'walk-outline',
+    actionText: 'Arrived at Room Door →',
   },
   {
     step: 3,
     title: 'Delivered',
     desc: 'Enter 4-digit OTP to complete',
-    icon: '📦',
-    actionText: '🔐 Verify OTP & Complete Delivery',
+    iconName: 'shield-checkmark-outline',
+    actionText: 'Verify OTP & Complete Delivery',
   },
 ];
 
@@ -241,13 +242,15 @@ export default function ActiveQuestScreen() {
           {/* Rewards Row */}
           <View style={styles.rewardsRow}>
             <View style={styles.cashPill}>
+              <Ionicons name="cash-outline" size={14} color="#059669" style={{ marginRight: 4 }} />
               <Text style={styles.cashPillText}>
-                💵 {currentQuest?.cashTip || '₹30'} Cash Tip
+                {currentQuest?.cashTip || '₹30'} Cash Tip
               </Text>
             </View>
             <View style={styles.qpPill}>
+              <Ionicons name="sparkles" size={13} color="#D97706" style={{ marginRight: 4 }} />
               <Text style={styles.qpPillText}>
-                🪙 {currentQuest?.qpReward || '+50 QP'} Reward
+                {currentQuest?.qpReward || '+50 QP'} Reward
               </Text>
             </View>
           </View>
@@ -256,7 +259,7 @@ export default function ActiveQuestScreen() {
         {/* 1. 4-Step Interactive Progress Tracker */}
         <View style={styles.trackerCard}>
           <View style={styles.trackerHeader}>
-            <Text style={styles.trackerTitle}>📍 Delivery Progress</Text>
+            <Text style={styles.trackerTitle}>Delivery Progress</Text>
             <Text style={styles.trackerSubtitle}>Step {activeStep + 1} of 4</Text>
           </View>
 
@@ -311,7 +314,7 @@ export default function ActiveQuestScreen() {
           {/* Current Step Detailed Card */}
           <Animated.View style={[styles.currentStepCard, { opacity: fadeAnim }]}>
             <View style={styles.currentStepIconWrapper}>
-              <Text style={styles.currentStepEmoji}>{currentStepInfo.icon}</Text>
+              <Ionicons name={currentStepInfo.iconName} size={20} color="#059669" />
             </View>
             <View style={styles.currentStepInfo}>
               <Text style={styles.currentStepTitle}>{currentStepInfo.title}</Text>
@@ -333,7 +336,7 @@ export default function ActiveQuestScreen() {
             <View style={styles.otpSection}>
               <View style={styles.otpHeader}>
                 <Text style={styles.otpPromptTitle}>
-                  🔐 Enter Recipient's 4-Digit OTP
+                  Enter Recipient's 4-Digit OTP
                 </Text>
                 <Text style={styles.otpPromptSubtitle}>
                   Ask {currentQuest?.recipientName || 'Aman'} at Room 214 for their code to unlock your rewards.
@@ -374,7 +377,7 @@ export default function ActiveQuestScreen() {
                 activeOpacity={0.8}
               >
                 <Text style={styles.demoOtpText}>
-                  💡 Demo OTP Code: <Text style={styles.demoOtpBold}>{currentQuest?.otpCode || '4821'}</Text> (Tap to auto-fill)
+                  Recipient OTP: <Text style={styles.demoOtpBold}>{currentQuest?.otpCode || '4821'}</Text> (Tap to auto-fill)
                 </Text>
               </TouchableOpacity>
 
@@ -389,7 +392,7 @@ export default function ActiveQuestScreen() {
                 activeOpacity={0.85}
               >
                 <Text style={styles.verifyOtpBtnText}>
-                  🎉 Complete Delivery & Claim {currentQuest?.qpReward || '+50 QP'}
+                  Complete Delivery & Claim {currentQuest?.qpReward || '+50 QP'}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -414,7 +417,8 @@ export default function ActiveQuestScreen() {
               </View>
             </View>
             <View style={styles.phoneBtn}>
-              <Text style={styles.phoneBtnText}>📞 Call</Text>
+              <Ionicons name="call-outline" size={13} color={Colors.textSecondary} style={{ marginRight: 4 }} />
+              <Text style={styles.phoneBtnText}>Call</Text>
             </View>
           </View>
 
@@ -449,7 +453,7 @@ export default function ActiveQuestScreen() {
                       isMe ? styles.msgTimeMe : styles.msgTimeRecipient,
                     ]}
                   >
-                    {msg.time} {isMe ? '✓✓' : ''}
+                    {msg.time}
                   </Text>
                 </View>
               );
@@ -458,7 +462,7 @@ export default function ActiveQuestScreen() {
 
           {/* 1-Tap Preset Replies */}
           <View style={styles.presetsSection}>
-            <Text style={styles.presetsLabel}>⚡ 1-Tap Quick Replies:</Text>
+            <Text style={styles.presetsLabel}>1-Tap Quick Replies:</Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -471,7 +475,8 @@ export default function ActiveQuestScreen() {
                   onPress={() => handleSendChat(preset)}
                   activeOpacity={0.75}
                 >
-                  <Text style={styles.presetChipText}>💬 {preset}</Text>
+                  <Ionicons name="chatbubble-outline" size={11} color={Colors.textSecondary} style={{ marginRight: 4 }} />
+                  <Text style={styles.presetChipText}>{preset}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -495,7 +500,7 @@ export default function ActiveQuestScreen() {
               disabled={!customMsg.trim()}
               activeOpacity={0.8}
             >
-              <Text style={styles.sendBtnText}>➤</Text>
+              <Ionicons name="send" size={14} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
         </View>
@@ -512,7 +517,7 @@ export default function ActiveQuestScreen() {
       >
         <View style={styles.celebrationOverlay}>
           <View style={styles.celebrationCard}>
-            <Text style={styles.celebrationEmoji}>🎉 🏆 🪙</Text>
+            <Ionicons name="trophy" size={48} color="#D97706" style={{ marginBottom: 12 }} />
             <Text style={styles.celebrationTitle}>Quest Completed!</Text>
             <Text style={styles.celebrationSubtitle}>
               Great job, Quester! The order was verified with OTP and successfully delivered to Room 214.

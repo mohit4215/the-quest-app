@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius } from '../../constants';
 import { useQuestMode } from '../../context/QuestModeContext';
 
@@ -21,7 +22,7 @@ const CAMPUS_SPOTS = [
     id: 'canteen',
     name: 'Night Canteen',
     peers: 8,
-    emoji: '🌙',
+    icon: 'restaurant-outline',
     status: 'High Activity',
     category: 'Night Canteen',
   },
@@ -29,7 +30,7 @@ const CAMPUS_SPOTS = [
     id: 'gate',
     name: 'Main Gate',
     peers: 5,
-    emoji: '🚪',
+    icon: 'cube-outline',
     status: 'Parcels Arrived',
     category: 'Gate Parcel',
   },
@@ -37,7 +38,7 @@ const CAMPUS_SPOTS = [
     id: 'stationery',
     name: 'Stationery Shop',
     peers: 2,
-    emoji: '🖨️',
+    icon: 'print-outline',
     status: 'Xerox Open',
     category: 'Printouts',
   },
@@ -45,7 +46,7 @@ const CAMPUS_SPOTS = [
     id: 'nescafe',
     name: 'Nescafe Corner',
     peers: 4,
-    emoji: '☕',
+    icon: 'cafe-outline',
     status: 'Open till 2 AM',
     category: 'Night Canteen',
   },
@@ -53,7 +54,7 @@ const CAMPUS_SPOTS = [
     id: 'bh2',
     name: 'BH-2 Lobby',
     peers: 7,
-    emoji: '🏢',
+    icon: 'business-outline',
     status: 'Common Room Active',
     category: 'Borrow Item',
   },
@@ -166,21 +167,21 @@ export default function LiveCampusRadar({ onSelectSpot }) {
 
         {/* Center icon */}
         <View style={[styles.scopeCenterDot, { backgroundColor: accentColor }]}>
-          <Text style={styles.scopeCenterText}>📍</Text>
+          <Ionicons name="location" size={13} color="#FFFFFF" />
         </View>
 
         {/* Interactive hotspot blips on the scope */}
         <View style={[styles.blip, { top: 16, left: 32 }]}>
-          <Text style={styles.blipText}>🌙 8</Text>
+          <Text style={styles.blipText}>Canteen • 8</Text>
         </View>
         <View style={[styles.blip, { top: 26, right: 36 }]}>
-          <Text style={styles.blipText}>🚪 5</Text>
+          <Text style={styles.blipText}>Gate • 5</Text>
         </View>
         <View style={[styles.blip, { bottom: 18, left: 45 }]}>
-          <Text style={styles.blipText}>🖨️ 2</Text>
+          <Text style={styles.blipText}>Print • 2</Text>
         </View>
         <View style={[styles.blip, { bottom: 20, right: 40 }]}>
-          <Text style={styles.blipText}>☕ 4</Text>
+          <Text style={styles.blipText}>Nescafe • 4</Text>
         </View>
       </View>
 
@@ -198,7 +199,7 @@ export default function LiveCampusRadar({ onSelectSpot }) {
             activeOpacity={0.75}
           >
             <View style={styles.spotTop}>
-              <Text style={styles.spotEmoji}>{spot.emoji}</Text>
+              <Ionicons name={spot.icon} size={18} color={accentColor} />
               <View style={styles.peerPill}>
                 <View style={styles.onlineMiniDot} />
                 <Text style={styles.peerCount}>{spot.peers} peers</Text>

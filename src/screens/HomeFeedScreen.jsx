@@ -13,6 +13,7 @@ import {
   Animated,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius } from '../constants';
 import { useQuestMode } from '../context/QuestModeContext';
 import TopAppBar from '../components/common/TopAppBar';
@@ -21,11 +22,11 @@ import QuestBountyCard from '../components/quest/QuestBountyCard';
 import PostQuestModal from '../components/quest/PostQuestModal';
 
 const CATEGORIES = [
-  { id: 'all', label: 'All', icon: '⚡' },
-  { id: 'Night Canteen', label: 'Night Canteen', icon: '🌙' },
-  { id: 'Gate Parcel', label: 'Gate Parcel', icon: '🚪' },
-  { id: 'Printouts', label: 'Printouts', icon: '🖨️' },
-  { id: 'Borrow Item', label: 'Borrow Item', icon: '🤝' },
+  { id: 'all', label: 'All', iconName: 'sparkles' },
+  { id: 'Night Canteen', label: 'Night Canteen', iconName: 'restaurant' },
+  { id: 'Gate Parcel', label: 'Gate Parcel', iconName: 'cube' },
+  { id: 'Printouts', label: 'Printouts', iconName: 'print' },
+  { id: 'Borrow Item', label: 'Borrow Item', iconName: 'swap-horizontal' },
 ];
 
 const INITIAL_QUESTS = [
@@ -209,7 +210,12 @@ export default function HomeFeedScreen() {
                   onPress={() => setSelectedCategory(cat.id)}
                   activeOpacity={0.75}
                 >
-                  <Text style={styles.chipIcon}>{cat.icon}</Text>
+                  <Ionicons
+                    name={cat.iconName}
+                    size={14}
+                    color={isActive ? accentColor : Colors.textSecondary}
+                    style={{ marginRight: 5 }}
+                  />
                   <Text
                     style={[
                       styles.chipLabel,
@@ -246,7 +252,7 @@ export default function HomeFeedScreen() {
         {/* 3. Bounty Cards List */}
         {filteredQuests.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyIcon}>🔍</Text>
+            <Ionicons name="search-outline" size={32} color={Colors.textMuted} style={{ marginBottom: 8 }} />
             <Text style={styles.emptyTitle}>No active bounties in this category</Text>
             <Text style={styles.emptySubtitle}>
               Try switching filters or tap "All" to browse all hostel errands.
@@ -280,7 +286,7 @@ export default function HomeFeedScreen() {
           accessibilityRole="button"
           accessibilityLabel="Post New Quest"
         >
-          <Text style={styles.floatingPostIcon}>➕</Text>
+          <Ionicons name="add" size={18} color="#FFFFFF" style={{ marginRight: 4 }} />
           <Text style={styles.floatingPostText}>Post New Quest</Text>
         </TouchableOpacity>
       )}

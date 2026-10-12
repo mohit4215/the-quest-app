@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius } from '../../constants';
 
 export default function QPBadge({ amount = 450, size = 'md', style }) {
@@ -12,7 +13,12 @@ export default function QPBadge({ amount = 450, size = 'md', style }) {
 
   return (
     <View style={[styles.container, isLarge && styles.containerLg, style]}>
-      <Text style={[styles.coin, isLarge && styles.coinLg]}>🪙</Text>
+      <Ionicons
+        name="sparkles"
+        size={isLarge ? 16 : 13}
+        color="#D97706"
+        style={{ marginRight: 4 }}
+      />
       <Text style={[styles.amount, isLarge && styles.amountLg]}>
         {typeof amount === 'number' ? amount.toLocaleString() : amount}
       </Text>
