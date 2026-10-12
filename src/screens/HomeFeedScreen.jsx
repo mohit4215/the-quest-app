@@ -4,7 +4,11 @@
  * 1. "Live Campus Radar" card with pulsing indicator (active peers near campus spots)
  * 2. Horizontal category filter chips: All, Night Canteen, Gate Parcel, Printouts, Borrow Item
  * 3. List of realistic Quest Bounty Cards (Item, Pickup -> Drop-off, Countdown, Cash Tip + QP, Accept button in Quester Mode)
- * 4. "Post New Quest" floating action button (visible in Lazy Mode)
+ * 4. Interactive "Post a Quest" bottom sheet modal triggered by Lazy Mode floating action button
+ *    - Quick-fill templates ("Gate Zomato Pickup", "2x Maggi from Canteen", "Lab File Printout")
+ *    - Interactive slider for Bounty Tip (₹10 to ₹100) auto-calculating bonus QP
+ *    - Toggle for "Drop at Door" vs "4-Digit OTP Handover"
+ *    - Dynamically prepends newly posted quest to top of list
  */
 
 import React, { useState, useMemo } from 'react';
@@ -14,15 +18,14 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Modal,
-  TextInput,
-  Alert,
+  Animated,
 } from 'react-native';
 import { Colors, Spacing, Radius } from '../constants';
 import { useQuestMode } from '../context/QuestModeContext';
 import TopAppBar from '../components/common/TopAppBar';
 import LiveCampusRadar from '../components/quest/LiveCampusRadar';
 import QuestBountyCard from '../components/quest/QuestBountyCard';
+import PostQuestModal from '../components/quest/PostQuestModal';
 
 // Categories specified
 const CATEGORIES = [
@@ -46,6 +49,7 @@ const INITIAL_QUESTS = [
     cashTip: '₹30',
     qpReward: '+50 QP',
     notes: 'Please ask for extra seasoning packet if possible.',
+    deliveryMethod: 'Drop at Door',
     isAccepted: false,
   },
   {
@@ -57,8 +61,9 @@ const INITIAL_QUESTS = [
     dropOffHostelRoom: 'BH-2 • Room 308',
     countdown: '8 mins left',
     cashTip: '₹40',
-    qpReward: '+60 QP',
+    qpReward: '+65 QP',
     notes: 'Show OTP 4821 to delivery executive Ramesh.',
+    deliveryMethod: '4-Digit OTP Handover',
     isAccepted: false,
   },
   {
@@ -72,6 +77,7 @@ const INITIAL_QUESTS = [
     cashTip: '₹20',
     qpReward: '+35 QP',
     notes: 'Already paid via UPI, just collect printout envelope #19.',
+    deliveryMethod: 'Drop at Door',
     isAccepted: false,
   },
   {
@@ -85,6 +91,7 @@ const INITIAL_QUESTS = [
     cashTip: '₹25',
     qpReward: '+45 QP',
     notes: 'Deliver to 4th floor before hostel roll call.',
+    deliveryMethod: '4-Digit OTP Handover',
     isAccepted: false,
   },
   {
@@ -98,6 +105,7 @@ const INITIAL_QUESTS = [
     cashTip: '₹30',
     qpReward: '+50 QP',
     notes: 'Will return safely within 45 mins. Urgent for interview tomorrow.',
+    deliveryMethod: '4-Digit OTP Handover',
     isAccepted: false,
   },
   {
@@ -111,6 +119,7 @@ const INITIAL_QUESTS = [
     cashTip: '₹35',
     qpReward: '+55 QP',
     notes: 'Bag is sealed with green tape.',
+    deliveryMethod: 'Drop at Door',
     isAccepted: false,
   },
 ];
@@ -119,13 +128,8 @@ export default function HomeFeedScreen() {
   const { isLazyMode, isQuesterMode, accentColor } = useQuestMode();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [quests, setQuests] = useState(INITIAL_QUESTS);
-
-  // Modal for Lazy Mode "Post New Quest"
-  const [postModalVisible, setPostModalVisible] = useState(false);
-  const [newItemTitle, setNewItemTitle] = useState('');
-  const [newPickup, setNewPickup] = useState('Night Canteen');
-  const [newCategory, setNewCategory] = useState('Night Canteen');
-  const [newCashTip, setNewCashTip] = useState('30');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
 
   // Filter logic
   const filteredQuests = useMemo(() => {
@@ -137,36 +141,39 @@ export default function HomeFeedScreen() {
     setQuests((prev) =>
       prev.map((q) => (q.id === id ? { ...q, isAccepted: true } : q))
     );
+    showToast('⚡ Quest accepted! Added to your Active Quest tracker.');
   };
 
-  const handlePostQuest = () => {
-    if (!newItemTitle.trim()) {
-      return;
+  const handleAddNewQuest = (newQuest) => {
+    // Dynamically prepend newly created quest to top of Home Feed list
+    setQuests((prev) => [newQuest, ...prev]);
+
+    // Ensure it's immediately visible
+    if (selectedCategory !== 'all' && selectedCategory !== newQuest.category) {
+      setSelectedCategory('all');
     }
 
-    const createdQuest = {
-      id: `q_${Date.now()}`,
-      category: newCategory,
-      categoryIcon: newCategory === 'Night Canteen' ? '🌙' : newCategory === 'Gate Parcel' ? '🚪' : newCategory === 'Printouts' ? '🖨️' : '🤝',
-      item: newItemTitle.trim(),
-      pickupSpot: newPickup,
-      dropOffHostelRoom: 'BH-2 • Room 214',
-      countdown: '30 mins left',
-      cashTip: `₹${newCashTip || '30'}`,
-      qpReward: '+50 QP',
-      notes: 'Posted by you from Room 214.',
-      isAccepted: false,
-    };
+    showToast(`🚀 "${newQuest.item}" posted live to BH-2 feed!`);
+  };
 
-    setQuests([createdQuest, ...quests]);
-    setNewItemTitle('');
-    setPostModalVisible(false);
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3500);
   };
 
   return (
     <View style={styles.container}>
       {/* Top App Bar with Hostel Badge, Gold QP Badge, and Mode Switcher */}
       <TopAppBar />
+
+      {/* Dynamic Toast Banner */}
+      {toastMessage && (
+        <View style={styles.toastContainer}>
+          <Text style={styles.toastText}>{toastMessage}</Text>
+        </View>
+      )}
 
       <ScrollView
         style={styles.scroll}
@@ -273,7 +280,7 @@ export default function HomeFeedScreen() {
       {isLazyMode && (
         <TouchableOpacity
           style={[styles.floatingPostBtn, { backgroundColor: Colors.lazyMode }]}
-          onPress={() => setPostModalVisible(true)}
+          onPress={() => setIsModalVisible(true)}
           activeOpacity={0.85}
           accessibilityRole="button"
           accessibilityLabel="Post New Quest"
@@ -283,87 +290,12 @@ export default function HomeFeedScreen() {
         </TouchableOpacity>
       )}
 
-      {/* Lazy Mode: Quick Post Quest Modal */}
-      <Modal
-        visible={postModalVisible}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setPostModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>🛋️ Post a Hostel Quest</Text>
-              <TouchableOpacity
-                onPress={() => setPostModalVisible(false)}
-                style={styles.closeBtn}
-              >
-                <Text style={styles.closeBtnText}>✕</Text>
-              </TouchableOpacity>
-            </View>
-
-            <Text style={styles.modalDesc}>
-              A fellow resident heading that way will grab your order and deliver to Room 214!
-            </Text>
-
-            <Text style={styles.inputLabel}>What do you need?</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g. 2x Maggi & Sprite from Night Canteen"
-              placeholderTextColor="#64748B"
-              value={newItemTitle}
-              onChangeText={setNewItemTitle}
-            />
-
-            <Text style={styles.inputLabel}>Category</Text>
-            <View style={styles.modalCategoryRow}>
-              {['Night Canteen', 'Gate Parcel', 'Printouts', 'Borrow Item'].map((cat) => (
-                <TouchableOpacity
-                  key={cat}
-                  style={[
-                    styles.modalCatChip,
-                    newCategory === cat && styles.modalCatChipActive,
-                  ]}
-                  onPress={() => {
-                    setNewCategory(cat);
-                    if (cat === 'Night Canteen') setNewPickup('Night Canteen (Nescafe)');
-                    if (cat === 'Gate Parcel') setNewPickup('Main Gate Security Desk');
-                    if (cat === 'Printouts') setNewPickup('Stationery Shop');
-                    if (cat === 'Borrow Item') setNewPickup('BH-1 or BH-2');
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.modalCatText,
-                      newCategory === cat && styles.modalCatTextActive,
-                    ]}
-                  >
-                    {cat}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            <Text style={styles.inputLabel}>Cash Tip (₹)</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="30"
-              placeholderTextColor="#64748B"
-              keyboardType="numeric"
-              value={newCashTip}
-              onChangeText={setNewCashTip}
-            />
-
-            <TouchableOpacity
-              style={[styles.submitPostBtn, { backgroundColor: Colors.lazyMode }]}
-              onPress={handlePostQuest}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.submitPostBtnText}>🚀 Launch Quest (+50 QP Reward)</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      {/* Interactive "Post a Quest" Modal / Bottom Sheet */}
+      <PostQuestModal
+        visible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        onSubmit={handleAddNewQuest}
+      />
     </View>
   );
 }
@@ -372,6 +304,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background, // #0D0F14
+  },
+  toastContainer: {
+    backgroundColor: '#1E2330',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#2A3245',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  toastText: {
+    color: '#34D399',
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 0.2,
   },
   scroll: {
     flex: 1,
@@ -509,106 +456,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '800',
     letterSpacing: 0.3,
-  },
-
-  // Modal styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
-    justifyContent: 'flex-end',
-  },
-  modalCard: {
-    backgroundColor: '#161922',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: Spacing.lg,
-    borderWidth: 1,
-    borderColor: '#232838',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: Colors.textPrimary,
-  },
-  closeBtn: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#1E2330',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  closeBtnText: {
-    color: Colors.textSecondary,
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  modalDesc: {
-    fontSize: 12,
-    color: Colors.textMuted,
-    marginBottom: 16,
-    lineHeight: 18,
-  },
-  inputLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: Colors.textSecondary,
-    marginBottom: 6,
-  },
-  input: {
-    backgroundColor: '#0D0F14',
-    borderWidth: 1,
-    borderColor: '#2A3245',
-    borderRadius: Radius.md,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    color: '#F9FAFB',
-    fontSize: 14,
-    marginBottom: 14,
-  },
-  modalCategoryRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
-    marginBottom: 14,
-  },
-  modalCatChip: {
-    backgroundColor: '#1E2330',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: Radius.sm,
-    borderWidth: 1,
-    borderColor: '#2A3245',
-  },
-  modalCatChipActive: {
-    backgroundColor: 'rgba(124, 58, 237, 0.25)',
-    borderColor: Colors.lazyMode,
-  },
-  modalCatText: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-    fontWeight: '600',
-  },
-  modalCatTextActive: {
-    color: '#DDD6FE',
-    fontWeight: '700',
-  },
-  submitPostBtn: {
-    paddingVertical: 13,
-    borderRadius: Radius.md,
-    alignItems: 'center',
-    marginTop: 6,
-    marginBottom: 10,
-  },
-  submitPostBtnText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '800',
   },
 });
