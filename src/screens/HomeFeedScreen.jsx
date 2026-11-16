@@ -1,6 +1,8 @@
 /**
- * HomeFeedScreen — "Home Feed" tab for "Quest"
- * White background theme
+ * HomeFeedScreen — "Dynamic Duality" Campus Feed
+ * - 🏃 Quester Mode: Pilot's Dashboard with Live Radar & Slide-to-Claim Quests
+ * - 🛋️ Lazy Mode: Magic Quick-Access Grid, Dynamic Bounty Slider & Instant Ordering
+ * Theme: OLED Black (#000000)
  */
 
 import React, { useState, useMemo } from 'react';
@@ -10,7 +12,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Animated,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -23,34 +24,19 @@ import PostQuestModal from '../components/quest/PostQuestModal';
 
 const CATEGORIES = [
   { id: 'all', label: 'All', iconName: 'sparkles' },
+  { id: 'Gate Parcel', label: 'Gate Delivery', iconName: 'cube' },
   { id: 'Night Canteen', label: 'Night Canteen', iconName: 'restaurant' },
-  { id: 'Gate Parcel', label: 'Gate Parcel', iconName: 'cube' },
   { id: 'Printouts', label: 'Printouts', iconName: 'print' },
   { id: 'Borrow Item', label: 'Borrow Item', iconName: 'swap-horizontal' },
 ];
 
 const INITIAL_QUESTS = [
   {
-    id: 'q_1',
-    category: 'Night Canteen',
-    categoryIcon: '🌙',
-    item: '2× Cheese Butter Maggi & Cold Coffee',
-    pickupSpot: 'Night Canteen (Nescafe Booth)',
-    dropOffHostelRoom: 'BH-2 • Room 214',
-    countdown: '15 mins left',
-    cashTip: '₹30',
-    qpReward: '+50 QP',
-    notes: 'Please ask for extra seasoning packet if possible.',
-    deliveryMethod: 'Drop at Door',
-    isAccepted: false,
-  },
-  {
     id: 'q_2',
     category: 'Gate Parcel',
-    categoryIcon: '🚪',
-    item: 'Amazon Parcel (Myntra Shoe Box)',
-    pickupSpot: 'Main Gate Security Post 1',
-    dropOffHostelRoom: 'BH-2 • Room 308',
+    item: 'Swiggy Food Parcel (Biryani & Coke)',
+    pickupSpot: 'Main Security Gate (Zomato/Swiggy Drop)',
+    dropOffHostelRoom: 'BH-2 • Room 214',
     countdown: '8 mins left',
     cashTip: '₹40',
     qpReward: '+65 QP',
@@ -59,23 +45,34 @@ const INITIAL_QUESTS = [
     isAccepted: false,
   },
   {
+    id: 'q_1',
+    category: 'Night Canteen',
+    item: '2× Cheese Butter Maggi & Cold Coffee',
+    pickupSpot: 'Night Canteen (Nescafe Booth)',
+    dropOffHostelRoom: 'BH-2 • Room 308',
+    countdown: '15 mins left',
+    cashTip: '₹30',
+    qpReward: '+50 QP',
+    notes: 'Please ask for extra seasoning packet if possible.',
+    deliveryMethod: 'Drop at Door',
+    isAccepted: false,
+  },
+  {
     id: 'q_3',
     category: 'Printouts',
-    categoryIcon: '🖨️',
     item: 'Compiler Design Lab Manual (14 pgs B&W)',
-    pickupSpot: 'Stationery Shop (Near Academic Block)',
+    pickupSpot: 'Stationery Shop (Xerox Counter)',
     dropOffHostelRoom: 'BH-2 • Room 104',
     countdown: '25 mins left',
     cashTip: '₹20',
     qpReward: '+35 QP',
-    notes: 'Already paid via UPI, just collect printout envelope #19.',
+    notes: 'Already paid via UPI, collect envelope with token #19.',
     deliveryMethod: 'Drop at Door',
     isAccepted: false,
   },
   {
     id: 'q_4',
     category: 'Night Canteen',
-    categoryIcon: '🌙',
     item: 'Spicy Paneer Roll + Thums Up (Can)',
     pickupSpot: 'Night Canteen (Roll Counter)',
     dropOffHostelRoom: 'BH-2 • Room 412',
@@ -84,34 +81,6 @@ const INITIAL_QUESTS = [
     qpReward: '+45 QP',
     notes: 'Deliver to 4th floor before hostel roll call.',
     deliveryMethod: '4-Digit OTP Handover',
-    isAccepted: false,
-  },
-  {
-    id: 'q_5',
-    category: 'Borrow Item',
-    categoryIcon: '🤝',
-    item: 'Electric Steam Iron for Placement Shirt',
-    pickupSpot: 'BH-1 • Room 204',
-    dropOffHostelRoom: 'BH-2 • Room 214',
-    countdown: '35 mins left',
-    cashTip: '₹30',
-    qpReward: '+50 QP',
-    notes: 'Will return safely within 45 mins. Urgent for interview tomorrow.',
-    deliveryMethod: '4-Digit OTP Handover',
-    isAccepted: false,
-  },
-  {
-    id: 'q_6',
-    category: 'Gate Parcel',
-    categoryIcon: '🚪',
-    item: 'Blinkit Grocery Bag (Milk & Bread)',
-    pickupSpot: 'Main Gate (Gate 2 Barrier)',
-    dropOffHostelRoom: 'BH-2 • Room 118',
-    countdown: '12 mins left',
-    cashTip: '₹35',
-    qpReward: '+55 QP',
-    notes: 'Bag is sealed with green tape.',
-    deliveryMethod: 'Drop at Door',
     isAccepted: false,
   },
 ];
@@ -123,6 +92,9 @@ export default function HomeFeedScreen() {
   const [quests, setQuests] = useState(INITIAL_QUESTS);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
+
+  // Lazy Mode Dynamic Bounty Slider state
+  const [lazyTip, setLazyTip] = useState(30);
 
   const filteredQuests = useMemo(() => {
     if (selectedCategory === 'all') return quests;
@@ -139,7 +111,7 @@ export default function HomeFeedScreen() {
     );
 
     acceptQuest(questObj);
-    showToast('⚡ Quest accepted! Opening Active Quest tracker...');
+    showToast('⚡ Quest Claimed! Opening Handshake Tracker...');
 
     setTimeout(() => {
       navigation.navigate('ActiveQuest');
@@ -148,12 +120,10 @@ export default function HomeFeedScreen() {
 
   const handleAddNewQuest = (newQuest) => {
     setQuests((prev) => [newQuest, ...prev]);
-
     if (selectedCategory !== 'all' && selectedCategory !== newQuest.category) {
       setSelectedCategory('all');
     }
-
-    showToast(`🚀 "${newQuest.item}" posted live to BH-2 feed!`);
+    showToast(`🚀 "${newQuest.item}" broadcasted live to campus quester feed!`);
   };
 
   const showToast = (msg) => {
@@ -162,6 +132,15 @@ export default function HomeFeedScreen() {
       setToastMessage(null);
     }, 3500);
   };
+
+  // Helper calculation for dynamic speed
+  const getSpeedHelper = (tip) => {
+    if (tip >= 50) return { label: 'Instant Claim Guarantee!', time: '⚡ ~3-5 mins', color: '#10B981', qp: '+80 QP' };
+    if (tip >= 30) return { label: 'Fast Pickup Priority', time: '🏃 ~7-10 mins', color: '#F59E0B', qp: '+50 QP' };
+    return { label: 'Standard Walk Speed', time: '🚶 ~15-20 mins', color: '#94A3B8', qp: '+25 QP' };
+  };
+
+  const speedInfo = getSpeedHelper(lazyTip);
 
   return (
     <View style={styles.container}>
@@ -178,14 +157,123 @@ export default function HomeFeedScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* 1. Live Campus Radar */}
-        <LiveCampusRadar
-          onSelectSpot={(cat) => {
-            if (cat) setSelectedCategory(cat);
-          }}
-        />
+        {/* ── 🛋️ LAZY MODE HERO: "What do you need right now?" ── */}
+        {isLazyMode && (
+          <View style={styles.lazyHeroCard}>
+            <View style={styles.lazyHeroTop}>
+              <View>
+                <Text style={styles.lazyHeroTitle}>What do you need right now?</Text>
+                <Text style={styles.lazyHeroSubtitle}>
+                  Order directly to your room door (BH-2 • #214)
+                </Text>
+              </View>
+              <View style={styles.lazyBedIcon}>
+                <Ionicons name="bed" size={20} color="#C4B5FD" />
+              </View>
+            </View>
 
-        {/* 2. Category Filter Chips */}
+            {/* 4 Large Quick-Access Tiles */}
+            <View style={styles.quickGrid}>
+              <TouchableOpacity
+                style={styles.quickTile}
+                onPress={() => setIsModalVisible(true)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.tileEmoji}>🍔</Text>
+                <Text style={styles.tileTitle}>Food Delivery</Text>
+                <Text style={styles.tileSub}>Main Gate Pickup</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.quickTile}
+                onPress={() => setIsModalVisible(true)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.tileEmoji}>🖨️</Text>
+                <Text style={styles.tileTitle}>Urgent Printouts</Text>
+                <Text style={styles.tileSub}>Xerox Shop</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.quickTile}
+                onPress={() => setIsModalVisible(true)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.tileEmoji}>🍫</Text>
+                <Text style={styles.tileTitle}>Midnight Snacks</Text>
+                <Text style={styles.tileSub}>Night Canteen</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.quickTile}
+                onPress={() => setIsModalVisible(true)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.tileEmoji}>💊</Text>
+                <Text style={styles.tileTitle}>Pharmacy / Meds</Text>
+                <Text style={styles.tileSub}>Essentials</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Dynamic Bounty Slider */}
+            <View style={styles.sliderCard}>
+              <View style={styles.sliderHeader}>
+                <Text style={styles.sliderLabel}>DYNAMIC CASH TIP</Text>
+                <Text style={styles.sliderValue}>₹{lazyTip}</Text>
+              </View>
+
+              {/* Step Buttons */}
+              <View style={styles.tipStepsRow}>
+                {[15, 30, 45, 60].map((val) => (
+                  <TouchableOpacity
+                    key={val}
+                    style={[
+                      styles.tipStepBtn,
+                      lazyTip === val && styles.tipStepBtnActive,
+                    ]}
+                    onPress={() => setLazyTip(val)}
+                  >
+                    <Text style={[styles.tipStepText, lazyTip === val && styles.tipStepTextActive]}>
+                      ₹{val}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {/* Dynamic Speed Helper */}
+              <View style={styles.speedIndicatorRow}>
+                <Ionicons name="speedometer-outline" size={14} color={speedInfo.color} />
+                <Text style={[styles.speedText, { color: speedInfo.color }]}>
+                  {speedInfo.label} • {speedInfo.time}
+                </Text>
+                <View style={styles.speedQPBadge}>
+                  <Text style={styles.speedQPText}>{speedInfo.qp}</Text>
+                </View>
+              </View>
+
+              {/* Primary Instant Order Button */}
+              <TouchableOpacity
+                style={styles.magicOrderBtn}
+                onPress={() => setIsModalVisible(true)}
+                activeOpacity={0.85}
+              >
+                <Ionicons name="flash" size={16} color="#FFFFFF" style={{ marginRight: 6 }} />
+                <Text style={styles.magicOrderBtnText}>Post Errand Request</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        {/* ── 🏃 QUESTER MODE HERO: Live Radar Dashboard ── */}
+        {isQuesterMode && (
+          <LiveCampusRadar
+            onSelectSpot={(cat) => {
+              if (cat) setSelectedCategory(cat);
+            }}
+          />
+        )}
+
+        {/* Category Filter Chips */}
         <View style={styles.filterSection}>
           <ScrollView
             horizontal
@@ -202,24 +290,24 @@ export default function HomeFeedScreen() {
                     isActive && [
                       styles.chipActive,
                       {
-                        backgroundColor: isLazyMode ? '#F5F3FF' : '#ECFDF5',
+                        backgroundColor: isLazyMode ? '#261F36' : '#1A3329',
                         borderColor: accentColor,
                       },
                     ],
                   ]}
                   onPress={() => setSelectedCategory(cat.id)}
-                  activeOpacity={0.75}
+                  activeOpacity={0.8}
                 >
                   <Ionicons
                     name={cat.iconName}
                     size={14}
-                    color={isActive ? accentColor : Colors.textSecondary}
+                    color={isActive ? accentColor : '#94A3B8'}
                     style={{ marginRight: 5 }}
                   />
                   <Text
                     style={[
                       styles.chipLabel,
-                      isActive && { color: accentColor, fontWeight: '700' },
+                      isActive && { color: accentColor, fontWeight: '800' },
                     ]}
                   >
                     {cat.label}
@@ -235,62 +323,34 @@ export default function HomeFeedScreen() {
           <View>
             <Text style={styles.feedTitle}>
               {selectedCategory === 'all'
-                ? 'Active Quest Bounties'
+                ? 'Campus Errand Radar'
                 : `${selectedCategory} Bounties`}
             </Text>
             <Text style={styles.feedSubtitle}>
               {isQuesterMode
-                ? 'Accept errands & earn Cash Tips + Quest Points'
-                : 'Current requests from fellow BH-2 residents'}
+                ? 'Slide to claim along your walking path'
+                : 'Active requests from hostel students'}
             </Text>
           </View>
           <View style={styles.countBadge}>
-            <Text style={styles.countText}>{filteredQuests.length} open</Text>
+            <Text style={styles.countText}>{filteredQuests.length} available</Text>
           </View>
         </View>
 
-        {/* 3. Bounty Cards List */}
-        {filteredQuests.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Ionicons name="search-outline" size={32} color={Colors.textMuted} style={{ marginBottom: 8 }} />
-            <Text style={styles.emptyTitle}>No active bounties in this category</Text>
-            <Text style={styles.emptySubtitle}>
-              Try switching filters or tap "All" to browse all hostel errands.
-            </Text>
-            <TouchableOpacity
-              style={[styles.resetFilterBtn, { borderColor: accentColor }]}
-              onPress={() => setSelectedCategory('all')}
-            >
-              <Text style={[styles.resetFilterText, { color: accentColor }]}>
-                View All Quests
-              </Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          filteredQuests.map((quest) => (
-            <QuestBountyCard
-              key={quest.id}
-              quest={quest}
-              onAccept={handleAcceptQuest}
-            />
-          ))
-        )}
+        {/* Bounty Cards List with Slide to Claim */}
+        {filteredQuests.map((quest) => (
+          <QuestBountyCard
+            key={quest.id}
+            quest={quest}
+            onAccept={handleAcceptQuest}
+            onViewDetails={() => navigation.navigate('ActiveQuest')}
+          />
+        ))}
+
+        <View style={{ height: 90 }} />
       </ScrollView>
 
-      {/* 4. Floating Action Button (Lazy Mode) */}
-      {isLazyMode && (
-        <TouchableOpacity
-          style={[styles.floatingPostBtn, { backgroundColor: Colors.lazyMode }]}
-          onPress={() => setIsModalVisible(true)}
-          activeOpacity={0.85}
-          accessibilityRole="button"
-          accessibilityLabel="Post New Quest"
-        >
-          <Ionicons name="add" size={18} color="#FFFFFF" style={{ marginRight: 4 }} />
-          <Text style={styles.floatingPostText}>Post New Quest</Text>
-        </TouchableOpacity>
-      )}
-
+      {/* Post Quest Modal */}
       <PostQuestModal
         visible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
@@ -303,68 +363,229 @@ export default function HomeFeedScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF', // White background
-  },
-  toastContainer: {
-    backgroundColor: '#DCFCE7',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#86EFAC',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  toastText: {
-    color: '#15803D',
-    fontSize: 12,
-    fontWeight: '700',
+    backgroundColor: '#000000', // OLED Black
   },
   scroll: {
     flex: 1,
   },
   scrollContent: {
-    padding: Spacing.base,
-    paddingBottom: 110,
+    paddingHorizontal: Spacing.base,
+    paddingTop: Spacing.sm,
   },
-  filterSection: {
+  toastContainer: {
+    backgroundColor: '#1E1E28',
+    marginHorizontal: Spacing.base,
+    marginTop: 8,
+    padding: 10,
+    borderRadius: Radius.md,
+    borderWidth: 1,
+    borderColor: '#7C3AED',
+  },
+  toastText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#F8FAFC',
+    textAlign: 'center',
+  },
+
+  // Lazy Mode Hero Card
+  lazyHeroCard: {
+    backgroundColor: '#1A1625', // Deep violet surface
+    borderRadius: Radius.lg,
+    padding: Spacing.base,
+    borderWidth: 1,
+    borderColor: 'rgba(124, 58, 237, 0.35)',
     marginBottom: Spacing.base,
+  },
+  lazyHeroTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  lazyHeroTitle: {
+    fontSize: 17,
+    fontWeight: '900',
+    color: '#F8FAFC',
+    letterSpacing: -0.2,
+  },
+  lazyHeroSubtitle: {
+    fontSize: 11,
+    color: '#C4B5FD',
+    marginTop: 2,
+  },
+  lazyBedIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(124, 58, 237, 0.25)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // 4 Quick-Access Tiles
+  quickGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 14,
+  },
+  quickTile: {
+    width: '48.5%',
+    backgroundColor: '#261F36',
+    borderRadius: Radius.md,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  tileEmoji: {
+    fontSize: 22,
+    marginBottom: 4,
+  },
+  tileTitle: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#F8FAFC',
+  },
+  tileSub: {
+    fontSize: 10,
+    color: '#94A3B8',
+    marginTop: 1,
+  },
+
+  // Dynamic Bounty Slider Card
+  sliderCard: {
+    backgroundColor: '#120F1C',
+    borderRadius: Radius.md,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(124, 58, 237, 0.25)',
+  },
+  sliderHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  sliderLabel: {
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 1,
+    color: '#C4B5FD',
+  },
+  sliderValue: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#A78BFA',
+  },
+  tipStepsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 12,
+  },
+  tipStepBtn: {
+    flex: 1,
+    backgroundColor: '#261F36',
+    paddingVertical: 7,
+    borderRadius: Radius.sm,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  tipStepBtnActive: {
+    backgroundColor: Colors.lazyMode,
+    borderColor: '#C4B5FD',
+  },
+  tipStepText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#94A3B8',
+  },
+  tipStepTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '900',
+  },
+  speedIndicatorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 12,
+  },
+  speedText: {
+    fontSize: 11,
+    fontWeight: '700',
+    flex: 1,
+  },
+  speedQPBadge: {
+    backgroundColor: '#1E170A',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: Radius.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.4)',
+  },
+  speedQPText: {
+    fontSize: 10,
+    fontWeight: '900',
+    color: '#FCD34D',
+  },
+  magicOrderBtn: {
+    backgroundColor: Colors.lazyMode,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: Radius.md,
+    shadowColor: Colors.lazyMode,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.45,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  magicOrderBtnText: {
+    fontSize: 13,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: 0.3,
+  },
+
+  // Category Filters
+  filterSection: {
+    marginBottom: 14,
   },
   filterScroll: {
     gap: 8,
-    paddingRight: 4,
   },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8FAFC',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    backgroundColor: '#121217',
+    paddingHorizontal: 12,
+    paddingVertical: 7,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    gap: 6,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   chipActive: {
     borderWidth: 1.5,
   },
-  chipIcon: {
-    fontSize: 12,
-  },
   chipLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#475569',
+    color: '#94A3B8',
   },
+
+  // Feed Header
   feedHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: Spacing.md,
+    marginBottom: 12,
   },
   feedTitle: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: '#0F172A',
+    fontSize: 15,
+    fontWeight: '900',
+    color: '#F8FAFC',
   },
   feedSubtitle: {
     fontSize: 11,
@@ -372,78 +593,16 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   countBadge: {
-    backgroundColor: '#F1F5F9',
-    paddingHorizontal: 9,
-    paddingVertical: 4,
+    backgroundColor: '#181820',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   countText: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '700',
-    color: '#475569',
-  },
-  emptyContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: Radius.lg,
-    padding: Spacing.xl,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    marginVertical: Spacing.md,
-  },
-  emptyIcon: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  emptyTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 4,
-  },
-  emptySubtitle: {
-    fontSize: 12,
-    color: '#64748B',
-    textAlign: 'center',
-    marginBottom: 14,
-  },
-  resetFilterBtn: {
-    borderWidth: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: Radius.md,
-  },
-  resetFilterText: {
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  floatingPostBtn: {
-    position: 'absolute',
-    bottom: 84,
-    alignSelf: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 22,
-    paddingVertical: 13,
-    borderRadius: Radius.full,
-    elevation: 6,
-    shadowColor: Colors.lazyMode,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
-  },
-  floatingPostIcon: {
-    fontSize: 15,
-    color: '#FFFFFF',
-    fontWeight: '800',
-  },
-  floatingPostText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '800',
-    letterSpacing: 0.3,
+    color: '#94A3B8',
   },
 });

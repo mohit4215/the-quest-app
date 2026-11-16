@@ -1,15 +1,16 @@
 /**
  * QuestBountyCard — Gamified Hostel Micro-Delivery Bounty Card
- * White UI Theme
+ * Theme: "Dynamic Duality" with Vertical Route Timeline & "Slide to Claim"
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Animated,
+  PanResponder,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius } from '../../constants';
@@ -22,25 +23,59 @@ export default function QuestBountyCard({
 }) {
   const { isQuesterMode, isLazyMode } = useQuestMode();
   const [accepted, setAccepted] = useState(quest.isAccepted || false);
-  const scaleAnim = React.useRef(new Animated.Value(1)).current;
+  const [sliderWidth, setSliderWidth] = useState(240);
 
-  const handleAccept = () => {
-    if (accepted) return;
+  // Slide to claim animation value
+  const slideX = useRef(new Animated.Value(0)).current;
 
-    Animated.sequence([
-      Animated.spring(scaleAnim, { toValue: 0.95, speed: 50, useNativeDriver: true }),
-      Animated.spring(scaleAnim, { toValue: 1, speed: 30, useNativeDriver: true }),
-    ]).start(() => {
-      setAccepted(true);
-      if (onAccept) onAccept(quest);
-    });
-  };
+  // Max slide distance is (sliderWidth - thumbWidth)
+  const thumbWidth = 44;
+  const maxSlide = Math.max(sliderWidth - thumbWidth - 8, 120);
+
+  // PanResponder for Slide to Claim gesture
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => !accepted,
+      onMoveShouldSetPanResponder: (_, gestureState) => !accepted && Math.abs(gestureState.dx) > 5,
+      onPanResponderMove: (_, gestureState) => {
+        if (accepted) return;
+        const newX = Math.max(0, Math.min(gestureState.dx, maxSlide));
+        slideX.setValue(newX);
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        if (accepted) return;
+        if (gestureState.dx >= maxSlide * 0.75) {
+          // Completed slide!
+          Animated.timing(slideX, {
+            toValue: maxSlide,
+            duration: 150,
+            useNativeDriver: true,
+          }).start(() => {
+            setAccepted(true);
+            if (onAccept) onAccept(quest);
+          });
+        } else {
+          // Snap back
+          Animated.spring(slideX, {
+            toValue: 0,
+            friction: 5,
+            tension: 40,
+            useNativeDriver: true,
+          }).start();
+        }
+      },
+    })
+  ).current;
 
   const isUrgent = quest.countdown && (quest.countdown.includes('8 min') || quest.countdown.includes('10 min'));
 
   return (
-    <Animated.View style={[styles.card, { transform: [{ scale: scaleAnim }] }]}>
-      {/* Top Row: Category Tag & Countdown Timer */}
+    <View style={[
+      styles.card,
+      isQuesterMode ? styles.cardQuester : styles.cardLazy,
+      isUrgent && styles.cardUrgent,
+    ]}>
+      {/* Top Row: Category Tag & Timer */}
       <View style={styles.topRow}>
         <View style={styles.categoryBadge}>
           <Text style={styles.categoryBadgeText}>
@@ -48,13 +83,13 @@ export default function QuestBountyCard({
           </Text>
         </View>
 
-        {/* Countdown Timer ("15 mins left") */}
+        {/* Countdown Timer with pulse */}
         <View style={[styles.timerBadge, isUrgent && styles.timerBadgeUrgent]}>
           <Ionicons
-            name="time-outline"
+            name="time"
             size={12}
-            color={isUrgent ? '#DC2626' : '#2563EB'}
-            style={{ marginRight: 3 }}
+            color={isUrgent ? '#EF4444' : '#38BDF8'}
+            style={{ marginRight: 4 }}
           />
           <Text style={[styles.timerText, isUrgent && styles.timerTextUrgent]}>
             {quest.countdown || '15 mins left'}
@@ -62,26 +97,41 @@ export default function QuestBountyCard({
         </View>
       </View>
 
-      {/* Item Title */}
-      <Text style={styles.itemTitle}>{quest.item}</Text>
+      {/* Item Title & Cash Bounty */}
+      <View style={styles.itemHeader}>
+        <Text style={styles.itemTitle}>{quest.item}</Text>
+        <View style={styles.cashPill}>
+          <Text style={styles.cashPillText}>{quest.cashTip || '₹30'}</Text>
+        </View>
+      </View>
 
-      {/* Route: Pickup Spot -> Drop-off Hostel & Room */}
+      {/* Vertical Route Timeline */}
       <View style={styles.routeContainer}>
-        <View style={styles.routeRow}>
-          <Ionicons name="location-outline" size={14} color={Colors.textMuted} style={{ marginRight: 6 }} />
-          <Text style={styles.routeLabel}>Pickup:</Text>
-          <Text style={styles.routeValue} numberOfLines={1}>{quest.pickupSpot}</Text>
+        {/* Left Vertical Line */}
+        <View style={styles.timelineCol}>
+          <View style={styles.pickupDot} />
+          <View style={styles.timelineLine} />
+          <View style={styles.dropoffDot} />
         </View>
-        <View style={styles.routeArrowRow}>
-          <View style={styles.routeDottedLine} />
-          <Text style={styles.routeArrow}>↓</Text>
+
+        {/* Right Station Details */}
+        <View style={styles.stationsCol}>
+          <View style={styles.stationRow}>
+            <Text style={styles.stationLabel}>PICKUP</Text>
+            <Text style={styles.stationText} numberOfLines={1}>{quest.pickupSpot}</Text>
+          </View>
+          <View style={[styles.stationRow, { marginTop: 14 }]}>
+            <Text style={styles.stationLabel}>DROPOFF</Text>
+            <Text style={styles.dropoffHighlight} numberOfLines={1}>
+              {quest.dropOffHostelRoom}
+            </Text>
+          </View>
         </View>
-        <View style={styles.routeRow}>
-          <Ionicons name="home-outline" size={14} color="#10B981" style={{ marginRight: 6 }} />
-          <Text style={styles.routeLabel}>Drop-off:</Text>
-          <Text style={styles.routeValueHighlight} numberOfLines={1}>
-            {quest.dropOffHostelRoom}
-          </Text>
+
+        {/* Massive Reward Pill */}
+        <View style={styles.qpRewardBox}>
+          <Ionicons name="sparkles" size={14} color="#F59E0B" />
+          <Text style={styles.qpRewardAmount}>{quest.qpReward || '+50 QP'}</Text>
         </View>
       </View>
 
@@ -94,277 +144,294 @@ export default function QuestBountyCard({
         </View>
       ) : null}
 
-      {/* Divider */}
-      <View style={styles.divider} />
-
-      {/* Bottom Row: Cash Tip + QP Reward & Action Button */}
-      <View style={styles.bottomRow}>
-        {/* Rewards Bundle: Cash Tip (₹30) + QP Reward (+50 QP) */}
-        <View style={styles.rewardsGroup}>
-          {/* Cash Tip */}
-          <View style={styles.cashTipPill}>
-            <Ionicons name="cash-outline" size={13} color="#059669" style={{ marginRight: 4 }} />
-            <Text style={styles.cashTipText}>{quest.cashTip || '₹30'}</Text>
-          </View>
-
-          {/* QP Reward */}
-          <View style={styles.qpRewardPill}>
-            <Ionicons name="sparkles" size={12} color="#D97706" style={{ marginRight: 4 }} />
-            <Text style={styles.qpText}>{quest.qpReward || '+50 QP'}</Text>
-          </View>
+      {/* Interaction: Slide to Claim (in Quester Mode) or View Details (Lazy Mode) */}
+      {isQuesterMode ? (
+        <View
+          style={styles.sliderContainer}
+          onLayout={(e) => setSliderWidth(e.nativeEvent.layout.width)}
+        >
+          {accepted ? (
+            <View style={styles.acceptedBanner}>
+              <Ionicons name="checkmark-circle" size={18} color="#10B981" style={{ marginRight: 6 }} />
+              <Text style={styles.acceptedBannerText}>CLAIMED • EN ROUTE</Text>
+            </View>
+          ) : (
+            <View style={styles.sliderTrack}>
+              <Text style={styles.sliderHintText}>SLIDE TO CLAIM  ➔</Text>
+              <Animated.View
+                style={[
+                  styles.sliderThumb,
+                  {
+                    transform: [{ translateX: slideX }],
+                  },
+                ]}
+                {...panResponder.panHandlers}
+              >
+                <Ionicons name="flash" size={18} color="#FFFFFF" />
+              </Animated.View>
+            </View>
+          )}
         </View>
-
-        {/* Action Button: Visible in Quester Mode */}
-        {isQuesterMode && (
-          <TouchableOpacity
-            style={[
-              styles.acceptBtn,
-              accepted && styles.acceptedBtn,
-            ]}
-            onPress={handleAccept}
-            disabled={accepted}
-            activeOpacity={0.8}
-            accessibilityRole="button"
-            accessibilityLabel={accepted ? 'Quest Accepted' : 'Accept Quest'}
-          >
-            <Ionicons
-              name={accepted ? "checkmark-circle" : "flash"}
-              size={14}
-              color="#FFFFFF"
-              style={{ marginRight: 4 }}
-            />
-            <Text style={[styles.acceptBtnText, accepted && styles.acceptedBtnText]}>
-              {accepted ? 'Accepted' : 'Accept Quest'}
-            </Text>
-          </TouchableOpacity>
-        )}
-
-        {/* In Lazy Mode, show a subtle details / status button */}
-        {isLazyMode && (
+      ) : (
+        <View style={styles.lazyActionRow}>
           <TouchableOpacity
             style={styles.detailsBtn}
             onPress={() => onViewDetails && onViewDetails(quest)}
-            activeOpacity={0.75}
+            activeOpacity={0.8}
           >
-            <Text style={styles.detailsBtnText}>Details →</Text>
+            <Text style={styles.detailsBtnText}>View Details & Status →</Text>
           </TouchableOpacity>
-        )}
-      </View>
-    </Animated.View>
+        </View>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF', // White background
     borderRadius: Radius.lg,
     padding: Spacing.base,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
     marginBottom: Spacing.md,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
+  },
+  cardQuester: {
+    backgroundColor: '#13251E', // Deep emerald surface
+    borderColor: 'rgba(16, 185, 129, 0.25)',
+  },
+  cardLazy: {
+    backgroundColor: '#1A1625', // Deep violet surface
+    borderColor: 'rgba(124, 58, 237, 0.25)',
+  },
+  cardUrgent: {
+    borderColor: 'rgba(239, 68, 68, 0.45)',
   },
   topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   categoryBadge: {
-    backgroundColor: '#F1F5F9',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     borderRadius: Radius.full,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
   },
   categoryBadgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#475569',
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#94A3B8',
+    letterSpacing: 0.5,
   },
   timerBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#EFF6FF',
+    backgroundColor: 'rgba(56, 189, 248, 0.15)',
     paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingVertical: 3,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: '#BFDBFE',
-    gap: 4,
+    borderColor: 'rgba(56, 189, 248, 0.3)',
   },
   timerBadgeUrgent: {
-    backgroundColor: '#FEF2F2',
-    borderColor: '#FECACA',
-  },
-  timerIcon: {
-    fontSize: 11,
+    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+    borderColor: 'rgba(239, 68, 68, 0.4)',
   },
   timerText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#2563EB',
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#38BDF8',
   },
   timerTextUrgent: {
-    color: '#DC2626',
-  },
-  itemTitle: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: '#0F172A',
-    marginBottom: 12,
-    lineHeight: 22,
+    color: '#EF4444',
   },
 
-  // Route: Pickup Spot -> Drop-off Hostel & Room
-  routeContainer: {
-    backgroundColor: '#F8FAFC',
-    borderRadius: Radius.md,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    marginBottom: 10,
-  },
-  routeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  routeIcon: {
-    fontSize: 12,
-  },
-  routeLabel: {
-    fontSize: 11,
-    color: '#64748B',
-    fontWeight: '600',
-  },
-  routeValue: {
-    fontSize: 12,
-    color: '#475569',
-    fontWeight: '600',
-    flex: 1,
-  },
-  routeValueHighlight: {
-    fontSize: 12,
-    color: '#0F172A',
-    fontWeight: '800',
-    flex: 1,
-  },
-  routeArrowRow: {
-    paddingLeft: 4,
-    paddingVertical: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  routeDottedLine: {
-    width: 1,
-    height: 10,
-    backgroundColor: '#CBD5E1',
-    marginLeft: 5,
-  },
-  routeArrow: {
-    fontSize: 11,
-    color: '#94A3B8',
-    marginLeft: 14,
-  },
-
-  notesBox: {
-    marginBottom: 10,
-    paddingHorizontal: 2,
-  },
-  notesText: {
-    fontSize: 12,
-    color: '#64748B',
-    fontStyle: 'italic',
-  },
-
-  divider: {
-    height: 1,
-    backgroundColor: '#F1F5F9',
-    marginBottom: 12,
-  },
-
-  // Bottom row
-  bottomRow: {
+  itemHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    marginBottom: 12,
   },
-  rewardsGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  cashTipPill: {
-    backgroundColor: '#DCFCE7',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: Radius.full,
-    borderWidth: 1,
-    borderColor: '#86EFAC',
-  },
-  cashTipText: {
-    fontSize: 12,
+  itemTitle: {
+    flex: 1,
+    fontSize: 15,
     fontWeight: '800',
-    color: '#15803D',
+    color: '#F8FAFC',
+    marginRight: 8,
   },
-  qpRewardPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FEF3C7',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: Radius.full,
+  cashPill: {
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: Radius.sm,
     borderWidth: 1,
-    borderColor: '#FCD34D',
-    gap: 4,
+    borderColor: 'rgba(16, 185, 129, 0.4)',
   },
-  qpCoin: {
-    fontSize: 11,
-  },
-  qpText: {
+  cashPillText: {
     fontSize: 12,
-    fontWeight: '800',
-    color: '#B45309',
+    fontWeight: '900',
+    color: '#34D399',
   },
 
-  // Buttons
-  acceptBtn: {
-    backgroundColor: '#10B981', // Quester mode green
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+  // Vertical Route Timeline
+  routeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
     borderRadius: Radius.md,
+    padding: 10,
+    marginBottom: 10,
   },
-  acceptedBtn: {
-    backgroundColor: '#DCFCE7',
+  timelineCol: {
+    alignItems: 'center',
+    width: 14,
+    marginRight: 10,
+  },
+  pickupDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#94A3B8',
+  },
+  timelineLine: {
+    width: 2,
+    height: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    marginVertical: 2,
+  },
+  dropoffDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#10B981',
+  },
+  stationsCol: {
+    flex: 1,
+  },
+  stationRow: {
+    justifyContent: 'center',
+  },
+  stationLabel: {
+    fontSize: 8,
+    fontWeight: '800',
+    color: '#64748B',
+    letterSpacing: 0.8,
+  },
+  stationText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#CBD5E1',
+  },
+  dropoffHighlight: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#10B981',
+  },
+
+  // Reward Box
+  qpRewardBox: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#1E170A',
+    borderRadius: Radius.md,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.4)',
+    marginLeft: 8,
+  },
+  qpRewardAmount: {
+    fontSize: 13,
+    fontWeight: '900',
+    color: '#FCD34D',
+    marginTop: 2,
+  },
+
+  // Notes Box
+  notesBox: {
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderRadius: Radius.sm,
+    padding: 8,
+    marginBottom: 12,
+    borderLeftWidth: 2,
+    borderLeftColor: Colors.questerMode,
+  },
+  notesText: {
+    fontSize: 11,
+    fontStyle: 'italic',
+    color: '#94A3B8',
+  },
+
+  // Slide to Claim Slider
+  sliderContainer: {
+    marginTop: 2,
+    height: 48,
+    borderRadius: 24,
+    overflow: 'hidden',
+  },
+  sliderTrack: {
+    flex: 1,
+    backgroundColor: '#0A1510',
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.4)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  sliderHintText: {
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 1.5,
+    color: '#10B981',
+  },
+  sliderThumb: {
+    position: 'absolute',
+    left: 4,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#10B981',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#10B981',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 4,
+  },
+  acceptedBanner: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    borderRadius: 24,
     borderWidth: 1,
     borderColor: '#10B981',
   },
-  acceptBtnText: {
-    color: '#FFFFFF',
+  acceptedBannerText: {
     fontSize: 12,
-    fontWeight: '800',
+    fontWeight: '900',
+    letterSpacing: 1,
+    color: '#10B981',
   },
-  acceptedBtnText: {
-    color: '#059669',
+
+  // Lazy Mode Action
+  lazyActionRow: {
+    marginTop: 4,
   },
   detailsBtn: {
-    backgroundColor: '#F8FAFC',
-    paddingHorizontal: 12,
-    paddingVertical: 7,
+    backgroundColor: 'rgba(124, 58, 237, 0.2)',
     borderRadius: Radius.md,
+    paddingVertical: 10,
+    alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: 'rgba(124, 58, 237, 0.4)',
   },
   detailsBtnText: {
-    color: '#475569',
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '800',
+    color: '#C4B5FD',
   },
 });

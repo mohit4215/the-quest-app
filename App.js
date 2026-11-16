@@ -19,7 +19,7 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <QuestModeProvider>
-        <StatusBar style="dark" backgroundColor="#FFFFFF" translucent={false} />
+        <StatusBar style="light" backgroundColor="#000000" translucent={false} />
         <RootNavigator />
       </QuestModeProvider>
     </SafeAreaProvider>

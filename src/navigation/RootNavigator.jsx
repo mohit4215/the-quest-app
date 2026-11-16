@@ -19,13 +19,13 @@ export default function RootNavigator() {
   return (
     <NavigationContainer
       theme={{
-        dark: false,
+        dark: true,
         colors: {
           primary: accentColor,
-          background: Colors.background, // #FFFFFF
-          card: Colors.surface,          // #FFFFFF
-          text: Colors.textPrimary,      // #0F172A
-          border: Colors.border,         // #E2E8F0
+          background: Colors.background, // #000000 OLED
+          card: Colors.surface,          // #121217
+          text: Colors.textPrimary,      // #F8FAFC
+          border: Colors.border,         // rgba(255,255,255,0.1)
           notification: Colors.error,
         },
       }}

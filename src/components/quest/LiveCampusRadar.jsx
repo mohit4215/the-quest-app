@@ -1,6 +1,6 @@
 /**
- * LiveCampusRadar — Pulsing live campus hotspot radar
- * Light theme (#FFFFFF background)
+ * LiveCampusRadar — Pilot's Dashboard Live Campus Hotspot Radar
+ * Theme: OLED Black (#000000) with Neon Emerald & Alert Red Pulsing Blobs
  */
 
 import React, { useEffect, useRef } from 'react';
@@ -19,26 +19,27 @@ import { useQuestMode } from '../../context/QuestModeContext';
 
 const CAMPUS_SPOTS = [
   {
-    id: 'canteen',
-    name: 'Night Canteen',
-    peers: 8,
-    icon: 'restaurant-outline',
-    status: 'High Activity',
-    category: 'Night Canteen',
-  },
-  {
     id: 'gate',
     name: 'Main Gate',
     peers: 5,
-    icon: 'cube-outline',
-    status: 'Parcels Arrived',
+    icon: 'cube',
+    status: 'High Bounty Parcel',
     category: 'Gate Parcel',
+    isUrgent: true,
+  },
+  {
+    id: 'canteen',
+    name: 'Night Canteen',
+    peers: 8,
+    icon: 'restaurant',
+    status: 'High Activity',
+    category: 'Night Canteen',
   },
   {
     id: 'stationery',
     name: 'Stationery Shop',
     peers: 2,
-    icon: 'print-outline',
+    icon: 'print',
     status: 'Xerox Open',
     category: 'Printouts',
   },
@@ -46,7 +47,7 @@ const CAMPUS_SPOTS = [
     id: 'nescafe',
     name: 'Nescafe Corner',
     peers: 4,
-    icon: 'cafe-outline',
+    icon: 'cafe',
     status: 'Open till 2 AM',
     category: 'Night Canteen',
   },
@@ -54,24 +55,28 @@ const CAMPUS_SPOTS = [
     id: 'bh2',
     name: 'BH-2 Lobby',
     peers: 7,
-    icon: 'business-outline',
-    status: 'Common Room Active',
+    icon: 'business',
+    status: 'Dropoff Hub',
     category: 'Borrow Item',
   },
 ];
 
 export default function LiveCampusRadar({ onSelectSpot }) {
-  const { accentColor } = useQuestMode();
+  const { accentColor, isQuesterMode } = useQuestMode();
 
   // Pulse animation for the live status dot
   const pulseScale = useRef(new Animated.Value(1)).current;
-  const pulseOpacity = useRef(new Animated.Value(0.7)).current;
+  const pulseOpacity = useRef(new Animated.Value(0.8)).current;
+
+  // Urgent gate parcel beacon pulse
+  const redPulseScale = useRef(new Animated.Value(1)).current;
+  const redPulseOpacity = useRef(new Animated.Value(0.9)).current;
 
   // Radar sweep animation
   const sweepAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    // Continuous pulse
+    // Continuous green pulse
     Animated.loop(
       Animated.sequence([
         Animated.parallel([
@@ -95,7 +100,39 @@ export default function LiveCampusRadar({ onSelectSpot }) {
             useNativeDriver: true,
           }),
           Animated.timing(pulseOpacity, {
-            toValue: 0.7,
+            toValue: 0.8,
+            duration: 0,
+            useNativeDriver: true,
+          }),
+        ]),
+      ])
+    ).start();
+
+    // Urgent Red beacon pulse
+    Animated.loop(
+      Animated.sequence([
+        Animated.parallel([
+          Animated.timing(redPulseScale, {
+            toValue: 2.6,
+            duration: 900,
+            easing: Easing.out(Easing.ease),
+            useNativeDriver: true,
+          }),
+          Animated.timing(redPulseOpacity, {
+            toValue: 0,
+            duration: 900,
+            easing: Easing.out(Easing.ease),
+            useNativeDriver: true,
+          }),
+        ]),
+        Animated.parallel([
+          Animated.timing(redPulseScale, {
+            toValue: 1,
+            duration: 0,
+            useNativeDriver: true,
+          }),
+          Animated.timing(redPulseOpacity, {
+            toValue: 0.9,
             duration: 0,
             useNativeDriver: true,
           }),
@@ -107,12 +144,12 @@ export default function LiveCampusRadar({ onSelectSpot }) {
     Animated.loop(
       Animated.timing(sweepAnim, {
         toValue: 1,
-        duration: 4000,
+        duration: 3500,
         easing: Easing.linear,
         useNativeDriver: true,
       })
     ).start();
-  }, [pulseScale, pulseOpacity, sweepAnim]);
+  }, [pulseScale, pulseOpacity, redPulseScale, redPulseOpacity, sweepAnim]);
 
   const sweepRotate = sweepAnim.interpolate({
     inputRange: [0, 1],
@@ -120,7 +157,10 @@ export default function LiveCampusRadar({ onSelectSpot }) {
   });
 
   return (
-    <View style={styles.card}>
+    <View style={[
+      styles.card,
+      isQuesterMode && styles.cardQuester,
+    ]}>
       {/* Top Header Row */}
       <View style={styles.headerRow}>
         <View style={styles.liveBadgeGroup}>
@@ -140,20 +180,20 @@ export default function LiveCampusRadar({ onSelectSpot }) {
         </View>
 
         <View style={styles.activeCounter}>
-          <Text style={styles.activeCounterText}>26 Peers Active</Text>
+          <Text style={styles.activeCounterText}>26 Questers Active</Text>
         </View>
       </View>
 
       <Text style={styles.radarSubtitle}>
-        Real-time hostel density detected near student hubs
+        Heatmap pulses show high-value orders & runner traffic
       </Text>
 
-      {/* Radar Miniature Visual Strip */}
+      {/* Radar Scope Display */}
       <View style={styles.radarScope}>
         {/* Concentric rings */}
-        <View style={[styles.scopeRing, { width: 140, height: 140, borderRadius: 70 }]} />
-        <View style={[styles.scopeRing, { width: 90, height: 90, borderRadius: 45 }]} />
-        <View style={[styles.scopeRing, { width: 40, height: 40, borderRadius: 20 }]} />
+        <View style={[styles.scopeRing, { width: 150, height: 150, borderRadius: 75 }]} />
+        <View style={[styles.scopeRing, { width: 100, height: 100, borderRadius: 50 }]} />
+        <View style={[styles.scopeRing, { width: 44, height: 44, borderRadius: 22 }]} />
 
         {/* Sweep line */}
         <Animated.View
@@ -167,20 +207,32 @@ export default function LiveCampusRadar({ onSelectSpot }) {
 
         {/* Center icon */}
         <View style={[styles.scopeCenterDot, { backgroundColor: accentColor }]}>
-          <Ionicons name="location" size={13} color="#FFFFFF" />
+          <Ionicons name="navigate" size={13} color="#FFFFFF" />
         </View>
 
-        {/* Interactive hotspot blips on the scope */}
-        <View style={[styles.blip, { top: 16, left: 32 }]}>
+        {/* Urgent Gate Parcel Beacon (Glowing Red Dot) */}
+        <View style={[styles.gateBeacon, { top: 22, right: 34 }]}>
+          <Animated.View
+            style={[
+              styles.redPulseRing,
+              {
+                transform: [{ scale: redPulseScale }],
+                opacity: redPulseOpacity,
+              },
+            ]}
+          />
+          <View style={styles.redDot} />
+          <Text style={styles.gateBeaconText}>Gate • 3 Waiting</Text>
+        </View>
+
+        {/* Other hotspot blips */}
+        <View style={[styles.blip, { top: 18, left: 24 }]}>
           <Text style={styles.blipText}>Canteen • 8</Text>
         </View>
-        <View style={[styles.blip, { top: 26, right: 36 }]}>
-          <Text style={styles.blipText}>Gate • 5</Text>
+        <View style={[styles.blip, { bottom: 18, left: 38 }]}>
+          <Text style={styles.blipText}>Xerox • 2</Text>
         </View>
-        <View style={[styles.blip, { bottom: 18, left: 45 }]}>
-          <Text style={styles.blipText}>Print • 2</Text>
-        </View>
-        <View style={[styles.blip, { bottom: 20, right: 40 }]}>
+        <View style={[styles.blip, { bottom: 20, right: 38 }]}>
           <Text style={styles.blipText}>Nescafe • 4</Text>
         </View>
       </View>
@@ -194,20 +246,27 @@ export default function LiveCampusRadar({ onSelectSpot }) {
         {CAMPUS_SPOTS.map((spot) => (
           <TouchableOpacity
             key={spot.id}
-            style={styles.spotCard}
+            style={[
+              styles.spotCard,
+              spot.isUrgent && styles.spotCardUrgent,
+            ]}
             onPress={() => onSelectSpot && onSelectSpot(spot.category)}
-            activeOpacity={0.75}
+            activeOpacity={0.8}
           >
             <View style={styles.spotTop}>
-              <Ionicons name={spot.icon} size={18} color={accentColor} />
-              <View style={styles.peerPill}>
-                <View style={styles.onlineMiniDot} />
-                <Text style={styles.peerCount}>{spot.peers} peers</Text>
+              <Ionicons
+                name={spot.icon}
+                size={16}
+                color={spot.isUrgent ? '#EF4444' : Colors.questerMode}
+              />
+              <View style={[styles.peerPill, spot.isUrgent && styles.peerPillUrgent]}>
+                <View style={[styles.onlineMiniDot, spot.isUrgent && { backgroundColor: '#EF4444' }]} />
+                <Text style={[styles.peerCount, spot.isUrgent && { color: '#EF4444' }]}>
+                  {spot.peers} active
+                </Text>
               </View>
             </View>
-            <Text style={styles.spotName} numberOfLines={1}>
-              {spot.name}
-            </Text>
+            <Text style={styles.spotName}>{spot.name}</Text>
             <Text style={styles.spotStatus}>{spot.status}</Text>
           </TouchableOpacity>
         ))}
@@ -218,18 +277,16 @@ export default function LiveCampusRadar({ onSelectSpot }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF', // White
+    backgroundColor: '#121217',
     borderRadius: Radius.lg,
     padding: Spacing.base,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    marginBottom: Spacing.lg,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    marginBottom: Spacing.base,
+  },
+  cardQuester: {
+    backgroundColor: '#13251E', // Deep emerald surface
+    borderColor: 'rgba(16, 185, 129, 0.25)',
   },
   headerRow: {
     flexDirection: 'row',
@@ -262,64 +319,97 @@ const styles = StyleSheet.create({
     backgroundColor: '#10B981',
   },
   headerTitle: {
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: 11,
+    fontWeight: '900',
     letterSpacing: 1.2,
-    color: '#059669',
+    color: '#10B981',
   },
   activeCounter: {
-    backgroundColor: '#F1F5F9',
+    backgroundColor: 'rgba(16, 185, 129, 0.15)',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: 'rgba(16, 185, 129, 0.3)',
   },
   activeCounterText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#475569',
+    color: '#34D399',
   },
   radarSubtitle: {
-    fontSize: 12,
-    color: '#64748B',
+    fontSize: 11,
+    color: '#94A3B8',
     marginBottom: 12,
   },
 
   // Radar scope
   radarScope: {
-    height: 110,
-    backgroundColor: '#F8FAFC',
+    height: 124,
+    backgroundColor: '#090D0B',
     borderRadius: Radius.md,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: 'rgba(16, 185, 129, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 14,
+    marginBottom: 12,
     position: 'relative',
     overflow: 'hidden',
   },
   scopeRing: {
     position: 'absolute',
     borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.25)',
+    borderColor: 'rgba(16, 185, 129, 0.22)',
   },
   scopeSweep: {
     position: 'absolute',
-    width: 120,
+    width: 130,
     height: 2,
-    backgroundColor: 'rgba(16, 185, 129, 0.45)',
+    backgroundColor: 'rgba(16, 185, 129, 0.65)',
   },
   scopeCenterDot: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     alignItems: 'center',
     justifyContent: 'center',
+    elevation: 3,
   },
-  scopeCenterText: {
-    fontSize: 11,
+
+  // Gate Urgent Beacon
+  gateBeacon: {
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(239, 68, 68, 0.25)',
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: '#EF4444',
   },
+  redPulseRing: {
+    position: 'absolute',
+    left: 6,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#EF4444',
+  },
+  redDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+    backgroundColor: '#EF4444',
+    marginRight: 5,
+  },
+  gateBeaconText: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: '#FCA5A5',
+  },
+
+  // Other blips
   blip: {
     position: 'absolute',
     backgroundColor: 'rgba(16, 185, 129, 0.15)',
@@ -327,12 +417,12 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.45)',
+    borderColor: 'rgba(16, 185, 129, 0.4)',
   },
   blipText: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: '700',
-    color: '#047857',
+    color: '#34D399',
   },
 
   // Spot cards
@@ -341,12 +431,16 @@ const styles = StyleSheet.create({
     paddingRight: 4,
   },
   spotCard: {
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#181E1B',
     borderRadius: Radius.md,
     padding: 10,
-    width: 136,
+    width: 132,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  spotCardUrgent: {
+    borderColor: 'rgba(239, 68, 68, 0.35)',
+    backgroundColor: '#1F1416',
   },
   spotTop: {
     flexDirection: 'row',
@@ -354,19 +448,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 6,
   },
-  spotEmoji: {
-    fontSize: 16,
-  },
   peerPill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(16, 185, 129, 0.12)',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: Radius.full,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+  },
+  peerPillUrgent: {
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
   },
   onlineMiniDot: {
     width: 5,
@@ -377,16 +469,16 @@ const styles = StyleSheet.create({
   peerCount: {
     fontSize: 9,
     fontWeight: '700',
-    color: '#059669',
+    color: '#34D399',
   },
   spotName: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0F172A',
+    color: '#F8FAFC',
     marginBottom: 2,
   },
   spotStatus: {
     fontSize: 10,
-    color: '#64748B',
+    color: '#94A3B8',
   },
 });

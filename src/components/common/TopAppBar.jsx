@@ -1,11 +1,10 @@
 /**
- * TopAppBar — Header component for "Quest"
+ * TopAppBar — Omni-Nav Header component for "Quest"
  * Features:
- * - Lemon yellow logo ("Q")
- * - User Hostel badge ("BH-2 • Room 214")
- * - Gold pill badge showing "450 QP" (Quest Points)
- * - Toggle switch to flip between "Lazy Mode" (Purple #7C3AED) and "Quester Mode" (Green #10B981)
- * - White UI background theme
+ * - Top Left: User Avatar with Gamification Tier Progress Ring
+ * - Top Center: Physical-feeling Mode Pill Toggle (🛋️ Lazy Purple vs 🏃 Quester Emerald)
+ * - Top Right: Live QP Balance with glowing aura
+ * - OLED Dark theme (#000000 background)
  */
 
 import React from 'react';
@@ -14,7 +13,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Pressable,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -36,35 +34,52 @@ export default function TopAppBar({
     userProfile,
   } = useQuestMode();
 
-  const hostelText = propHostelBadge || userProfile?.hostelBadge || 'BH-2 • Room 214';
+  const hostelText = propHostelBadge || userProfile?.hostelBadge || 'BH-2 • #214';
   const qpAmount = propQpBalance !== undefined ? propQpBalance : (userProfile?.qpBalance ?? 450);
 
-  return (
-    <View style={[styles.wrapper, { paddingTop: Math.max(insets.top, 12) }]}>
-      {/* Upper Bar: Lemon Yellow Logo + Hostel Badge + Gold QP Pill */}
-      <View style={styles.topRow}>
-        {/* Left: Lemon Yellow Logo + Hostel Badge */}
-        <View style={styles.leftGroup}>
-          {/* Lemon Yellow Logo */}
-          <View style={styles.lemonLogo}>
-            <Text style={styles.lemonLogoText}>Q</Text>
-          </View>
+  // Gamification Tier logic
+  const getTierInfo = (qp) => {
+    if (qp >= 2000) return { name: 'Master', color: '#8B5CF6' };
+    if (qp >= 1000) return { name: 'Gold', color: '#F59E0B' };
+    if (qp >= 400)  return { name: 'Silver', color: '#38BDF8' };
+    return { name: 'Scout', color: '#10B981' };
+  };
 
-          {/* User Hostel Badge */}
-          <View style={styles.hostelBadgeContainer}>
-            <Ionicons name="business" size={16} color={Colors.textSecondary} style={{ marginRight: 6 }} />
-            <View>
-              <Text style={styles.hostelLabel}>HOSTEL</Text>
-              <Text style={styles.hostelText}>{hostelText}</Text>
+  const tier = getTierInfo(qpAmount);
+
+  return (
+    <View style={[styles.wrapper, { paddingTop: Math.max(insets.top, 10) }]}>
+      <View style={styles.topRow}>
+        {/* Top Left: Avatar with Gamification Tier Ring */}
+        <TouchableOpacity
+          style={styles.avatarContainer}
+          activeOpacity={0.8}
+          accessibilityLabel="User profile and tier"
+        >
+          <View style={[styles.tierRing, { borderColor: tier.color }]}>
+            <View style={styles.avatarCircle}>
+              <Text style={styles.avatarInitials}>
+                {(userProfile?.name || 'M')[0].toUpperCase()}
+              </Text>
             </View>
           </View>
-        </View>
+          <View style={styles.userMeta}>
+            <View style={styles.tierTag}>
+              <Text style={[styles.tierLabel, { color: tier.color }]}>
+                {tier.name.toUpperCase()}
+              </Text>
+            </View>
+            <Text style={styles.hostelText} numberOfLines={1}>
+              {hostelText}
+            </Text>
+          </View>
+        </TouchableOpacity>
 
-        {/* Right: Gold Pill Badge showing "450 QP" */}
+        {/* Top Right: Glowing QP Balance */}
         <QPBadge amount={qpAmount} />
       </View>
 
-      {/* Mode Switcher: Lazy Mode (Purple #7C3AED) vs Quester Mode (Green #10B981) */}
+      {/* Top Center: Omni-Nav Pill Switcher */}
       <View style={styles.switchWrapper}>
         <View style={styles.switchTrack}>
           {/* Lazy Mode Option */}
@@ -74,15 +89,15 @@ export default function TopAppBar({
               isLazyMode && styles.switchOptionActiveLazy,
             ]}
             onPress={() => setMode('lazy')}
-            activeOpacity={0.8}
+            activeOpacity={0.85}
             accessibilityRole="button"
             accessibilityLabel="Switch to Lazy Mode"
           >
             <Ionicons
               name="bed"
-              size={15}
-              color={isLazyMode ? Colors.lazyMode : Colors.textMuted}
-              style={{ marginRight: 5 }}
+              size={14}
+              color={isLazyMode ? '#FFFFFF' : Colors.textMuted}
+              style={{ marginRight: 6 }}
             />
             <Text
               style={[
@@ -92,7 +107,6 @@ export default function TopAppBar({
             >
               Lazy Mode
             </Text>
-            {isLazyMode && <View style={styles.lazyDot} />}
           </TouchableOpacity>
 
           {/* Quester Mode Option */}
@@ -102,15 +116,15 @@ export default function TopAppBar({
               isQuesterMode && styles.switchOptionActiveQuester,
             ]}
             onPress={() => setMode('quester')}
-            activeOpacity={0.8}
+            activeOpacity={0.85}
             accessibilityRole="button"
             accessibilityLabel="Switch to Quester Mode"
           >
             <Ionicons
               name="flash"
-              size={15}
-              color={isQuesterMode ? Colors.questerMode : Colors.textMuted}
-              style={{ marginRight: 5 }}
+              size={14}
+              color={isQuesterMode ? '#FFFFFF' : Colors.textMuted}
+              style={{ marginRight: 6 }}
             />
             <Text
               style={[
@@ -120,34 +134,8 @@ export default function TopAppBar({
             >
               Quester Mode
             </Text>
-            {isQuesterMode && <View style={styles.questerDot} />}
           </TouchableOpacity>
         </View>
-
-        {/* Mini quick toggle slider pill on the side */}
-        <Pressable
-          onPress={toggleMode}
-          style={[
-            styles.toggleMiniTrack,
-            { backgroundColor: isLazyMode ? Colors.lazyMode : Colors.questerMode },
-          ]}
-          accessibilityRole="switch"
-          accessibilityState={{ checked: isQuesterMode }}
-          accessibilityLabel={`Currently in ${isLazyMode ? 'Lazy Mode' : 'Quester Mode'}. Tap to toggle.`}
-        >
-          <View
-            style={[
-              styles.toggleMiniThumb,
-              isQuesterMode ? styles.toggleThumbRight : styles.toggleThumbLeft,
-            ]}
-          >
-            <Ionicons
-              name={isLazyMode ? 'moon' : 'walk'}
-              size={13}
-              color={isLazyMode ? Colors.lazyMode : Colors.questerMode}
-            />
-          </View>
-        </Pressable>
       </View>
     </View>
   );
@@ -155,91 +143,74 @@ export default function TopAppBar({
 
 const styles = StyleSheet.create({
   wrapper: {
-    backgroundColor: '#FFFFFF', // White background
+    backgroundColor: '#000000', // OLED Black
     paddingHorizontal: Spacing.base,
-    paddingBottom: Spacing.md,
+    paddingBottom: Spacing.sm + 2,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
   },
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.sm,
   },
-  leftGroup: {
+  avatarContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 8,
   },
-  // Lemon Yellow Logo
-  lemonLogo: {
+  tierRing: {
     width: 38,
     height: 38,
-    borderRadius: 12,
-    backgroundColor: '#FAEA48', // Lemon Yellow
+    borderRadius: 19,
+    borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1.5,
-    borderColor: '#EAB308',
-    shadowColor: '#EAB308',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 3,
+    padding: 2,
   },
-  lemonLogoText: {
-    fontSize: 22,
-    fontWeight: '900',
-    color: '#0F172A', // Dark contrasting text
-    letterSpacing: -0.5,
+  avatarCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#1E1E28',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  // Hostel Badge
-  hostelBadgeContainer: {
+  avatarInitials: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#F8FAFC',
+  },
+  userMeta: {
+    justifyContent: 'center',
+  },
+  tierTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8FAFC',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: Radius.md,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    gap: 6,
   },
-  hostelIcon: {
-    fontSize: 13,
-  },
-  hostelLabel: {
-    fontSize: 8,
-    fontWeight: '800',
-    letterSpacing: 0.8,
-    color: '#64748B',
+  tierLabel: {
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 0.6,
   },
   hostelText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#0F172A',
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#94A3B8',
   },
 
-  // Mode Switcher styles
+  // Omni-Nav Pill Switcher
   switchWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
+    marginTop: 2,
   },
   switchTrack: {
-    flex: 1,
     flexDirection: 'row',
-    backgroundColor: '#F1F5F9',
+    backgroundColor: '#121217',
     borderRadius: Radius.full,
     padding: 3,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   switchOption: {
     flex: 1,
@@ -247,32 +218,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 7,
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     borderRadius: Radius.full,
-    gap: 6,
   },
   switchOptionActiveLazy: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: Colors.lazyMode, // #7C3AED
+    backgroundColor: Colors.lazyMode, // Electric Purple
     shadowColor: Colors.lazyMode,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.45,
+    shadowRadius: 6,
+    elevation: 4,
   },
   switchOptionActiveQuester: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: Colors.questerMode, // #10B981
+    backgroundColor: Colors.questerMode, // Neon Emerald
     shadowColor: Colors.questerMode,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  optionIcon: {
-    fontSize: 13,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.45,
+    shadowRadius: 6,
+    elevation: 4,
   },
   optionText: {
     fontSize: 12,
@@ -280,54 +243,11 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   optionTextActiveLazy: {
-    color: Colors.lazyMode,
-    fontWeight: '700',
+    color: '#FFFFFF',
+    fontWeight: '800',
   },
   optionTextActiveQuester: {
-    color: Colors.questerMode,
-    fontWeight: '700',
-  },
-  lazyDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: Colors.lazyMode,
-  },
-  questerDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: Colors.questerMode,
-  },
-
-  // Mini toggle slider
-  toggleMiniTrack: {
-    width: 48,
-    height: 28,
-    borderRadius: 14,
-    padding: 2,
-    justifyContent: 'center',
-  },
-  toggleMiniThumb: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-  },
-  toggleThumbLeft: {
-    alignSelf: 'flex-start',
-  },
-  toggleThumbRight: {
-    alignSelf: 'flex-end',
-  },
-  miniThumbIcon: {
-    fontSize: 11,
+    color: '#FFFFFF',
+    fontWeight: '800',
   },
 });

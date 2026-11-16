@@ -1,15 +1,12 @@
 /**
- * ActiveQuestScreen — "Active Quest" tab for "Quest"
- *
- * Requirements:
- * 1. 4-step interactive progress tracker:
- *    "Quest Claimed" -> "At Shop/Gate" -> "Walking to Hostel" -> "Delivered"
- * 2. Button to advance to the next step, ending with a 4-digit OTP input box
- *    to complete delivery and add earned QP to the top wallet balance
- * 3. Compact quick-chat box at the bottom with 1-tap preset replies:
- *    - "At your hostel gate"
- *    - "Item out of stock, want an alternative?"
- *    - "Send UPI on delivery"
+ * ActiveQuestScreen — "The Handshake" Delivery Cockpit
+ * Features:
+ * 1. Horizontal Status Tracker: Open ➔ Claimed ➔ Walking ➔ Doorstep
+ * 2. 1-Tap Floating Quick-Chats: "At counter", "Heading to BH-1 now", "Waiting outside"
+ * 3. Dual-Role Handshake:
+ *    - 🛋️ Requester View: Frosted-Glass OTP Vault displaying big 4-digit code
+ *    - 🏃 Quester View: Custom Sleek Numeric Keypad + Green Screen Flash & QP Celebration
+ * Theme: OLED Black (#000000)
  */
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -19,11 +16,8 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  TextInput,
   Modal,
   Animated,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -31,43 +25,18 @@ import { Colors, Spacing, Radius } from '../constants';
 import { useQuestMode, DEFAULT_ACTIVE_QUEST } from '../context/QuestModeContext';
 import TopAppBar from '../components/common/TopAppBar';
 
-// 4 Steps defined
 const TRACKER_STEPS = [
-  {
-    step: 0,
-    title: 'Quest Claimed',
-    desc: 'Accepted & locked to you',
-    iconName: 'clipboard-outline',
-    actionText: "I've Arrived at Shop/Gate →",
-  },
-  {
-    step: 1,
-    title: 'At Shop/Gate',
-    desc: 'Picking up item from vendor/gate',
-    iconName: 'storefront-outline',
-    actionText: 'Order Collected, Walking to Hostel →',
-  },
-  {
-    step: 2,
-    title: 'Walking to Hostel',
-    desc: 'En route to recipient room',
-    iconName: 'walk-outline',
-    actionText: 'Arrived at Room Door →',
-  },
-  {
-    step: 3,
-    title: 'Delivered',
-    desc: 'Enter 4-digit OTP to complete',
-    iconName: 'shield-checkmark-outline',
-    actionText: 'Verify OTP & Complete Delivery',
-  },
+  { step: 0, title: 'Claimed', desc: 'Runner assigned', icon: 'flash' },
+  { step: 1, title: 'At Shop/Gate', desc: 'Order pickup', icon: 'storefront' },
+  { step: 2, title: 'Walking', desc: 'En route to hostel', icon: 'walk' },
+  { step: 3, title: 'Doorstep', desc: 'OTP Handshake', icon: 'shield-checkmark' },
 ];
 
-// Preset chat messages
 const PRESET_CHATS = [
-  'At your hostel gate',
-  'Item out of stock, want an alternative?',
-  'Send UPI on delivery',
+  'At the counter now',
+  'Heading to BH-1 now',
+  'Waiting outside your door',
+  'Send UPI QR on delivery',
 ];
 
 export default function ActiveQuestScreen() {
@@ -79,124 +48,95 @@ export default function ActiveQuestScreen() {
     advanceStep,
     addQP,
     clearActiveQuest,
-    userProfile,
+    isLazyMode,
+    isQuesterMode,
+    accentColor,
   } = useQuestMode();
 
-  // If no quest was set, fallback to default mock quest
   const currentQuest = activeQuest || DEFAULT_ACTIVE_QUEST;
 
-  // 4-Digit OTP state
-  const [otpDigits, setOtpDigits] = useState(['', '', '', '']);
+  // 4-Digit OTP state for Quester keypad
+  const [enteredOtp, setEnteredOtp] = useState('');
   const [otpError, setOtpError] = useState(false);
   const [celebrationVisible, setCelebrationVisible] = useState(false);
-  const [earnedAmount, setEarnedAmount] = useState(50);
 
-  // OTP input refs
-  const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
+  // Screen flash animation
+  const flashAnim = useRef(new Animated.Value(0)).current;
 
   // Quick-Chat state
   const [chatMessages, setChatMessages] = useState([
     {
       id: 'm1',
-      sender: 'recipient',
-      text: 'Hey! Thanks for picking this up. Please grab an extra napkin/seasoning packet if you can 🙏',
-      time: 'Just now',
+      sender: 'courier',
+      text: 'Hey! At the canteen counter picking up your butter maggi now 👍',
+      time: '2m ago',
     },
   ]);
-  const [customMsg, setCustomMsg] = useState('');
   const chatScrollRef = useRef(null);
 
-  // Animation for step change
-  const fadeAnim = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    fadeAnim.setValue(0.6);
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  }, [activeStep, fadeAnim]);
-
-  // Handle advancing steps
-  const handleAdvanceStep = () => {
-    if (activeStep < 3) {
-      advanceStep();
-    }
-  };
-
-  // OTP change handler
-  const handleOtpChange = (value, index) => {
-    setOtpError(false);
-    const newDigits = [...otpDigits];
-    newDigits[index] = value;
-    setOtpDigits(newDigits);
-
-    // Auto advance focus to next cell
-    if (value && index < 3) {
-      inputRefs[index + 1]?.current?.focus();
-    }
-  };
-
-  const handleOtpKeyPress = (e, index) => {
-    if (e.nativeEvent.key === 'Backspace' && !otpDigits[index] && index > 0) {
-      inputRefs[index - 1]?.current?.focus();
-    }
-  };
-
-  // Verify OTP and complete delivery
-  const handleVerifyOtp = () => {
-    const enteredCode = otpDigits.join('');
-    const targetCode = currentQuest?.otpCode || '4821';
-
-    // Allow correct OTP or demo code
-    if (enteredCode === targetCode || enteredCode.length === 4) {
-      const qpToReward = currentQuest?.rewardQPNumber || 50;
-      setEarnedAmount(qpToReward);
-
-      // Add earned QP to top wallet balance dynamically!
-      addQP(qpToReward);
-
-      // Show celebration modal
-      setCelebrationVisible(true);
+  // Keypad press handler
+  const handleKeyPress = (num) => {
+    if (enteredOtp.length < 4) {
+      const nextOtp = enteredOtp + num;
+      setEnteredOtp(nextOtp);
       setOtpError(false);
+
+      if (nextOtp.length === 4) {
+        verifyCode(nextOtp);
+      }
+    }
+  };
+
+  const handleBackspace = () => {
+    if (enteredOtp.length > 0) {
+      setEnteredOtp(enteredOtp.slice(0, -1));
+      setOtpError(false);
+    }
+  };
+
+  const verifyCode = (code) => {
+    const targetCode = currentQuest?.otpCode || '4821';
+    if (code === targetCode || code === '4821') {
+      // Trigger green screen flash
+      Animated.sequence([
+        Animated.timing(flashAnim, { toValue: 1, duration: 150, useNativeDriver: true }),
+        Animated.timing(flashAnim, { toValue: 0, duration: 300, useNativeDriver: true }),
+      ]).start();
+
+      const qpEarned = currentQuest?.rewardQPNumber || 50;
+      addQP(qpEarned);
+      setCelebrationVisible(true);
     } else {
       setOtpError(true);
     }
   };
 
-  const handleFillDemoOtp = () => {
-    const code = (currentQuest?.otpCode || '4821').split('');
-    setOtpDigits(code);
-    setOtpError(false);
-  };
-
-  // Send quick chat
   const handleSendChat = (textToSend) => {
-    const trimmed = textToSend.trim();
-    if (!trimmed) return;
-
     const newMsg = {
       id: `msg_${Date.now()}`,
-      sender: 'me',
-      text: trimmed,
+      sender: isQuesterMode ? 'courier' : 'requester',
+      text: textToSend,
       time: 'Just now',
     };
-
     setChatMessages((prev) => [...prev, newMsg]);
-    setCustomMsg('');
-
-    // Scroll to bottom
     setTimeout(() => {
       chatScrollRef.current?.scrollToEnd({ animated: true });
     }, 100);
   };
 
-  const currentStepInfo = TRACKER_STEPS[activeStep];
-
   return (
     <View style={styles.container}>
-      {/* Top App Bar showing dynamic QP wallet */}
+      {/* Green screen flash overlay on successful handshake */}
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          styles.flashOverlay,
+          {
+            opacity: flashAnim,
+          },
+        ]}
+      />
+
       <TopAppBar />
 
       <ScrollView
@@ -204,97 +144,91 @@ export default function ActiveQuestScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Active Quest Info Header Card */}
-        <View style={styles.questCard}>
-          <View style={styles.questCardTop}>
-            <View style={styles.livePulseRow}>
-              <View style={styles.liveDot} />
-              <Text style={styles.liveBadgeText}>ACTIVE DELIVERY IN PROGRESS</Text>
-            </View>
-            <View style={styles.etaPill}>
-              <Text style={styles.etaText}>⏱️ {currentQuest?.countdown || '15 mins'}</Text>
-            </View>
-          </View>
-
-          <Text style={styles.questTitle}>{currentQuest?.item}</Text>
-
-          {/* Route Display */}
-          <View style={styles.routeBox}>
-            <View style={styles.routeItem}>
-              <Text style={styles.routeIcon}>📍</Text>
-              <View style={styles.routeTextGroup}>
-                <Text style={styles.routeLabel}>PICKUP FROM</Text>
-                <Text style={styles.routeVal}>{currentQuest?.pickupSpot}</Text>
-              </View>
-            </View>
-            <View style={styles.routeDivider} />
-            <View style={styles.routeItem}>
-              <Text style={styles.routeIcon}>🏠</Text>
-              <View style={styles.routeTextGroup}>
-                <Text style={styles.routeLabel}>DELIVER TO</Text>
-                <Text style={styles.routeValHighlight}>
-                  {currentQuest?.dropOffHostelRoom}
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Rewards Row */}
-          <View style={styles.rewardsRow}>
-            <View style={styles.cashPill}>
-              <Ionicons name="cash-outline" size={14} color="#059669" style={{ marginRight: 4 }} />
-              <Text style={styles.cashPillText}>
-                {currentQuest?.cashTip || '₹30'} Cash Tip
+        {/* Active Delivery Status Card */}
+        <View style={[styles.cockpitCard, isQuesterMode ? styles.cardQuester : styles.cardLazy]}>
+          <View style={styles.cockpitTop}>
+            <View style={styles.liveIndicatorRow}>
+              <View style={[styles.liveDot, { backgroundColor: accentColor }]} />
+              <Text style={[styles.liveTag, { color: accentColor }]}>
+                {isQuesterMode ? 'ACTIVE RUN IN PROGRESS' : 'ORDER BEING DELIVERED'}
               </Text>
+            </View>
+            <View style={styles.etaBadge}>
+              <Text style={styles.etaText}>⏱️ {currentQuest?.countdown || '12 mins left'}</Text>
+            </View>
+          </View>
+
+          <Text style={styles.cockpitItemTitle}>{currentQuest?.item}</Text>
+
+          {/* Route Nodes */}
+          <View style={styles.routeContainer}>
+            <View style={styles.routeRow}>
+              <Ionicons name="location" size={14} color="#94A3B8" style={{ marginRight: 6 }} />
+              <Text style={styles.routeLabel}>From:</Text>
+              <Text style={styles.routeVal} numberOfLines={1}>{currentQuest?.pickupSpot}</Text>
+            </View>
+            <View style={styles.routeRow}>
+              <Ionicons name="home" size={14} color="#10B981" style={{ marginRight: 6 }} />
+              <Text style={styles.routeLabel}>To:</Text>
+              <Text style={styles.routeValHighlight} numberOfLines={1}>
+                {currentQuest?.dropOffHostelRoom}
+              </Text>
+            </View>
+          </View>
+
+          {/* Bounty details */}
+          <View style={styles.bountyRow}>
+            <View style={styles.tipPill}>
+              <Ionicons name="cash" size={13} color="#34D399" style={{ marginRight: 4 }} />
+              <Text style={styles.tipText}>{currentQuest?.cashTip || '₹30'} Cash Tip</Text>
             </View>
             <View style={styles.qpPill}>
-              <Ionicons name="sparkles" size={13} color="#D97706" style={{ marginRight: 4 }} />
-              <Text style={styles.qpPillText}>
-                {currentQuest?.qpReward || '+50 QP'} Reward
-              </Text>
+              <Ionicons name="sparkles" size={13} color="#FCD34D" style={{ marginRight: 4 }} />
+              <Text style={styles.qpText}>{currentQuest?.qpReward || '+50 QP'}</Text>
             </View>
           </View>
         </View>
 
-        {/* 1. 4-Step Interactive Progress Tracker */}
+        {/* 1. Horizontal Status Tracker (Open ➔ Claimed ➔ Walking ➔ Doorstep) */}
         <View style={styles.trackerCard}>
           <View style={styles.trackerHeader}>
-            <Text style={styles.trackerTitle}>Delivery Progress</Text>
-            <Text style={styles.trackerSubtitle}>Step {activeStep + 1} of 4</Text>
+            <Text style={styles.trackerTitle}>DELIVERY TIMELINE</Text>
+            <Text style={styles.trackerStepNumber}>Step {activeStep + 1} of 4</Text>
           </View>
 
-          {/* Horizontal Step Stepper */}
           <View style={styles.stepperRow}>
-            {TRACKER_STEPS.map((s, idx) => {
-              const isCompleted = activeStep > s.step;
-              const isCurrent = activeStep === s.step;
+            {TRACKER_STEPS.map((step, idx) => {
+              const isDone = activeStep > step.step;
+              const isCurrent = activeStep === step.step;
 
               return (
-                <React.Fragment key={s.step}>
+                <React.Fragment key={step.step}>
                   <TouchableOpacity
-                    style={styles.stepCol}
-                    onPress={() => setActiveStep(s.step)}
-                    activeOpacity={0.7}
+                    style={styles.stepItem}
+                    onPress={() => setActiveStep(step.step)}
+                    activeOpacity={0.8}
                   >
                     <View
                       style={[
-                        styles.stepCircle,
-                        isCompleted && styles.stepCircleCompleted,
-                        isCurrent && styles.stepCircleCurrent,
+                        styles.stepDot,
+                        isDone && { backgroundColor: '#10B981', borderColor: '#10B981' },
+                        isCurrent && { backgroundColor: accentColor, borderColor: '#FFFFFF' },
                       ]}
                     >
-                      <Text style={styles.stepCircleText}>
-                        {isCompleted ? '✓' : idx + 1}
-                      </Text>
+                      <Ionicons
+                        name={isDone ? 'checkmark' : step.icon}
+                        size={12}
+                        color="#FFFFFF"
+                      />
                     </View>
                     <Text
                       style={[
-                        styles.stepName,
-                        (isCurrent || isCompleted) && styles.stepNameActive,
+                        styles.stepTitle,
+                        (isDone || isCurrent) && { color: '#F8FAFC', fontWeight: '800' },
                       ]}
-                      numberOfLines={2}
+                      numberOfLines={1}
                     >
-                      {s.title}
+                      {step.title}
                     </Text>
                   </TouchableOpacity>
 
@@ -302,7 +236,7 @@ export default function ActiveQuestScreen() {
                     <View
                       style={[
                         styles.stepConnector,
-                        activeStep > idx && styles.stepConnectorActive,
+                        activeStep > idx && { backgroundColor: '#10B981' },
                       ]}
                     />
                   )}
@@ -311,204 +245,198 @@ export default function ActiveQuestScreen() {
             })}
           </View>
 
-          {/* Current Step Detailed Card */}
-          <Animated.View style={[styles.currentStepCard, { opacity: fadeAnim }]}>
-            <View style={styles.currentStepIconWrapper}>
-              <Ionicons name={currentStepInfo.iconName} size={20} color="#059669" />
-            </View>
-            <View style={styles.currentStepInfo}>
-              <Text style={styles.currentStepTitle}>{currentStepInfo.title}</Text>
-              <Text style={styles.currentStepDesc}>{currentStepInfo.desc}</Text>
-            </View>
-          </Animated.View>
-
-          {/* 2. Step Advance Button or 4-Digit OTP Input Box */}
-          {activeStep < 3 ? (
+          {/* Advance Step Button for Quester before reaching Doorstep */}
+          {activeStep < 3 && (
             <TouchableOpacity
-              style={styles.advanceBtn}
-              onPress={handleAdvanceStep}
+              style={[styles.nextStepBtn, { backgroundColor: accentColor }]}
+              onPress={advanceStep}
               activeOpacity={0.85}
             >
-              <Text style={styles.advanceBtnText}>{currentStepInfo.actionText}</Text>
+              <Text style={styles.nextStepBtnText}>
+                Advance Status: Next Step →
+              </Text>
             </TouchableOpacity>
-          ) : (
-            /* Step 4: 4-Digit OTP Box */
-            <View style={styles.otpSection}>
-              <View style={styles.otpHeader}>
-                <Text style={styles.otpPromptTitle}>
-                  Enter Recipient's 4-Digit OTP
-                </Text>
-                <Text style={styles.otpPromptSubtitle}>
-                  Ask {currentQuest?.recipientName || 'Aman'} at Room 214 for their code to unlock your rewards.
-                </Text>
-              </View>
-
-              {/* 4 Digit Boxes */}
-              <View style={styles.otpBoxesRow}>
-                {otpDigits.map((digit, index) => (
-                  <TextInput
-                    key={index}
-                    ref={inputRefs[index]}
-                    style={[
-                      styles.otpBox,
-                      digit ? styles.otpBoxFilled : null,
-                      otpError ? styles.otpBoxError : null,
-                    ]}
-                    maxLength={1}
-                    keyboardType="number-pad"
-                    value={digit}
-                    onChangeText={(val) => handleOtpChange(val, index)}
-                    onKeyPress={(e) => handleOtpKeyPress(e, index)}
-                    selectTextOnFocus
-                  />
-                ))}
-              </View>
-
-              {otpError && (
-                <Text style={styles.otpErrorText}>
-                  ⚠️ Incorrect OTP. Please re-check with the recipient.
-                </Text>
-              )}
-
-              {/* Demo auto-fill chip */}
-              <TouchableOpacity
-                style={styles.demoOtpChip}
-                onPress={handleFillDemoOtp}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.demoOtpText}>
-                  Recipient OTP: <Text style={styles.demoOtpBold}>{currentQuest?.otpCode || '4821'}</Text> (Tap to auto-fill)
-                </Text>
-              </TouchableOpacity>
-
-              {/* Complete Delivery Button */}
-              <TouchableOpacity
-                style={[
-                  styles.verifyOtpBtn,
-                  otpDigits.join('').length < 4 && styles.verifyOtpBtnDisabled,
-                ]}
-                onPress={handleVerifyOtp}
-                disabled={otpDigits.join('').length < 4}
-                activeOpacity={0.85}
-              >
-                <Text style={styles.verifyOtpBtnText}>
-                  Complete Delivery & Claim {currentQuest?.qpReward || '+50 QP'}
-                </Text>
-              </TouchableOpacity>
-            </View>
           )}
         </View>
 
-        {/* 3. Compact Quick-Chat Box at Bottom */}
+        {/* ── 2. DUAL HANDSHAKE SECTION ── */}
+        {/* A. REQUESTER VIEW: The Frosted-Glass OTP Vault */}
+        {isLazyMode ? (
+          <View style={styles.otpVaultCard}>
+            <View style={styles.vaultHeader}>
+              <Ionicons name="lock-closed" size={16} color="#A78BFA" />
+              <Text style={styles.vaultTitle}>THE OTP VAULT</Text>
+            </View>
+
+            <Text style={styles.vaultSub}>
+              Share this secure code with your quester only after receiving your order at your room door.
+            </Text>
+
+            {/* Massive Glowing 4-Digit Display */}
+            <View style={styles.codeVaultBox}>
+              {(currentQuest?.otpCode || '4821').split('').map((char, i) => (
+                <View key={i} style={styles.vaultDigitBox}>
+                  <Text style={styles.vaultDigitText}>{char}</Text>
+                </View>
+              ))}
+            </View>
+
+            <View style={styles.vaultShieldRow}>
+              <Ionicons name="shield-checkmark" size={14} color="#10B981" />
+              <Text style={styles.vaultShieldText}>Handshake protected by Quest Escrow</Text>
+            </View>
+          </View>
+        ) : (
+          /* B. QUESTER VIEW: Sleek Numeric Handshake Keypad at Doorstep */
+          <View style={styles.keypadCard}>
+            <View style={styles.keypadHeader}>
+              <Ionicons name="keypad" size={16} color="#34D399" />
+              <Text style={styles.keypadTitle}>ENTER RECIPIENT'S 4-DIGIT OTP</Text>
+            </View>
+            <Text style={styles.keypadSub}>
+              Ask {currentQuest?.recipientName || 'Aman'} at Room 214 for their code to finalize delivery.
+            </Text>
+
+            {/* OTP 4-Digit Slots */}
+            <View style={styles.otpSlotsRow}>
+              {[0, 1, 2, 3].map((index) => {
+                const char = enteredOtp[index] || '';
+                return (
+                  <View
+                    key={index}
+                    style={[
+                      styles.otpSlot,
+                      char ? styles.otpSlotFilled : null,
+                      otpError ? styles.otpSlotError : null,
+                    ]}
+                  >
+                    <Text style={styles.otpSlotText}>{char}</Text>
+                  </View>
+                );
+              })}
+            </View>
+
+            {otpError && (
+              <Text style={styles.otpErrorMsg}>
+                ⚠️ Code does not match! Ask recipient for the correct 4 digits.
+              </Text>
+            )}
+
+            {/* Demo auto-fill chip */}
+            <TouchableOpacity
+              style={styles.autoFillChip}
+              onPress={() => {
+                setEnteredOtp(currentQuest?.otpCode || '4821');
+                verifyCode(currentQuest?.otpCode || '4821');
+              }}
+            >
+              <Text style={styles.autoFillText}>
+                Demo OTP: <Text style={{ fontWeight: '900', color: '#10B981' }}>{currentQuest?.otpCode || '4821'}</Text> (Tap to auto-enter)
+              </Text>
+            </TouchableOpacity>
+
+            {/* Custom Numeric Keypad */}
+            <View style={styles.keypadGrid}>
+              {[
+                ['1', '2', '3'],
+                ['4', '5', '6'],
+                ['7', '8', '9'],
+                ['clear', '0', 'backspace'],
+              ].map((row, rIdx) => (
+                <View key={rIdx} style={styles.keypadRow}>
+                  {row.map((btn) => (
+                    <TouchableOpacity
+                      key={btn}
+                      style={styles.keypadBtn}
+                      onPress={() => {
+                        if (btn === 'clear') setEnteredOtp('');
+                        else if (btn === 'backspace') handleBackspace();
+                        else handleKeyPress(btn);
+                      }}
+                      activeOpacity={0.7}
+                    >
+                      {btn === 'backspace' ? (
+                        <Ionicons name="backspace" size={20} color="#F8FAFC" />
+                      ) : btn === 'clear' ? (
+                        <Text style={styles.keypadSpecialText}>C</Text>
+                      ) : (
+                        <Text style={styles.keypadNumText}>{btn}</Text>
+                      )}
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+
+        {/* 3. Live 1-Tap Floating Quick-Chats */}
         <View style={styles.chatCard}>
-          {/* Chat Header */}
           <View style={styles.chatHeader}>
-            <View style={styles.chatUserRow}>
+            <View style={styles.chatMeta}>
               <View style={styles.chatAvatar}>
-                <Text style={styles.chatAvatarText}>AS</Text>
+                <Text style={styles.chatAvatarInitials}>
+                  {isQuesterMode ? 'AS' : 'RD'}
+                </Text>
               </View>
               <View>
-                <Text style={styles.chatUserName}>
-                  {currentQuest?.recipientName || 'Aman Sharma'}
+                <Text style={styles.chatName}>
+                  {isQuesterMode ? 'Aman Sharma (Room 214)' : 'Ramesh (Runner)'}
                 </Text>
-                <Text style={styles.chatUserRoom}>
-                  {currentQuest?.dropOffHostelRoom || 'BH-2 • Room 214'} • Online
-                </Text>
+                <Text style={styles.chatOnlineText}>Active on campus corridor</Text>
               </View>
-            </View>
-            <View style={styles.phoneBtn}>
-              <Ionicons name="call-outline" size={13} color={Colors.textSecondary} style={{ marginRight: 4 }} />
-              <Text style={styles.phoneBtnText}>Call</Text>
             </View>
           </View>
 
-          {/* Chat Messages Log */}
+          {/* Chat Messages */}
           <ScrollView
             ref={chatScrollRef}
-            style={styles.chatMessagesScroll}
-            contentContainerStyle={styles.chatMessagesContent}
+            style={styles.chatScroll}
+            contentContainerStyle={styles.chatScrollContent}
             nestedScrollEnabled
           >
-            {chatMessages.map((msg) => {
-              const isMe = msg.sender === 'me';
-              return (
-                <View
-                  key={msg.id}
-                  style={[
-                    styles.msgBubble,
-                    isMe ? styles.msgBubbleMe : styles.msgBubbleRecipient,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.msgText,
-                      isMe ? styles.msgTextMe : styles.msgTextRecipient,
-                    ]}
-                  >
-                    {msg.text}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.msgTime,
-                      isMe ? styles.msgTimeMe : styles.msgTimeRecipient,
-                    ]}
-                  >
-                    {msg.time}
-                  </Text>
-                </View>
-              );
-            })}
+            {chatMessages.map((msg) => (
+              <View
+                key={msg.id}
+                style={[
+                  styles.chatBubble,
+                  msg.sender === (isQuesterMode ? 'courier' : 'requester')
+                    ? styles.chatBubbleMe
+                    : styles.chatBubbleOther,
+                ]}
+              >
+                <Text style={styles.chatBubbleText}>{msg.text}</Text>
+                <Text style={styles.chatBubbleTime}>{msg.time}</Text>
+              </View>
+            ))}
           </ScrollView>
 
-          {/* 1-Tap Preset Replies */}
-          <View style={styles.presetsSection}>
-            <Text style={styles.presetsLabel}>1-Tap Quick Replies:</Text>
+          {/* 1-Tap Quick-Reply Bubbles */}
+          <View style={styles.presetSection}>
+            <Text style={styles.presetLabel}>1-TAP QUICK STATUS:</Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.presetsRow}
+              contentContainerStyle={styles.presetScroll}
             >
               {PRESET_CHATS.map((preset, idx) => (
                 <TouchableOpacity
                   key={idx}
-                  style={styles.presetChip}
+                  style={styles.presetPill}
                   onPress={() => handleSendChat(preset)}
-                  activeOpacity={0.75}
+                  activeOpacity={0.8}
                 >
-                  <Ionicons name="chatbubble-outline" size={11} color={Colors.textSecondary} style={{ marginRight: 4 }} />
-                  <Text style={styles.presetChipText}>{preset}</Text>
+                  <Text style={styles.presetPillText}>{preset}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
           </View>
-
-          {/* Custom Message Input Bar */}
-          <View style={styles.chatInputBar}>
-            <TextInput
-              style={styles.chatTextInput}
-              placeholder="Type message to recipient..."
-              placeholderTextColor="#64748B"
-              value={customMsg}
-              onChangeText={setCustomMsg}
-            />
-            <TouchableOpacity
-              style={[
-                styles.sendBtn,
-                !customMsg.trim() && styles.sendBtnDisabled,
-              ]}
-              onPress={() => handleSendChat(customMsg)}
-              disabled={!customMsg.trim()}
-              activeOpacity={0.8}
-            >
-              <Ionicons name="send" size={14} color="#FFFFFF" />
-            </TouchableOpacity>
-          </View>
         </View>
 
-        <View style={{ height: 40 }} />
+        <View style={{ height: 90 }} />
       </ScrollView>
 
-      {/* Celebration Completion Modal */}
+      {/* Celebration Payout Modal */}
       <Modal
         visible={celebrationVisible}
         animationType="fade"
@@ -517,33 +445,21 @@ export default function ActiveQuestScreen() {
       >
         <View style={styles.celebrationOverlay}>
           <View style={styles.celebrationCard}>
-            <Ionicons name="trophy" size={48} color="#D97706" style={{ marginBottom: 12 }} />
-            <Text style={styles.celebrationTitle}>Quest Completed!</Text>
-            <Text style={styles.celebrationSubtitle}>
-              Great job, Quester! The order was verified with OTP and successfully delivered to Room 214.
+            <Ionicons name="trophy" size={54} color="#F59E0B" style={{ marginBottom: 10 }} />
+            <Text style={styles.celebrationTitle}>DELIVERY COMPLETED!</Text>
+            <Text style={styles.celebrationSub}>
+              OTP verified! Rewards have been instantly deposited into your wallet.
             </Text>
 
-            {/* Reward Summary Card */}
-            <View style={styles.rewardSummaryCard}>
-              <View style={styles.rewardSummaryRow}>
-                <Text style={styles.rewardLabel}>Quest Points Earned:</Text>
-                <Text style={styles.rewardValueQP}>+{earnedAmount} QP</Text>
-              </View>
-              <View style={styles.rewardSummaryRow}>
-                <Text style={styles.rewardLabel}>Cash Tip Received:</Text>
-                <Text style={styles.rewardValueCash}>{currentQuest?.cashTip || '₹30'}</Text>
-              </View>
-              <View style={styles.rewardDivider} />
-              <View style={styles.rewardSummaryRow}>
-                <Text style={styles.rewardLabelTotal}>New QP Balance:</Text>
-                <Text style={styles.rewardValueTotal}>
-                  {userProfile?.qpBalance || 500} QP
-                </Text>
-              </View>
+            <View style={styles.celebrationRewardPill}>
+              <Ionicons name="sparkles" size={20} color="#F59E0B" />
+              <Text style={styles.celebrationQPText}>
+                {currentQuest?.qpReward || '+50 QP'} EARNED
+              </Text>
             </View>
 
             <TouchableOpacity
-              style={styles.celebrationDismissBtn}
+              style={styles.celebrationBtn}
               onPress={() => {
                 setCelebrationVisible(false);
                 clearActiveQuest();
@@ -551,9 +467,7 @@ export default function ActiveQuestScreen() {
               }}
               activeOpacity={0.85}
             >
-              <Text style={styles.celebrationDismissText}>
-                🚀 Claim Another Quest (Home Feed)
-              </Text>
+              <Text style={styles.celebrationBtnText}>Back to Campus Radar</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -565,33 +479,43 @@ export default function ActiveQuestScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: '#000000', // OLED Black
+  },
+  flashOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#10B981',
+    zIndex: 999,
   },
   scroll: {
     flex: 1,
   },
   scrollContent: {
-    padding: Spacing.base,
-    paddingBottom: 110,
+    paddingHorizontal: Spacing.base,
+    paddingTop: Spacing.sm,
   },
 
-  // Active Quest Info Header Card
-  questCard: {
-    backgroundColor: Colors.card,
+  // Cockpit Card
+  cockpitCard: {
     borderRadius: Radius.lg,
     padding: Spacing.base,
-    borderWidth: 1.5,
-    borderColor: '#10B981', // Quester mode green
-    marginBottom: Spacing.base,
-    ...Colors.shadowSm,
+    borderWidth: 1,
+    marginBottom: Spacing.md,
   },
-  questCardTop: {
+  cardQuester: {
+    backgroundColor: '#13251E',
+    borderColor: 'rgba(16, 185, 129, 0.3)',
+  },
+  cardLazy: {
+    backgroundColor: '#1A1625',
+    borderColor: 'rgba(124, 58, 237, 0.3)',
+  },
+  cockpitTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 8,
   },
-  livePulseRow: {
+  liveIndicatorRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
@@ -600,591 +524,493 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#10B981',
   },
-  liveBadgeText: {
+  liveTag: {
     fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 0.8,
-    color: '#059669',
+    fontWeight: '900',
+    letterSpacing: 1,
   },
-  etaPill: {
-    backgroundColor: '#FEF3C7',
+  etaBadge: {
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: Radius.full,
-    borderWidth: 1,
-    borderColor: '#FDE68A',
   },
   etaText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#B45309',
-  },
-  questTitle: {
-    fontSize: 17,
+    fontSize: 10,
     fontWeight: '800',
-    color: Colors.textPrimary,
-    marginBottom: 12,
+    color: '#F8FAFC',
   },
-  routeBox: {
-    backgroundColor: Colors.surfaceAlt,
+  cockpitItemTitle: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#F8FAFC',
+    marginBottom: 10,
+  },
+
+  // Route
+  routeContainer: {
+    backgroundColor: 'rgba(0, 0, 0, 0.35)',
     borderRadius: Radius.md,
     padding: 10,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    gap: 6,
     marginBottom: 12,
   },
-  routeItem: {
+  routeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-  },
-  routeIcon: {
-    fontSize: 14,
-  },
-  routeTextGroup: {
-    flex: 1,
   },
   routeLabel: {
-    fontSize: 9,
+    fontSize: 10,
     fontWeight: '700',
-    color: Colors.textMuted,
-    letterSpacing: 0.6,
+    color: '#64748B',
+    width: 38,
   },
   routeVal: {
     fontSize: 12,
     fontWeight: '600',
-    color: Colors.textSecondary,
-    marginTop: 1,
+    color: '#CBD5E1',
+    flex: 1,
   },
   routeValHighlight: {
     fontSize: 12,
-    fontWeight: '700',
-    color: Colors.textPrimary,
-    marginTop: 1,
-  },
-  routeDivider: {
-    height: 1,
-    backgroundColor: Colors.border,
-    marginVertical: 8,
-    marginLeft: 22,
-  },
-  rewardsRow: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  cashPill: {
-    flex: 1,
-    backgroundColor: '#DCFCE7',
-    paddingVertical: 7,
-    borderRadius: Radius.md,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#BBF7D0',
-  },
-  cashPillText: {
-    fontSize: 12,
     fontWeight: '800',
-    color: '#059669',
-  },
-  qpPill: {
+    color: '#10B981',
     flex: 1,
-    backgroundColor: '#FEF3C7',
-    paddingVertical: 7,
-    borderRadius: Radius.md,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#FDE68A',
-  },
-  qpPillText: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: '#B45309',
   },
 
-  // 1. Progress Tracker Card
+  // Bounty
+  bountyRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  tipPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: Radius.full,
+  },
+  tipText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#34D399',
+  },
+  qpPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1E170A',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.4)',
+  },
+  qpText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#FCD34D',
+  },
+
+  // Horizontal Stepper
   trackerCard: {
-    backgroundColor: Colors.card,
+    backgroundColor: '#121217',
     borderRadius: Radius.lg,
     padding: Spacing.base,
     borderWidth: 1,
-    borderColor: Colors.border,
-    marginBottom: Spacing.base,
-    ...Colors.shadowSm,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    marginBottom: Spacing.md,
   },
   trackerHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 14,
   },
   trackerTitle: {
-    fontSize: 15,
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 1,
+    color: '#94A3B8',
+  },
+  trackerStepNumber: {
+    fontSize: 11,
     fontWeight: '700',
-    color: Colors.textPrimary,
+    color: '#64748B',
   },
-  trackerSubtitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#059669',
-  },
-
-  // Stepper horizontal row
   stepperRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 18,
-    paddingHorizontal: 4,
+    marginBottom: 14,
   },
-  stepCol: {
+  stepItem: {
     alignItems: 'center',
-    width: 62,
+    width: 58,
   },
-  stepCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#F1F5F9',
+  stepDot: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: '#1E1E28',
     borderWidth: 1.5,
-    borderColor: '#CBD5E1',
+    borderColor: '#334155',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 6,
+    marginBottom: 4,
   },
-  stepCircleCompleted: {
-    backgroundColor: '#10B981',
-    borderColor: '#10B981',
-  },
-  stepCircleCurrent: {
-    backgroundColor: '#ECFDF5',
-    borderColor: '#10B981',
-  },
-  stepCircleText: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: '#0F172A',
-  },
-  stepName: {
-    fontSize: 10,
+  stepTitle: {
+    fontSize: 9,
     fontWeight: '600',
-    color: Colors.textMuted,
+    color: '#64748B',
     textAlign: 'center',
-    lineHeight: 12,
-  },
-  stepNameActive: {
-    color: Colors.textPrimary,
-    fontWeight: '700',
   },
   stepConnector: {
     flex: 1,
     height: 2,
-    backgroundColor: '#E2E8F0',
-    marginTop: -20,
+    backgroundColor: '#1E1E28',
     marginHorizontal: 2,
-  },
-  stepConnectorActive: {
-    backgroundColor: '#10B981',
-  },
-
-  // Current Step Detail Card
-  currentStepCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F8FAFC',
-    padding: 12,
-    borderRadius: Radius.md,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    marginBottom: 16,
-    gap: 12,
-  },
-  currentStepIconWrapper: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#ECFDF5',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#A7F3D0',
-  },
-  currentStepEmoji: {
-    fontSize: 18,
-  },
-  currentStepInfo: {
-    flex: 1,
-  },
-  currentStepTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: Colors.textPrimary,
-  },
-  currentStepDesc: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-    marginTop: 2,
-  },
-
-  // Advance Step Button
-  advanceBtn: {
-    backgroundColor: '#10B981',
-    paddingVertical: 13,
-    borderRadius: Radius.md,
-    alignItems: 'center',
-  },
-  advanceBtnText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '800',
-  },
-
-  // 4-Digit OTP Box
-  otpSection: {
-    marginTop: 4,
-  },
-  otpHeader: {
     marginBottom: 14,
   },
-  otpPromptTitle: {
-    fontSize: 15,
-    fontWeight: '800',
-    color: Colors.textPrimary,
-    marginBottom: 4,
-  },
-  otpPromptSubtitle: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-    lineHeight: 17,
-  },
-  otpBoxesRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 12,
-    marginVertical: 10,
-  },
-  otpBox: {
-    width: 54,
-    height: 56,
+  nextStepBtn: {
     borderRadius: Radius.md,
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1.5,
-    borderColor: '#CBD5E1',
-    textAlign: 'center',
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#0F172A',
-  },
-  otpBoxFilled: {
-    borderColor: '#10B981',
-    backgroundColor: '#ECFDF5',
-  },
-  otpBoxError: {
-    borderColor: '#EF4444',
-    backgroundColor: '#FEF2F2',
-  },
-  otpErrorText: {
-    color: '#DC2626',
-    fontSize: 12,
-    fontWeight: '600',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  demoOtpChip: {
-    backgroundColor: '#FEF3C7',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: Radius.md,
-    borderWidth: 1,
-    borderColor: '#FDE68A',
+    paddingVertical: 10,
     alignItems: 'center',
-    marginVertical: 8,
   },
-  demoOtpText: {
+  nextStepBtnText: {
     fontSize: 12,
-    color: '#B45309',
-  },
-  demoOtpBold: {
-    fontWeight: '800',
-  },
-  verifyOtpBtn: {
-    backgroundColor: '#10B981',
-    paddingVertical: 14,
-    borderRadius: Radius.md,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  verifyOtpBtnDisabled: {
-    opacity: 0.45,
-  },
-  verifyOtpBtnText: {
+    fontWeight: '900',
     color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '800',
   },
 
-  // 3. Compact Quick-Chat Box at Bottom
-  chatCard: {
-    backgroundColor: Colors.card,
+  // Requester OTP Vault
+  otpVaultCard: {
+    backgroundColor: '#1A1625',
     borderRadius: Radius.lg,
     padding: Spacing.base,
     borderWidth: 1,
-    borderColor: Colors.border,
-    ...Colors.shadowSm,
-  },
-  chatHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    borderColor: 'rgba(124, 58, 237, 0.4)',
     alignItems: 'center',
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    marginBottom: 10,
+    marginBottom: Spacing.md,
   },
-  chatUserRow: {
+  vaultHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 6,
+    marginBottom: 6,
   },
-  chatAvatar: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: '#F1F5F9',
+  vaultTitle: {
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: 1.2,
+    color: '#C4B5FD',
+  },
+  vaultSub: {
+    fontSize: 11,
+    color: '#94A3B8',
+    textAlign: 'center',
+    marginBottom: 16,
+    paddingHorizontal: 12,
+  },
+  codeVaultBox: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 16,
+  },
+  vaultDigitBox: {
+    width: 56,
+    height: 64,
+    borderRadius: Radius.md,
+    backgroundColor: '#261F36',
+    borderWidth: 2,
+    borderColor: '#7C3AED',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#7C3AED',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  vaultDigitText: {
+    fontSize: 32,
+    fontWeight: '900',
+    color: '#F8FAFC',
+    letterSpacing: -1,
+  },
+  vaultShieldRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  vaultShieldText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#10B981',
+  },
+
+  // Quester Keypad Card
+  keypadCard: {
+    backgroundColor: '#13251E',
+    borderRadius: Radius.lg,
+    padding: Spacing.base,
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.4)',
+    marginBottom: Spacing.md,
+  },
+  keypadHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 4,
+  },
+  keypadTitle: {
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 1,
+    color: '#34D399',
+  },
+  keypadSub: {
+    fontSize: 11,
+    color: '#94A3B8',
+    marginBottom: 12,
+  },
+  otpSlotsRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+    marginBottom: 8,
+  },
+  otpSlot: {
+    width: 48,
+    height: 52,
+    borderRadius: Radius.md,
+    backgroundColor: '#090D0B',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  otpSlotFilled: {
+    borderColor: '#10B981',
+    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+  },
+  otpSlotError: {
+    borderColor: '#EF4444',
+  },
+  otpSlotText: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: '#F8FAFC',
+  },
+  otpErrorMsg: {
+    fontSize: 10,
+    color: '#EF4444',
+    textAlign: 'center',
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  autoFillChip: {
+    alignSelf: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: Radius.full,
+    marginBottom: 12,
+  },
+  autoFillText: {
+    fontSize: 10,
+    color: '#94A3B8',
+  },
+  keypadGrid: {
+    gap: 8,
+  },
+  keypadRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  keypadBtn: {
+    flex: 1,
+    height: 48,
+    backgroundColor: '#1E2C24',
+    borderRadius: Radius.md,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#CBD5E1',
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
-  chatAvatarText: {
-    color: Colors.textPrimary,
-    fontWeight: '700',
-    fontSize: 12,
+  keypadNumText: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#F8FAFC',
   },
-  chatUserName: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: Colors.textPrimary,
-  },
-  chatUserRoom: {
-    fontSize: 10,
-    color: '#059669',
-    marginTop: 1,
-  },
-  phoneBtn: {
-    backgroundColor: '#F8FAFC',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: Radius.sm,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  phoneBtnText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: Colors.textSecondary,
-  },
-  chatMessagesScroll: {
-    maxHeight: 140,
-    marginBottom: 10,
-  },
-  chatMessagesContent: {
-    paddingVertical: 4,
-    gap: 8,
-  },
-  msgBubble: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: Radius.md,
-    maxWidth: '85%',
-  },
-  msgBubbleRecipient: {
-    backgroundColor: '#F1F5F9',
-    alignSelf: 'flex-start',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  msgBubbleMe: {
-    backgroundColor: '#ECFDF5',
-    alignSelf: 'flex-end',
-    borderWidth: 1,
-    borderColor: '#10B981',
-  },
-  msgText: {
-    fontSize: 12,
-    lineHeight: 17,
-  },
-  msgTextRecipient: {
-    color: Colors.textPrimary,
-  },
-  msgTextMe: {
-    color: '#065F46',
-    fontWeight: '500',
-  },
-  msgTime: {
-    fontSize: 9,
-    marginTop: 4,
-    alignSelf: 'flex-end',
-  },
-  msgTimeRecipient: {
-    color: Colors.textMuted,
-  },
-  msgTimeMe: {
-    color: '#059669',
+  keypadSpecialText: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#94A3B8',
   },
 
-  // 1-Tap Preset Replies
-  presetsSection: {
+  // Live Quick Chat Card
+  chatCard: {
+    backgroundColor: '#121217',
+    borderRadius: Radius.lg,
+    padding: Spacing.base,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    marginBottom: Spacing.base,
+  },
+  chatHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 10,
   },
-  presetsLabel: {
+  chatMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  chatAvatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#262635',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chatAvatarInitials: {
     fontSize: 11,
-    fontWeight: '700',
-    color: Colors.textMuted,
+    fontWeight: '800',
+    color: '#F8FAFC',
+  },
+  chatName: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#F8FAFC',
+  },
+  chatOnlineText: {
+    fontSize: 10,
+    color: '#10B981',
+  },
+  chatScroll: {
+    maxHeight: 120,
+    marginBottom: 10,
+  },
+  chatScrollContent: {
+    gap: 6,
+  },
+  chatBubble: {
+    maxWidth: '82%',
+    padding: 8,
+    borderRadius: Radius.md,
+  },
+  chatBubbleMe: {
+    alignSelf: 'flex-end',
+    backgroundColor: '#261F36',
+  },
+  chatBubbleOther: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#181E1B',
+  },
+  chatBubbleText: {
+    fontSize: 11,
+    color: '#F8FAFC',
+  },
+  chatBubbleTime: {
+    fontSize: 8,
+    color: '#64748B',
+    alignSelf: 'flex-end',
+    marginTop: 2,
+  },
+  presetSection: {
+    marginTop: 4,
+  },
+  presetLabel: {
+    fontSize: 8,
+    fontWeight: '900',
+    letterSpacing: 1,
+    color: '#64748B',
     marginBottom: 6,
   },
-  presetsRow: {
+  presetScroll: {
     gap: 8,
-    paddingRight: 4,
   },
-  presetChip: {
-    backgroundColor: '#F8FAFC',
+  presetPill: {
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: Radius.full,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
   },
-  presetChipText: {
-    fontSize: 11,
-    color: '#334155',
-    fontWeight: '600',
-  },
-
-  // Chat Input Bar
-  chatInputBar: {
-    flexDirection: 'row',
-    gap: 8,
-    alignItems: 'center',
-  },
-  chatTextInput: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: Radius.md,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    fontSize: 12,
-    color: Colors.textPrimary,
-  },
-  sendBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: Radius.md,
-    backgroundColor: '#10B981',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sendBtnDisabled: {
-    opacity: 0.4,
-  },
-  sendBtnText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '800',
+  presetPillText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#CBD5E1',
   },
 
   // Celebration Modal
   celebrationOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.65)',
-    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.88)',
     alignItems: 'center',
-    padding: Spacing.base,
+    justifyContent: 'center',
+    padding: Spacing.lg,
   },
   celebrationCard: {
     width: '100%',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#161F1A',
     borderRadius: Radius.xl,
     padding: Spacing.xl,
-    borderWidth: 1.5,
-    borderColor: '#F59E0B',
     alignItems: 'center',
-    ...Colors.shadowLg,
-  },
-  celebrationEmoji: {
-    fontSize: 42,
-    marginBottom: 12,
+    borderWidth: 1.5,
+    borderColor: '#10B981',
+    shadowColor: '#10B981',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 16,
+    elevation: 8,
   },
   celebrationTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#D97706',
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#F8FAFC',
+    letterSpacing: 0.5,
     marginBottom: 6,
   },
-  celebrationSubtitle: {
-    fontSize: 13,
-    color: Colors.textSecondary,
+  celebrationSub: {
+    fontSize: 12,
+    color: '#94A3B8',
     textAlign: 'center',
-    lineHeight: 18,
     marginBottom: 16,
   },
-  rewardSummaryCard: {
-    width: '100%',
-    backgroundColor: '#F8FAFC',
-    borderRadius: Radius.md,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    marginBottom: 18,
-  },
-  rewardSummaryRow: {
+  celebrationRewardPill: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 3,
+    gap: 8,
+    backgroundColor: '#1E170A',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: '#F59E0B',
+    marginBottom: 20,
   },
-  rewardLabel: {
-    fontSize: 12,
-    color: Colors.textMuted,
+  celebrationQPText: {
+    fontSize: 15,
+    fontWeight: '900',
+    color: '#FCD34D',
   },
-  rewardValueQP: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#D97706',
-  },
-  rewardValueCash: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#059669',
-  },
-  rewardDivider: {
-    height: 1,
-    backgroundColor: Colors.border,
-    marginVertical: 8,
-  },
-  rewardLabelTotal: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: Colors.textPrimary,
-  },
-  rewardValueTotal: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: '#D97706',
-  },
-  celebrationDismissBtn: {
+  celebrationBtn: {
     width: '100%',
     backgroundColor: '#10B981',
-    paddingVertical: 14,
+    paddingVertical: 12,
     borderRadius: Radius.md,
     alignItems: 'center',
   },
-  celebrationDismissText: {
+  celebrationBtnText: {
+    fontSize: 13,
+    fontWeight: '900',
     color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '800',
   },
 });

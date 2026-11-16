@@ -108,18 +108,18 @@ export default function TabNavigator() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#FFFFFF', // White navigation surface
+    backgroundColor: '#09090C', // OLED dark navigation surface
     borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
+    borderTopColor: 'rgba(255, 255, 255, 0.08)',
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    elevation: 8,
+    elevation: 12,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
     paddingTop: 6,
   },
   tabItem: {
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   tabLabel: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#64748B',
+    color: '#94A3B8',
     marginTop: 3,
   },
   activePill: {
