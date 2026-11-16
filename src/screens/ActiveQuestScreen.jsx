@@ -1,15 +1,16 @@
 /**
- * ActiveQuestScreen — "The Handshake" Delivery Cockpit
- * Features:
- * 1. Horizontal Status Tracker: Open ➔ Claimed ➔ Walking ➔ Doorstep
- * 2. 1-Tap Floating Quick-Chats: "At counter", "Heading to BH-1 now", "Waiting outside"
- * 3. Dual-Role Handshake:
- *    - 🛋️ Requester View: Frosted-Glass OTP Vault displaying big 4-digit code
- *    - 🏃 Quester View: Custom Sleek Numeric Keypad + Green Screen Flash & QP Celebration
+ * ActiveQuestScreen — "The Handshake" & Scale Architecture
+ * 
+ * Scaled Campus Upgrades:
+ * 1. Frictionless UPI Deep-Linking: Dynamic upi://pay intent with pre-filled item cost + tip
+ * 2. Multi-Order Batching: "Suggested Add-on" UI flagging nearby tasks along current route
+ * 3. 4-Step Interactive Timeline: Claimed ➔ At Shop/Gate ➔ Walking ➔ Doorstep
+ * 4. Dual Handshake (OTP Vault for Requester, Keypad for Quester)
+ * 5. Trust & Dispute Resolution: 5-Star post-delivery rating
  * Theme: OLED Black (#000000)
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -18,6 +19,8 @@ import {
   TouchableOpacity,
   Modal,
   Animated,
+  Linking,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -36,7 +39,7 @@ const PRESET_CHATS = [
   'At the counter now',
   'Heading to BH-1 now',
   'Waiting outside your door',
-  'Send UPI QR on delivery',
+  'UPI payment ready on delivery',
 ];
 
 export default function ActiveQuestScreen() {
@@ -59,6 +62,20 @@ export default function ActiveQuestScreen() {
   const [enteredOtp, setEnteredOtp] = useState('');
   const [otpError, setOtpError] = useState(false);
   const [celebrationVisible, setCelebrationVisible] = useState(false);
+
+  // Trust & Star Rating state
+  const [starRating, setStarRating] = useState(5);
+  const [ratingSubmitted, setRatingSubmitted] = useState(false);
+
+  // Multi-Order Batching state
+  const [batchedQuest, setBatchedQuest] = useState(null);
+  const [batchAdded, setBatchAdded] = useState(false);
+
+  // Financial amounts for UPI deep linking
+  const itemCost = 50.00; // e.g. 2x Maggi
+  const runnerTip = 30.00;
+  const totalPayable = (itemCost + runnerTip).toFixed(2);
+  const runnerVPA = 'mohit.runner@oksbi';
 
   // Screen flash animation
   const flashAnim = useRef(new Animated.Value(0)).current;
@@ -111,6 +128,31 @@ export default function ActiveQuestScreen() {
     }
   };
 
+  // Launch Frictionless UPI Intent
+  const handleLaunchUPI = async () => {
+    const note = encodeURIComponent(`Quest Settlement: ${currentQuest?.item || 'Order'}`);
+    const upiUrl = `upi://pay?pa=${runnerVPA}&pn=MohitRunner&am=${totalPayable}&tn=${note}&cu=INR`;
+
+    try {
+      const supported = await Linking.canOpenURL(upiUrl);
+      if (supported) {
+        await Linking.openURL(upiUrl);
+      } else {
+        // Fallback for desktop / simulator
+        Alert.alert(
+          'UPI Deep-Link Generated',
+          `VPA: ${runnerVPA}\nAmount: ₹${totalPayable}\nNote: ${decodeURIComponent(note)}\n\nIn mobile apps, this opens Google Pay, PhonePe, or Paytm automatically.`,
+          [{ text: 'OK' }]
+        );
+      }
+    } catch (err) {
+      Alert.alert(
+        'UPI Intent',
+        `Pay ₹${totalPayable} directly to ${runnerVPA} via GPay/PhonePe.`
+      );
+    }
+  };
+
   const handleSendChat = (textToSend) => {
     const newMsg = {
       id: `msg_${Date.now()}`,
@@ -122,6 +164,16 @@ export default function ActiveQuestScreen() {
     setTimeout(() => {
       chatScrollRef.current?.scrollToEnd({ animated: true });
     }, 100);
+  };
+
+  const handleAddBatch = () => {
+    setBatchAdded(true);
+    setBatchedQuest({
+      item: 'Flipkart Delivery (Study Lamp)',
+      dropoff: 'BH-2 • Room 218',
+      tip: '₹35',
+      qp: '+55 QP',
+    });
   };
 
   return (
@@ -189,7 +241,87 @@ export default function ActiveQuestScreen() {
           </View>
         </View>
 
-        {/* 1. Horizontal Status Tracker (Open ➔ Claimed ➔ Walking ➔ Doorstep) */}
+        {/* ── 1. THE BATCHING SYSTEM (MULTI-ORDER CLAIMS) ── */}
+        {isQuesterMode && (
+          <View style={styles.batchBanner}>
+            <View style={styles.batchHeader}>
+              <View style={styles.batchTag}>
+                <Ionicons name="layers" size={13} color="#10B981" />
+                <Text style={styles.batchTagText}>SUGGESTED ROUTE ADD-ON</Text>
+              </View>
+              <Text style={styles.batchCapacityText}>Capacity: {batchAdded ? '2 / 3' : '1 / 3'}</Text>
+            </View>
+
+            {batchAdded ? (
+              <View style={styles.batchedActiveCard}>
+                <View style={styles.batchActiveIcon}>
+                  <Ionicons name="checkmark-done" size={16} color="#10B981" />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.batchedItemTitle}>Batch 2: {batchedQuest?.item}</Text>
+                  <Text style={styles.batchedItemSub}>Also dropping to {batchedQuest?.dropoff} ({batchedQuest?.tip})</Text>
+                </View>
+              </View>
+            ) : (
+              <View style={styles.batchPromptCard}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.batchPromptTitle}>1 Parcel Waiting at Gate for BH-2 Room 218</Text>
+                  <Text style={styles.batchPromptSub}>Same wing! Earn extra +₹35 & +55 QP in the same walk.</Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.batchAddBtn}
+                  onPress={handleAddBatch}
+                  activeOpacity={0.8}
+                >
+                  <Ionicons name="add" size={16} color="#FFFFFF" />
+                  <Text style={styles.batchAddBtnText}>Batch</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* ── 2. FRICTIONLESS UPI DEEP-LINKING (THE MONEY PROBLEM) ── */}
+        <View style={styles.upiCard}>
+          <View style={styles.upiHeader}>
+            <View style={styles.upiBadge}>
+              <Ionicons name="wallet" size={14} color="#F59E0B" />
+              <Text style={styles.upiBadgeText}>FRICTIONLESS UPI REIMBURSEMENT</Text>
+            </View>
+            <Text style={styles.upiVpaText}>{runnerVPA}</Text>
+          </View>
+
+          {/* Breakdown: Item Cost + Quest Tip */}
+          <View style={styles.upiBreakdown}>
+            <View style={styles.breakdownRow}>
+              <Text style={styles.breakdownLabel}>Canteen / Shop Item Cost:</Text>
+              <Text style={styles.breakdownVal}>₹{itemCost.toFixed(2)}</Text>
+            </View>
+            <View style={styles.breakdownRow}>
+              <Text style={styles.breakdownLabel}>Quester Delivery Tip:</Text>
+              <Text style={styles.breakdownVal}>₹{runnerTip.toFixed(2)}</Text>
+            </View>
+            <View style={styles.breakdownDivider} />
+            <View style={styles.breakdownRow}>
+              <Text style={styles.breakdownTotalLabel}>Total Settlement Due:</Text>
+              <Text style={styles.breakdownTotalVal}>₹{totalPayable}</Text>
+            </View>
+          </View>
+
+          {/* 1-Tap UPI Launch Intent Button */}
+          <TouchableOpacity
+            style={styles.upiPayBtn}
+            onPress={handleLaunchUPI}
+            activeOpacity={0.85}
+          >
+            <Ionicons name="card" size={16} color="#FFFFFF" style={{ marginRight: 6 }} />
+            <Text style={styles.upiPayBtnText}>
+              Pay ₹{totalPayable} via UPI (GPay / PhonePe / Paytm)
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* 3. Horizontal Status Tracker */}
         <View style={styles.trackerCard}>
           <View style={styles.trackerHeader}>
             <Text style={styles.trackerTitle}>DELIVERY TIMELINE</Text>
@@ -245,7 +377,6 @@ export default function ActiveQuestScreen() {
             })}
           </View>
 
-          {/* Advance Step Button for Quester before reaching Doorstep */}
           {activeStep < 3 && (
             <TouchableOpacity
               style={[styles.nextStepBtn, { backgroundColor: accentColor }]}
@@ -259,8 +390,7 @@ export default function ActiveQuestScreen() {
           )}
         </View>
 
-        {/* ── 2. DUAL HANDSHAKE SECTION ── */}
-        {/* A. REQUESTER VIEW: The Frosted-Glass OTP Vault */}
+        {/* ── 4. DUAL HANDSHAKE SECTION ── */}
         {isLazyMode ? (
           <View style={styles.otpVaultCard}>
             <View style={styles.vaultHeader}>
@@ -287,7 +417,7 @@ export default function ActiveQuestScreen() {
             </View>
           </View>
         ) : (
-          /* B. QUESTER VIEW: Sleek Numeric Handshake Keypad at Doorstep */
+          /* Quester View Keypad */
           <View style={styles.keypadCard}>
             <View style={styles.keypadHeader}>
               <Ionicons name="keypad" size={16} color="#34D399" />
@@ -297,7 +427,6 @@ export default function ActiveQuestScreen() {
               Ask {currentQuest?.recipientName || 'Aman'} at Room 214 for their code to finalize delivery.
             </Text>
 
-            {/* OTP 4-Digit Slots */}
             <View style={styles.otpSlotsRow}>
               {[0, 1, 2, 3].map((index) => {
                 const char = enteredOtp[index] || '';
@@ -322,7 +451,6 @@ export default function ActiveQuestScreen() {
               </Text>
             )}
 
-            {/* Demo auto-fill chip */}
             <TouchableOpacity
               style={styles.autoFillChip}
               onPress={() => {
@@ -370,7 +498,7 @@ export default function ActiveQuestScreen() {
           </View>
         )}
 
-        {/* 3. Live 1-Tap Floating Quick-Chats */}
+        {/* 5. Live 1-Tap Floating Quick-Chats */}
         <View style={styles.chatCard}>
           <View style={styles.chatHeader}>
             <View style={styles.chatMeta}>
@@ -436,7 +564,7 @@ export default function ActiveQuestScreen() {
         <View style={{ height: 90 }} />
       </ScrollView>
 
-      {/* Celebration Payout Modal */}
+      {/* ── 6. TRUST, SAFETY & CELEBRATION MODAL ── */}
       <Modal
         visible={celebrationVisible}
         animationType="fade"
@@ -445,16 +573,39 @@ export default function ActiveQuestScreen() {
       >
         <View style={styles.celebrationOverlay}>
           <View style={styles.celebrationCard}>
-            <Ionicons name="trophy" size={54} color="#F59E0B" style={{ marginBottom: 10 }} />
+            <Ionicons name="trophy" size={50} color="#F59E0B" style={{ marginBottom: 10 }} />
             <Text style={styles.celebrationTitle}>DELIVERY COMPLETED!</Text>
             <Text style={styles.celebrationSub}>
-              OTP verified! Rewards have been instantly deposited into your wallet.
+              OTP verified! Rewards and points have been deposited into your wallet.
             </Text>
 
             <View style={styles.celebrationRewardPill}>
-              <Ionicons name="sparkles" size={20} color="#F59E0B" />
+              <Ionicons name="sparkles" size={18} color="#F59E0B" />
               <Text style={styles.celebrationQPText}>
                 {currentQuest?.qpReward || '+50 QP'} EARNED
+              </Text>
+            </View>
+
+            {/* Trust & Safety 5-Star Rating Section */}
+            <View style={styles.ratingSection}>
+              <Text style={styles.ratingTitle}>Rate Delivery Reliability:</Text>
+              <View style={styles.starsRow}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <TouchableOpacity
+                    key={star}
+                    onPress={() => setStarRating(star)}
+                    activeOpacity={0.7}
+                  >
+                    <Ionicons
+                      name={star <= starRating ? 'star' : 'star-outline'}
+                      size={28}
+                      color="#F59E0B"
+                    />
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <Text style={styles.ratingHelpText}>
+                {starRating === 5 ? '⭐ Outstanding delivery (Fast & Reliable)' : `${starRating} Star Feedback`}
               </Text>
             </View>
 
@@ -467,7 +618,7 @@ export default function ActiveQuestScreen() {
               }}
               activeOpacity={0.85}
             >
-              <Text style={styles.celebrationBtnText}>Back to Campus Radar</Text>
+              <Text style={styles.celebrationBtnText}>Submit & Return to Radar</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -613,7 +764,181 @@ const styles = StyleSheet.create({
     color: '#FCD34D',
   },
 
-  // Horizontal Stepper
+  // Batching
+  batchBanner: {
+    backgroundColor: '#10221A',
+    borderRadius: Radius.lg,
+    padding: Spacing.base,
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.35)',
+    marginBottom: Spacing.md,
+  },
+  batchHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  batchTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  batchTagText: {
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 1,
+    color: '#10B981',
+  },
+  batchCapacityText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#34D399',
+  },
+  batchPromptCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  batchPromptTitle: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#F8FAFC',
+  },
+  batchPromptSub: {
+    fontSize: 10,
+    color: '#94A3B8',
+    marginTop: 2,
+  },
+  batchAddBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#10B981',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: Radius.md,
+  },
+  batchAddBtnText: {
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+  batchedActiveCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+    padding: 10,
+    borderRadius: Radius.md,
+  },
+  batchActiveIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(16, 185, 129, 0.25)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  batchedItemTitle: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#F8FAFC',
+  },
+  batchedItemSub: {
+    fontSize: 10,
+    color: '#34D399',
+  },
+
+  // UPI Card
+  upiCard: {
+    backgroundColor: '#19150F',
+    borderRadius: Radius.lg,
+    padding: Spacing.base,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.35)',
+    marginBottom: Spacing.md,
+  },
+  upiHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  upiBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  upiBadgeText: {
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 0.8,
+    color: '#F59E0B',
+  },
+  upiVpaText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#94A3B8',
+  },
+  upiBreakdown: {
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    borderRadius: Radius.md,
+    padding: 10,
+    gap: 6,
+    marginBottom: 12,
+  },
+  breakdownRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  breakdownLabel: {
+    fontSize: 11,
+    color: '#94A3B8',
+  },
+  breakdownVal: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#F8FAFC',
+  },
+  breakdownDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    marginVertical: 2,
+  },
+  breakdownTotalLabel: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#FCD34D',
+  },
+  breakdownTotalVal: {
+    fontSize: 14,
+    fontWeight: '900',
+    color: '#FCD34D',
+  },
+  upiPayBtn: {
+    backgroundColor: '#D97706',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: Radius.md,
+    shadowColor: '#F59E0B',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.35,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  upiPayBtnText: {
+    fontSize: 12,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: 0.3,
+  },
+
+  // Timeline
   trackerCard: {
     backgroundColor: '#121217',
     borderRadius: Radius.lg,
@@ -727,17 +1052,11 @@ const styles = StyleSheet.create({
     borderColor: '#7C3AED',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#7C3AED',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-    elevation: 4,
   },
   vaultDigitText: {
     fontSize: 32,
     fontWeight: '900',
     color: '#F8FAFC',
-    letterSpacing: -1,
   },
   vaultShieldRow: {
     flexDirection: 'row',
@@ -750,7 +1069,7 @@ const styles = StyleSheet.create({
     color: '#10B981',
   },
 
-  // Quester Keypad Card
+  // Keypad
   keypadCard: {
     backgroundColor: '#13251E',
     borderRadius: Radius.lg,
@@ -851,7 +1170,7 @@ const styles = StyleSheet.create({
     color: '#94A3B8',
   },
 
-  // Live Quick Chat Card
+  // Quick Chat
   chatCard: {
     backgroundColor: '#121217',
     borderRadius: Radius.lg,
@@ -949,7 +1268,7 @@ const styles = StyleSheet.create({
     color: '#CBD5E1',
   },
 
-  // Celebration Modal
+  // Celebration & Trust Rating
   celebrationOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.88)',
@@ -965,11 +1284,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1.5,
     borderColor: '#10B981',
-    shadowColor: '#10B981',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 16,
-    elevation: 8,
   },
   celebrationTitle: {
     fontSize: 18,
@@ -982,7 +1296,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#94A3B8',
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: 14,
   },
   celebrationRewardPill: {
     flexDirection: 'row',
@@ -990,16 +1304,42 @@ const styles = StyleSheet.create({
     gap: 8,
     backgroundColor: '#1E170A',
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 8,
     borderRadius: Radius.full,
     borderWidth: 1,
     borderColor: '#F59E0B',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   celebrationQPText: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '900',
     color: '#FCD34D',
+  },
+  ratingSection: {
+    width: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+    borderRadius: Radius.md,
+    padding: 12,
+    alignItems: 'center',
+    marginBottom: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  ratingTitle: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#F8FAFC',
+    marginBottom: 8,
+  },
+  starsRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 6,
+  },
+  ratingHelpText: {
+    fontSize: 10,
+    color: '#FCD34D',
+    fontWeight: '600',
   },
   celebrationBtn: {
     width: '100%',

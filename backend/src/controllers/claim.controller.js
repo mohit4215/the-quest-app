@@ -175,6 +175,35 @@ const claimQuest = asyncHandler(async (req, res) => {
       );
     }
 
+    // Check if courier is suspended due to low ratings or penalties
+    const { rows: courierProfileRows } = await client.query(
+      'SELECT is_quester_suspended, rating_avg, upi_id FROM users WHERE id = $1',
+      [courierId]
+    );
+    if (courierProfileRows[0]?.is_quester_suspended) {
+      throw new AppError(
+        'Your Quester privilege is temporarily suspended due to low rating (< 3.5) or delivery disputes.',
+        403,
+        'QUESTER_SUSPENDED'
+      );
+    }
+
+    // ── Batching System: Check active quest capacity (Max 3 concurrent) ──
+    const { rows: activeCountRows } = await client.query(
+      `SELECT COUNT(*) AS active_count
+         FROM quests
+        WHERE courier_id = $1
+          AND status IN ('claimed', 'in_transit')`,
+      [courierId]
+    );
+    if (parseInt(activeCountRows[0].active_count, 10) >= 3) {
+      throw new AppError(
+        'Batch limit reached! You have 3 active quests in your route. Deliver at least one before adding more.',
+        400,
+        'BATCH_LIMIT_REACHED'
+      );
+    }
+
     // Check expiry
     if (quest.expires_at && new Date(quest.expires_at) < new Date()) {
       // Mark expired as cancelled while we have the lock
@@ -189,15 +218,19 @@ const claimQuest = asyncHandler(async (req, res) => {
 
     // ════════════════════════════════════════════════════════════════════════
     // STEP 4 — Atomically assign courier and flip status.
-    //          The status-transition trigger in SQL validates open→claimed.
+    //          Set 30-minute timeout auto-release trigger & courier UPI ID.
     // ════════════════════════════════════════════════════════════════════════
+    const courierUPI = courierProfileRows[0]?.upi_id || null;
+
     const { rows: updatedRows } = await client.query(
       `UPDATE quests
-          SET status     = 'claimed',
-              courier_id = $2
+          SET status           = 'claimed',
+              courier_id       = $2,
+              courier_upi_id   = $3,
+              claim_expires_at = NOW() + INTERVAL '30 minutes'
         WHERE id = $1
         RETURNING *`,
-      [questId, courierId]
+      [questId, courierId, courierUPI]
     );
 
     const updatedQuest = updatedRows[0];
@@ -281,4 +314,48 @@ const claimQuest = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { claimQuest };
+// ── GET /quests/:id/suggested-batch ──────────────────────────────────────────
+// Finds other open quests along the courier's route (same pickup or dropoff)
+const getSuggestedBatch = asyncHandler(async (req, res) => {
+  const questId = req.params.id;
+
+  const { withPool } = require('../db/pool');
+  const pool = require('../db/pool');
+
+  const { rows: sourceQuestRows } = await pool.query(
+    'SELECT pickup_location, dropoff_location FROM quests WHERE id = $1',
+    [questId]
+  );
+
+  if (sourceQuestRows.length === 0) {
+    throw new AppError('Quest not found', 404, 'QUEST_NOT_FOUND');
+  }
+
+  const { pickup_location, dropoff_location } = sourceQuestRows[0];
+
+  // Match same pickup spot (e.g. Main Gate) OR same dropoff hostel
+  const dropoffPrefix = dropoff_location.split(',')[0].trim(); // e.g. "BH-1" or "BH-2"
+
+  const { rows: suggestedRows } = await pool.query(
+    `SELECT q.*, u.name as requester_name
+       FROM quests q
+       JOIN users u ON q.requester_id = u.id
+      WHERE q.status = 'open'
+        AND q.id != $1
+        AND (
+          q.pickup_location ILIKE '%' || $2 || '%'
+          OR q.dropoff_location ILIKE '%' || $3 || '%'
+        )
+      ORDER BY q.created_at DESC
+      LIMIT 3`,
+    [questId, pickup_location, dropoffPrefix]
+  );
+
+  return sendSuccess(res, {
+    suggested: suggestedRows,
+    matchHub: pickup_location,
+    matchHostel: dropoffPrefix,
+  });
+});
+
+module.exports = { claimQuest, getSuggestedBatch };

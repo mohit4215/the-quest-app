@@ -383,6 +383,163 @@ const completeQuest = asyncHandler(async (req, res) => {
   return sendSuccess(res, { questId: id, status: 'completed' });
 });
 
+// ── GET /quests/:id/upi-intent ───────────────────────────────────────────────
+// Dynamic UPI intent linking: Item Cost + Quest Tip
+const getUpiIntent = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { rows } = await query(
+    `SELECT q.id, q.item_description, q.bounty_amount, q.item_cost, q.courier_upi_id,
+            c.name as courier_name, c.upi_id as fallback_upi
+       FROM quests q
+       LEFT JOIN users c ON c.id = q.courier_id
+      WHERE q.id = $1`,
+    [id]
+  );
+
+  if (!rows.length) throw new AppError('Quest not found', 404, 'QUEST_NOT_FOUND');
+  const quest = rows[0];
+  const upiId = quest.courier_upi_id || quest.fallback_upi || 'runner@okaxis';
+  const totalAmount = (parseFloat(quest.item_cost || 0) + parseFloat(quest.bounty_amount || 0)).toFixed(2);
+  const courierName = quest.courier_name || 'Quest Runner';
+  const note = `Quest: ${quest.item_description}`.slice(0, 30);
+  const upiLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(courierName)}&am=${totalAmount}&tn=${encodeURIComponent(note)}&cu=INR`;
+
+  return sendSuccess(res, {
+    totalAmount,
+    itemCost: quest.item_cost || '0.00',
+    bountyAmount: quest.bounty_amount,
+    upiId,
+    courierName,
+    upiLink,
+  });
+});
+
+// ── GET /quests/scheduled ────────────────────────────────────────────────────
+// Scheduled / Pre-order quests for morning or future class runs
+const getScheduledQuests = asyncHandler(async (req, res) => {
+  const { rows } = await query(
+    `SELECT ${QUEST_SELECT}
+       FROM quests q
+       JOIN users r ON r.id = q.requester_id
+       LEFT JOIN users c ON c.id = q.courier_id
+      WHERE q.scheduled_for IS NOT NULL
+        AND q.status = 'open'
+      ORDER BY q.scheduled_for ASC`
+  );
+  return sendSuccess(res, rows);
+});
+
+// ── POST /quests/maintenance/timeout-sweep ───────────────────────────────────
+// 30-min auto-release trigger for abandoned claimed quests
+const timeoutSweep = asyncHandler(async (req, res) => {
+  const { rows: expiredClaims } = await query(
+    `UPDATE quests
+        SET status = 'open',
+            courier_id = NULL,
+            claim_expires_at = NULL
+      WHERE status = 'claimed'
+        AND claim_expires_at < NOW()
+      RETURNING id, courier_id`
+  );
+
+  // Penalize couriers who abandoned claimed tasks
+  for (const exp of expiredClaims) {
+    if (exp.courier_id) {
+      await query(
+        `UPDATE users
+            SET rating_count = rating_count + 1,
+                rating_avg = GREATEST(1.00, ((rating_avg * rating_count) + 1.0) / (rating_count + 1)),
+                is_quester_suspended = (CASE WHEN rating_avg < 3.5 THEN TRUE ELSE FALSE END)
+          WHERE id = $1`,
+        [exp.courier_id]
+      );
+    }
+  }
+
+  return sendSuccess(res, { releasedCount: expiredClaims.length });
+});
+
+// ── POST /quests/:id/rate ────────────────────────────────────────────────────
+// Trust & Safety 1-5 star rating
+const rateQuest = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { rating, comment } = req.body;
+
+  if (!rating || rating < 1 || rating > 5) {
+    throw new AppError('Rating must be between 1 and 5 stars', 400, 'INVALID_RATING');
+  }
+
+  const { rows: questRows } = await query(
+    'SELECT courier_id, rated_by_requester FROM quests WHERE id = $1',
+    [id]
+  );
+  if (!questRows.length) throw new AppError('Quest not found', 404, 'QUEST_NOT_FOUND');
+  if (questRows[0].rated_by_requester) throw new AppError('Quest already rated', 400, 'ALREADY_RATED');
+
+  const courierId = questRows[0].courier_id;
+
+  await query(
+    `UPDATE quests
+        SET rating = $1, rating_comment = $2, rated_by_requester = TRUE
+      WHERE id = $3`,
+    [rating, comment || null, id]
+  );
+
+  if (courierId) {
+    const { rows: userRows } = await query(
+      'SELECT rating_avg, rating_count FROM users WHERE id = $1',
+      [courierId]
+    );
+    const currentAvg = parseFloat(userRows[0]?.rating_avg) || 5.0;
+    const count = parseInt(userRows[0]?.rating_count, 10) || 0;
+    const newAvg = (((currentAvg * count) + rating) / (count + 1)).toFixed(2);
+    const isSuspended = parseFloat(newAvg) < 3.5;
+
+    await query(
+      `UPDATE users
+          SET rating_avg = $1,
+              rating_count = rating_count + 1,
+              is_quester_suspended = $2
+        WHERE id = $3`,
+      [newAvg, isSuspended, courierId]
+    );
+  }
+
+  return sendSuccess(res, { message: 'Rating submitted successfully' });
+});
+
+// ── Vendor Dashboard Endpoints ───────────────────────────────────────────────
+const getVendorOrders = asyncHandler(async (req, res) => {
+  const { vendor } = req.query; // 'Night Canteen', 'Xerox Shop'
+  const { rows } = await query(
+    `SELECT q.*, r.name as requester_name, c.name as courier_name
+       FROM quests q
+       JOIN users r ON r.id = q.requester_id
+       LEFT JOIN users c ON c.id = q.courier_id
+      WHERE q.pickup_location ILIKE '%' || $1 || '%'
+        AND q.status IN ('open', 'claimed', 'in_transit')
+      ORDER BY q.created_at DESC`,
+    [vendor || 'Canteen']
+  );
+  return sendSuccess(res, rows);
+});
+
+const updateVendorStatus = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { vendor_status } = req.body; // 'preparing' | 'ready_for_pickup' | 'collected'
+
+  const { rows } = await query(
+    `UPDATE quests
+        SET vendor_status = $1
+      WHERE id = $2
+      RETURNING *`,
+    [vendor_status, id]
+  );
+  if (!rows.length) throw new AppError('Quest not found', 404, 'QUEST_NOT_FOUND');
+
+  return sendSuccess(res, rows[0]);
+});
+
 module.exports = {
   getQuests,
   getMyQuests,
@@ -391,4 +548,10 @@ module.exports = {
   cancelQuest,
   pickupQuest,
   completeQuest,
+  getUpiIntent,
+  getScheduledQuests,
+  timeoutSweep,
+  rateQuest,
+  getVendorOrders,
+  updateVendorStatus,
 };

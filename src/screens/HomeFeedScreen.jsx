@@ -1,7 +1,11 @@
 /**
- * HomeFeedScreen — "Dynamic Duality" Campus Feed
- * - 🏃 Quester Mode: Pilot's Dashboard with Live Radar & Slide-to-Claim Quests
- * - 🛋️ Lazy Mode: Magic Quick-Access Grid, Dynamic Bounty Slider & Instant Ordering
+ * HomeFeedScreen — Campus Radar & Production Scale Engine
+ * 
+ * Features:
+ * - 🏃 Quester Mode: Radar Dashboard with urgent Gate parcel beacon & Slide-to-Claim
+ * - 🛋️ Lazy Mode: Quick-Access Grid, Dynamic Bounty Slider with Instant Delivery
+ * - ⏰ Scheduled / Pre-Order Quests: Future morning errands & xerox runs
+ * - 🏪 Vendor Portal Modal: B2B2C Night Canteen & Xerox Shop order management
  * Theme: OLED Black (#000000)
  */
 
@@ -12,6 +16,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Modal,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -27,6 +32,7 @@ const CATEGORIES = [
   { id: 'Gate Parcel', label: 'Gate Delivery', iconName: 'cube' },
   { id: 'Night Canteen', label: 'Night Canteen', iconName: 'restaurant' },
   { id: 'Printouts', label: 'Printouts', iconName: 'print' },
+  { id: 'Scheduled', label: '⏰ Pre-Orders', iconName: 'time' },
   { id: 'Borrow Item', label: 'Borrow Item', iconName: 'swap-horizontal' },
 ];
 
@@ -43,6 +49,20 @@ const INITIAL_QUESTS = [
     notes: 'Show OTP 4821 to delivery executive Ramesh.',
     deliveryMethod: '4-Digit OTP Handover',
     isAccepted: false,
+  },
+  {
+    id: 'q_sched_1',
+    category: 'Scheduled',
+    item: 'Operating Systems Lab File (Printed & Spiral Bound)',
+    pickupSpot: 'Campus Xerox Shop (Counter 2)',
+    dropOffHostelRoom: 'BH-1 • Room 302',
+    countdown: 'Scheduled: Tomorrow 8:45 AM',
+    cashTip: '₹35',
+    qpReward: '+60 QP',
+    notes: 'Pre-ordered for morning submission! Token #14.',
+    deliveryMethod: 'Drop at Door',
+    isAccepted: false,
+    isScheduled: true,
   },
   {
     id: 'q_1',
@@ -93,11 +113,19 @@ export default function HomeFeedScreen() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
 
+  // Vendor Dashboard Modal state
+  const [vendorModalVisible, setVendorModalVisible] = useState(false);
+  const [vendorOrders, setVendorOrders] = useState([
+    { id: 'v1', item: '2x Butter Maggi & Chai', token: '#22', status: 'preparing', student: 'Aman (BH-2 #214)' },
+    { id: 'v2', item: 'Cold Coffee + Paneer Patties', token: '#23', status: 'ready', student: 'Rohan (BH-1 #108)' },
+  ]);
+
   // Lazy Mode Dynamic Bounty Slider state
   const [lazyTip, setLazyTip] = useState(30);
 
   const filteredQuests = useMemo(() => {
     if (selectedCategory === 'all') return quests;
+    if (selectedCategory === 'Scheduled') return quests.filter((q) => q.isScheduled || q.category === 'Scheduled');
     return quests.filter((q) => q.category === selectedCategory);
   }, [selectedCategory, quests]);
 
@@ -123,7 +151,7 @@ export default function HomeFeedScreen() {
     if (selectedCategory !== 'all' && selectedCategory !== newQuest.category) {
       setSelectedCategory('all');
     }
-    showToast(`🚀 "${newQuest.item}" broadcasted live to campus quester feed!`);
+    showToast(`🚀 "${newQuest.item}" broadcasted live to campus feed!`);
   };
 
   const showToast = (msg) => {
@@ -133,7 +161,6 @@ export default function HomeFeedScreen() {
     }, 3500);
   };
 
-  // Helper calculation for dynamic speed
   const getSpeedHelper = (tip) => {
     if (tip >= 50) return { label: 'Instant Claim Guarantee!', time: '⚡ ~3-5 mins', color: '#10B981', qp: '+80 QP' };
     if (tip >= 30) return { label: 'Fast Pickup Priority', time: '🏃 ~7-10 mins', color: '#F59E0B', qp: '+50 QP' };
@@ -141,6 +168,16 @@ export default function HomeFeedScreen() {
   };
 
   const speedInfo = getSpeedHelper(lazyTip);
+
+  // Toggle Vendor Status
+  const handleToggleVendorReady = (id) => {
+    setVendorOrders((prev) =>
+      prev.map((o) =>
+        o.id === id ? { ...o, status: o.status === 'ready' ? 'collected' : 'ready' } : o
+      )
+    );
+    showToast('📢 Vendor marked order READY FOR PICKUP! Courier notified via Socket.');
+  };
 
   return (
     <View style={styles.container}>
@@ -152,12 +189,27 @@ export default function HomeFeedScreen() {
         </View>
       )}
 
+      {/* Campus Vendor Portal Quick Banner */}
+      <View style={styles.vendorStrip}>
+        <View style={styles.vendorStripLeft}>
+          <Ionicons name="storefront" size={14} color="#F59E0B" />
+          <Text style={styles.vendorStripText}>Campus Canteen & Xerox B2B2C Network</Text>
+        </View>
+        <TouchableOpacity
+          style={styles.vendorStripBtn}
+          onPress={() => setVendorModalVisible(true)}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.vendorStripBtnText}>Vendor Portal →</Text>
+        </TouchableOpacity>
+      </View>
+
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* ── 🛋️ LAZY MODE HERO: "What do you need right now?" ── */}
+        {/* ── 🛋️ LAZY MODE HERO ── */}
         {isLazyMode && (
           <View style={styles.lazyHeroCard}>
             <View style={styles.lazyHeroTop}>
@@ -209,9 +261,9 @@ export default function HomeFeedScreen() {
                 onPress={() => setIsModalVisible(true)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.tileEmoji}>💊</Text>
-                <Text style={styles.tileTitle}>Pharmacy / Meds</Text>
-                <Text style={styles.tileSub}>Essentials</Text>
+                <Text style={styles.tileEmoji}>⏰</Text>
+                <Text style={styles.tileTitle}>Pre-Order / Later</Text>
+                <Text style={styles.tileSub}>Morning Class Drop</Text>
               </TouchableOpacity>
             </View>
 
@@ -222,7 +274,6 @@ export default function HomeFeedScreen() {
                 <Text style={styles.sliderValue}>₹{lazyTip}</Text>
               </View>
 
-              {/* Step Buttons */}
               <View style={styles.tipStepsRow}>
                 {[15, 30, 45, 60].map((val) => (
                   <TouchableOpacity
@@ -240,7 +291,6 @@ export default function HomeFeedScreen() {
                 ))}
               </View>
 
-              {/* Dynamic Speed Helper */}
               <View style={styles.speedIndicatorRow}>
                 <Ionicons name="speedometer-outline" size={14} color={speedInfo.color} />
                 <Text style={[styles.speedText, { color: speedInfo.color }]}>
@@ -251,7 +301,6 @@ export default function HomeFeedScreen() {
                 </View>
               </View>
 
-              {/* Primary Instant Order Button */}
               <TouchableOpacity
                 style={styles.magicOrderBtn}
                 onPress={() => setIsModalVisible(true)}
@@ -324,11 +373,13 @@ export default function HomeFeedScreen() {
             <Text style={styles.feedTitle}>
               {selectedCategory === 'all'
                 ? 'Campus Errand Radar'
+                : selectedCategory === 'Scheduled'
+                ? 'Pre-Orders & Morning Scheduled'
                 : `${selectedCategory} Bounties`}
             </Text>
             <Text style={styles.feedSubtitle}>
               {isQuesterMode
-                ? 'Slide to claim along your walking path'
+                ? 'Slide to claim along your walking path (Up to 3 multi-batch)'
                 : 'Active requests from hostel students'}
             </Text>
           </View>
@@ -356,6 +407,82 @@ export default function HomeFeedScreen() {
         onClose={() => setIsModalVisible(false)}
         onSubmit={handleAddNewQuest}
       />
+
+      {/* ── 4. VENDOR DASHBOARD PORTAL MODAL ── */}
+      <Modal
+        visible={vendorModalVisible}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setVendorModalVisible(false)}
+      >
+        <View style={styles.vendorModalOverlay}>
+          <View style={styles.vendorModalCard}>
+            <View style={styles.vendorModalHeader}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Ionicons name="storefront" size={20} color="#F59E0B" />
+                <View>
+                  <Text style={styles.vendorTitle}>Night Canteen & Xerox Portal</Text>
+                  <Text style={styles.vendorSub}>Order Queue & Ready-for-Pickup Dispatch</Text>
+                </View>
+              </View>
+              <TouchableOpacity onPress={() => setVendorModalVisible(false)}>
+                <Ionicons name="close-circle" size={24} color="#94A3B8" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={{ maxHeight: 380 }}>
+              <Text style={styles.vendorQueueLabel}>INCOMING KITCHEN & PRINT QUEUE:</Text>
+              {vendorOrders.map((order) => (
+                <View key={order.id} style={styles.vendorOrderItem}>
+                  <View style={styles.orderTop}>
+                    <View style={styles.tokenBadge}>
+                      <Text style={styles.tokenText}>{order.token}</Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.orderItemName}>{order.item}</Text>
+                      <Text style={styles.orderStudent}>Student: {order.student}</Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.orderBottom}>
+                    <View style={[
+                      styles.orderStatusChip,
+                      order.status === 'ready' ? styles.statusReady : styles.statusPrep
+                    ]}>
+                      <Text style={[
+                        styles.orderStatusText,
+                        order.status === 'ready' ? { color: '#10B981' } : { color: '#F59E0B' }
+                      ]}>
+                        {order.status === 'ready' ? 'READY FOR COURIER PICKUP' : 'PREPARING...'}
+                      </Text>
+                    </View>
+
+                    <TouchableOpacity
+                      style={[
+                        styles.vendorActionBtn,
+                        order.status === 'ready' ? styles.vendorActionCollected : styles.vendorActionReady
+                      ]}
+                      onPress={() => handleToggleVendorReady(order.id)}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={styles.vendorActionBtnText}>
+                        {order.status === 'ready' ? 'Mark Collected' : 'Mark Ready ✓'}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ))}
+            </ScrollView>
+
+            <TouchableOpacity
+              style={styles.vendorCloseBtn}
+              onPress={() => setVendorModalVisible(false)}
+            >
+              <Text style={styles.vendorCloseBtnText}>Close Portal</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -388,9 +515,44 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
+  // Vendor Strip
+  vendorStrip: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#16130B',
+    paddingHorizontal: Spacing.base,
+    paddingVertical: 7,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(245, 158, 11, 0.25)',
+  },
+  vendorStripLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  vendorStripText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#FCD34D',
+  },
+  vendorStripBtn: {
+    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.35)',
+  },
+  vendorStripBtnText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#FCD34D',
+  },
+
   // Lazy Mode Hero Card
   lazyHeroCard: {
-    backgroundColor: '#1A1625', // Deep violet surface
+    backgroundColor: '#1A1625',
     borderRadius: Radius.lg,
     padding: Spacing.base,
     borderWidth: 1,
@@ -423,7 +585,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  // 4 Quick-Access Tiles
   quickGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -453,7 +614,6 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
 
-  // Dynamic Bounty Slider Card
   sliderCard: {
     backgroundColor: '#120F1C',
     borderRadius: Radius.md,
@@ -546,10 +706,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '900',
     color: '#FFFFFF',
-    letterSpacing: 0.3,
   },
 
-  // Category Filters
   filterSection: {
     marginBottom: 14,
   },
@@ -575,7 +733,6 @@ const styles = StyleSheet.create({
     color: '#94A3B8',
   },
 
-  // Feed Header
   feedHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -604,5 +761,130 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700',
     color: '#94A3B8',
+  },
+
+  // Vendor Dashboard Modal
+  vendorModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.88)',
+    justifyContent: 'center',
+    padding: Spacing.base,
+  },
+  vendorModalCard: {
+    backgroundColor: '#121217',
+    borderRadius: Radius.xl,
+    padding: Spacing.base,
+    borderWidth: 1.5,
+    borderColor: 'rgba(245, 158, 11, 0.4)',
+  },
+  vendorModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+    paddingBottom: 10,
+  },
+  vendorTitle: {
+    fontSize: 14,
+    fontWeight: '900',
+    color: '#F8FAFC',
+  },
+  vendorSub: {
+    fontSize: 10,
+    color: '#94A3B8',
+  },
+  vendorQueueLabel: {
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 1,
+    color: '#64748B',
+    marginBottom: 10,
+  },
+  vendorOrderItem: {
+    backgroundColor: '#181822',
+    borderRadius: Radius.md,
+    padding: 12,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.06)',
+  },
+  orderTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 10,
+  },
+  tokenBadge: {
+    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: Radius.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.4)',
+  },
+  tokenText: {
+    fontSize: 13,
+    fontWeight: '900',
+    color: '#FCD34D',
+  },
+  orderItemName: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#F8FAFC',
+  },
+  orderStudent: {
+    fontSize: 10,
+    color: '#94A3B8',
+    marginTop: 1,
+  },
+  orderBottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  orderStatusChip: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: Radius.full,
+  },
+  statusPrep: {
+    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+  },
+  statusReady: {
+    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+  },
+  orderStatusText: {
+    fontSize: 9,
+    fontWeight: '900',
+  },
+  vendorActionBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: Radius.sm,
+  },
+  vendorActionReady: {
+    backgroundColor: '#10B981',
+  },
+  vendorActionCollected: {
+    backgroundColor: '#334155',
+  },
+  vendorActionBtnText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  vendorCloseBtn: {
+    backgroundColor: '#262635',
+    paddingVertical: 10,
+    borderRadius: Radius.md,
+    alignItems: 'center',
+    marginTop: 14,
+  },
+  vendorCloseBtnText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#F8FAFC',
   },
 });

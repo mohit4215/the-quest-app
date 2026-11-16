@@ -20,8 +20,16 @@ router.get('/',    general, quests.getQuests);
 // ── Authenticated ────────────────────────────────────────────────────────────
 router.use(authenticate);
 
-router.get('/my',  quests.getMyQuests);
-router.get('/:id', quests.getQuestById);
+router.get('/my',            quests.getMyQuests);
+router.get('/scheduled',     quests.getScheduledQuests);
+router.get('/vendor/orders', quests.getVendorOrders);
+
+// Maintenance
+router.post('/maintenance/timeout-sweep', quests.timeoutSweep);
+
+router.get('/:id',                 quests.getQuestById);
+router.get('/:id/upi-intent',      quests.getUpiIntent);
+router.get('/:id/suggested-batch', claim.getSuggestedBatch);
 
 router.post('/',
   quests.createValidators, validate,
@@ -32,8 +40,10 @@ router.post('/',
 router.post('/:id/claim',    claimLimit,  claim.claimQuest);
 
 // ── Lifecycle transitions ────────────────────────────────────────────────────
-router.post('/:id/pickup',   quests.pickupQuest);
-router.post('/:id/complete', quests.completeQuest);
-router.post('/:id/cancel',   quests.cancelQuest);
+router.post('/:id/pickup',        quests.pickupQuest);
+router.post('/:id/complete',      quests.completeQuest);
+router.post('/:id/cancel',        quests.cancelQuest);
+router.post('/:id/rate',          quests.rateQuest);
+router.patch('/:id/vendor-status', quests.updateVendorStatus);
 
 module.exports = router;

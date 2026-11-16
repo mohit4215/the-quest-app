@@ -103,6 +103,41 @@ Deliveries follow a strict, reliable state machine:
 
 ---
 
+## ⚡ Campus Production Scale Upgrades (Friction Solvers)
+
+To transition Quest from a campus prototype to a viral production network, six physical and financial friction points have been engineered:
+
+### 1. Multi-Order Route Batching
+- **The Upgrade**: A Quester walking from the Main Gate or Canteen can hold up to **3 active quests simultaneously**.
+- **Backend Guard**: Concurrency state machine enforces `max 3 active orders` per courier and provides a `GET /api/v1/quests/:id/suggested-batch` endpoint.
+- **Route Add-on UI**: Runners receive intelligent route alerts when another parcel or snack order shares their destination hostel wing (e.g., *"1 Flipkart parcel waiting at Main Gate for BH-2 Room 218! +₹35 tip / +55 QP"*).
+
+### 2. Frictionless UPI Deep-Linking (`upi://pay`)
+- **The Upgrade**: Completely eliminates the awkward "share your QR scanner" dance at the hostel door.
+- **Dynamic Intent**: Generates standard UPI intent links:
+  ```
+  upi://pay?pa=courier@oksbi&pn=CourierName&am=80.00&tn=Quest+Settlement&cu=INR
+  ```
+- **Automated Breakdown**: Combines shop/canteen item reimbursement (e.g. ₹50) + courier tip (e.g. ₹30) = ₹80 total, opening Google Pay, PhonePe, or Paytm with 1 tap.
+
+### 3. Scheduled / Pre-Order Quests
+- **The Upgrade**: Supports non-urgent morning runs (e.g. *"Print Lab Manual & Spiral Bound from Xerox shop and deliver to BH-1 by 8:45 AM tomorrow"*).
+- **Schema**: Backed by `scheduled_for` timestamp in `quests`. Couriers claim scheduled quests the night before, locking in guaranteed earnings for their morning walk to class.
+
+### 4. B2B2C Vendor Dashboard (Canteen & Xerox Queue)
+- **The Upgrade**: Specialized web and in-app portal for Night Canteens, Nescafe stalls, and Xerox centers.
+- **Order Token Dispatch**: Vendors mark orders as `PREPARING` or `READY FOR PICKUP (Token #22)`. Runners receive real-time Socket.io alerts when their order is packed, eliminating queue wait times.
+
+### 5. Trust, Safety & Dispute Resolution
+- **30-Minute Auto-Release Timeout**: If a courier claims a quest but fails to advance status within 30 minutes, `POST /api/v1/quests/maintenance/timeout-sweep` automatically un-claims the task and releases it back to the radar.
+- **5-Star Rating & Penalties**: Requesters submit a 1–5 star rating upon OTP verification. Couriers dropping below a **3.5 average rating** are automatically suspended from claiming tasks.
+
+### 6. Push Notifications & Live Background GPS
+- **Expo Notifications**: Sends push notifications for door-step arrivals, high-bounty gate parcels, and vendor ready signals.
+- **Live Location Tracking**: Uses `expo-location` to transmit courier corridor coordinates to the requester during `in_transit` state.
+
+---
+
 ## 🏗️ System Architecture
 
 ```
