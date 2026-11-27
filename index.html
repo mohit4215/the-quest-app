@@ -1128,33 +1128,33 @@
 
           <!-- Hotspots Carousel -->
           <div class="radar-spots">
-            <div class="spot-pill" onclick="filterCategory('Night Canteen')">
+            <div class="spot-pill" onclick="filterCategory('Academic Gigs')">
               <div class="spot-top">
-                <span class="spot-name">Night Canteen</span>
-                <span class="spot-peers">8 peers</span>
+                <span class="spot-name">Academic Gigs</span>
+                <span class="spot-peers">12 peers</span>
               </div>
-              <div class="spot-desc">Nescafe & Maggi Point</div>
+              <div class="spot-desc">Lab Manuals & ED Sheets</div>
             </div>
             <div class="spot-pill" onclick="filterCategory('Gate Parcel')">
               <div class="spot-top">
-                <span class="spot-name">Main Gate</span>
-                <span class="spot-peers">5 peers</span>
+                <span class="spot-name">Main Gate 1</span>
+                <span class="spot-peers">7 peers</span>
               </div>
-              <div class="spot-desc">Zomato / Swiggy drop point</div>
+              <div class="spot-desc">Swiggy & Amazon drop desk</div>
             </div>
             <div class="spot-pill" onclick="filterCategory('Printouts')">
               <div class="spot-top">
-                <span class="spot-name">Stationery Shop</span>
-                <span class="spot-peers">2 peers</span>
+                <span class="spot-name">Central Xerox Shop</span>
+                <span class="spot-peers">4 peers</span>
               </div>
-              <div class="spot-desc">Lab manual Xerox hub</div>
+              <div class="spot-desc">File print & spiral binding</div>
             </div>
             <div class="spot-pill" onclick="filterCategory('Borrow Item')">
               <div class="spot-top">
-                <span class="spot-name">BH-1 Lounge</span>
-                <span class="spot-peers">4 peers</span>
+                <span class="spot-name">Girls Hostel (GH)</span>
+                <span class="spot-peers">9 peers</span>
               </div>
-              <div class="spot-desc">Academic gear sharing</div>
+              <div class="spot-desc">Lock-in 6:30 PM (Order Early)</div>
             </div>
           </div>
         </div>
@@ -1162,10 +1162,10 @@
         <!-- Category Filter Chips -->
         <div class="filter-chips-wrap">
           <button class="category-chip active" onclick="filterCategory('all', this)">All Bounties</button>
-          <button class="category-chip" onclick="filterCategory('Night Canteen', this)">Night Canteen</button>
-          <button class="category-chip" onclick="filterCategory('Gate Parcel', this)">Gate Parcel</button>
-          <button class="category-chip" onclick="filterCategory('Printouts', this)">Printouts</button>
-          <button class="category-chip" onclick="filterCategory('Borrow Item', this)">Borrow Item</button>
+          <button class="category-chip" onclick="filterCategory('Academic Gigs', this)">📝 Academic Gigs</button>
+          <button class="category-chip" onclick="filterCategory('Gate Parcel', this)">📦 Gate Parcel</button>
+          <button class="category-chip" onclick="filterCategory('Printouts', this)">🖨️ Printouts</button>
+          <button class="category-chip" onclick="filterCategory('Borrow Item', this)">🔄 Borrow Item</button>
         </div>
 
         <!-- Quest Bounty Cards Container -->
@@ -1210,8 +1210,8 @@
 
           <!-- Current Step Box -->
           <div class="step-action-box" id="step-desc-box">
-            <div class="step-action-title" id="step-title">1. Quest Claimed & Locked</div>
-            <div class="step-action-sub" id="step-desc">Head to Night Canteen (Nescafe Booth) to collect 2× Butter Maggi & Cold Coffee.</div>
+            <div class="step-action-title" id="step-title">1. Academic Gig Claimed</div>
+            <div class="step-action-sub" id="step-desc">Coordinate with requester to pick up questions/file. Escrow of ₹140 locked (₹100 writer payout + ₹40 Quest fee).</div>
           </div>
 
           <!-- Advance Button or OTP -->
@@ -1333,11 +1333,11 @@
 
         <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; box-shadow: var(--shadow-sm);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <div style="font-size: 14px; font-weight: 800; color: var(--text);">Night Canteen ₹50 Voucher</div>
+            <div style="font-size: 14px; font-weight: 800; color: var(--text);">Nescafe & Day Canteen ₹50 Voucher</div>
             <div style="font-size: 12px; font-weight: 800; color: #D97706;">500 QP</div>
           </div>
-          <div style="font-size: 11px; color: var(--text-sec); margin-bottom: 10px;">Valid on orders above ₹100 at Nescafe & Maggi counters.</div>
-          <button class="advance-btn" style="background: var(--lazy); padding: 9px;" onclick="redeemPerk('Night Canteen ₹50 Voucher', 500)">
+          <div style="font-size: 11px; color: var(--text-sec); margin-bottom: 10px;">Valid on snacks & cold coffee at Nescafe Booth or Campus Canteen.</div>
+          <button class="advance-btn" style="background: var(--lazy); padding: 9px;" onclick="redeemPerk('Nescafe ₹50 Voucher', 500)">
             Redeem (500 QP)
           </button>
         </div>
@@ -1373,25 +1373,26 @@
     <div class="modal-overlay" id="post-modal" onclick="closeModalOnBg(event)">
       <div class="bottom-sheet">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-          <div style="font-size: 18px; font-weight: 800; color: var(--text);">Post a Quest</div>
+          <div style="font-size: 18px; font-weight: 800; color: var(--text);">Post a Quest / Academic Gig</div>
           <button onclick="closePostModal()" style="background: var(--surface-alt); border: 1px solid var(--border); color: var(--text); width: 28px; height: 28px; border-radius: 14px; cursor: pointer;">✕</button>
         </div>
 
         <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">Quick-Fill Templates:</div>
         <div class="template-chips">
-          <div class="template-chip" onclick="fillTemplate('Gate Zomato Pickup', 'Main Gate Security', 40, 'Gate Parcel')">Gate Zomato Pickup</div>
-          <div class="template-chip" onclick="fillTemplate('2x Maggi from Canteen', 'Night Canteen Nescafe', 25, 'Night Canteen')">2x Maggi from Canteen</div>
-          <div class="template-chip" onclick="fillTemplate('Lab File Printout (10 pgs)', 'Stationery Xerox Shop', 20, 'Printouts')">Lab File Printout</div>
+          <div class="template-chip" onclick="fillTemplate('10-Page Lab Manual Writing', 'Hostel Room (Question PDF)', 140, 'Academic Gigs')">📝 Lab Manual (₹140)</div>
+          <div class="template-chip" onclick="fillTemplate('Engineering Drawing Sheet (ED)', 'Hostel Room (Problem Sheet)', 220, 'Academic Gigs')">📐 ED Sheet (₹220)</div>
+          <div class="template-chip" onclick="fillTemplate('Main Gate 1 Zomato Drop', 'Main Gate 1 Security', 15, 'Gate Parcel')">📦 Gate 1 Drop (₹15)</div>
+          <div class="template-chip" onclick="fillTemplate('Lab File Print & Spiral', 'Central Xerox Shop', 10, 'Printouts')">🖨️ Xerox Print (₹10)</div>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Item Details</label>
-          <input class="form-input" id="post-item" placeholder="e.g. 2x Butter Maggi & Cold Coffee" />
+          <label class="form-label">Item / Gig Details</label>
+          <input class="form-input" id="post-item" placeholder="e.g. Compiler Design Lab Manual (12 pages)" />
         </div>
 
         <div class="form-group">
           <label class="form-label">Pickup Location</label>
-          <input class="form-input" id="post-pickup" placeholder="e.g. Night Canteen Nescafe" />
+          <input class="form-input" id="post-pickup" placeholder="e.g. BH-1 Floor 2, Main Gate 1, Central Xerox" />
         </div>
 
         <div class="form-group">
@@ -1402,14 +1403,14 @@
         <!-- Tip Slider -->
         <div class="form-group">
           <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-            <label class="form-label">Bounty Cash Tip</label>
-            <span style="font-size: 13px; font-weight: 800; color: #059669;" id="slider-tip-val">₹30</span>
+            <label class="form-label">Bounty Escrow / Cash Tip</label>
+            <span style="font-size: 13px; font-weight: 800; color: #059669;" id="slider-tip-val">₹140</span>
           </div>
-          <input type="range" min="10" max="100" step="5" value="30" style="width: 100%; accent-color: var(--lazy);" id="tip-slider" oninput="updateTipSlider(this.value)" />
+          <input type="range" min="10" max="250" step="5" value="140" style="width: 100%; accent-color: var(--lazy);" id="tip-slider" oninput="updateTipSlider(this.value)" />
           <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-top: 4px;">
             <span>₹10 (Min)</span>
-            <span style="color: #D97706; font-weight: 700;" id="calc-bonus-qp">+50 QP Auto-Bonus</span>
-            <span>₹100 (Max)</span>
+            <span style="color: #D97706; font-weight: 700;" id="calc-bonus-qp">+120 QP Incentive</span>
+            <span>₹250 (Max)</span>
           </div>
         </div>
 
@@ -1438,46 +1439,56 @@
     let activeCategory = 'all';
     let handoverMethod = 'otp';
 
-    // Mock Quest Bounties
+    // Mock Quest Bounties Tailored for AKGEC Campus
     let bounties = [
       {
         id: 'q1',
-        category: 'Night Canteen',
-        item: '2× Cheese Butter Maggi & Cold Coffee',
-        pickup: 'Night Canteen (Nescafe Booth)',
-        drop: 'BH-2 • Room 214',
-        timer: '15 mins left',
+        category: 'Academic Gigs',
+        item: 'Compiler Design Lab Manual (12 pgs handwritten)',
+        pickup: 'BH-1 Floor 2 (Question PDF Given)',
+        drop: 'BH-1 • Room 302',
+        timer: 'Due Tomorrow 8:30 AM',
         urgent: false,
-        cash: '₹30',
-        qp: '+50 QP',
+        cash: '₹140',
+        qp: '+120 QP',
         isClaimed: false
       },
       {
         id: 'q2',
-        category: 'Gate Parcel',
-        item: 'Amazon Package (Myntra Shoe Box)',
-        pickup: 'Main Gate Security Post 1',
-        drop: 'BH-2 • Room 308',
-        timer: '8 mins left',
-        urgent: true,
-        cash: '₹40',
-        qp: '+65 QP',
+        category: 'Academic Gigs',
+        item: 'Engineering Drawing (ED) Sheet — Isometric Projections',
+        pickup: 'BH-2 Room 204',
+        drop: 'BH-2 • Room 412',
+        timer: 'Due Friday 9:00 AM',
+        urgent: false,
+        cash: '₹220',
+        qp: '+180 QP',
         isClaimed: false
       },
       {
         id: 'q3',
-        category: 'Printouts',
-        item: 'Compiler Design Lab Manual (14 pgs B&W)',
-        pickup: 'Stationery Shop (Xerox Counter)',
-        drop: 'BH-2 • Room 104',
-        timer: '25 mins left',
-        urgent: false,
-        cash: '₹20',
+        category: 'Gate Parcel',
+        item: 'Swiggy Food Parcel (Biryani & Coke)',
+        pickup: 'Main Security Gate 1',
+        drop: 'BH-2 • Room 214',
+        timer: '8 mins left',
+        urgent: true,
+        cash: '₹15',
         qp: '+35 QP',
         isClaimed: false
       },
       {
         id: 'q4',
+        category: 'Printouts',
+        item: 'Operating Systems Lab File Print & Spiral',
+        pickup: 'Campus Central Xerox Shop',
+        drop: 'BH-1 • Room 104',
+        timer: 'Scheduled: Tomorrow 8:45 AM',
+        urgent: false,
+        cash: '₹10',
+        qp: '+25 QP',
+        isClaimed: false
+      },
         category: 'Borrow Item',
         item: 'Electric Steam Iron for Interview',
         pickup: 'BH-1 • Room 204',
@@ -1773,11 +1784,11 @@
 
       const newQ = {
         id: 'q_' + Date.now(),
-        category: 'Night Canteen',
+        category: 'Academic Gigs',
         item: item,
         pickup: pickup,
         drop: drop,
-        timer: '30 mins left',
+        timer: 'Due Tomorrow 8:30 AM',
         urgent: false,
         cash: `₹${tip}`,
         qp: `+${bonusQP} QP`,

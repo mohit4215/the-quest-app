@@ -7,7 +7,7 @@
  * 2. Middle section: "Inter-Hostel Leaderboard" comparing total points across hostels
  *    (BH-1, BH-2, BH-3, GH-1) and a top 5 weekly student runners list.
  * 3. Bottom section: "Redeem QP Store" where users can swap points for
- *    "Free Delivery Pass (150 QP)" or "Night Canteen ₹50 Voucher (500 QP)".
+ *    "Free Delivery Pass (150 QP)" or "Nescafe & Day Canteen ₹50 Voucher (500 QP)".
  */
 
 import React, { useState } from 'react';
@@ -134,12 +134,12 @@ const STORE_PERKS = [
   },
   {
     id: 'perk_canteen',
-    title: 'Night Canteen ₹50 Voucher',
-    desc: 'Instant ₹50 off on orders above ₹100 at Nescafe, Maggi Booth or Roll Counter.',
+    title: 'Nescafe & Day Canteen ₹50 Voucher',
+    desc: 'Instant ₹50 off on snacks & cold coffee at Nescafe Booth or Campus Canteen.',
     costQP: 500,
     iconName: 'restaurant-outline',
     tag: 'Best Value',
-    codePrefix: 'CANTEEN-50',
+    codePrefix: 'NESCAFE-50',
   },
   {
     id: 'perk_print',

@@ -5,7 +5,7 @@
  * - 🏃 Quester Mode: Radar Dashboard with urgent Gate parcel beacon & Slide-to-Claim
  * - 🛋️ Lazy Mode: Quick-Access Grid, Dynamic Bounty Slider with Instant Delivery
  * - ⏰ Scheduled / Pre-Order Quests: Future morning errands & xerox runs
- * - 🏪 Vendor Portal Modal: B2B2C Night Canteen & Xerox Shop order management
+ * - 🏪 Vendor Portal Modal: B2B2C AKGEC Day Canteen & Central Xerox Shop order management
  * Theme: OLED Black (#000000)
  */
 
@@ -29,24 +29,55 @@ import PostQuestModal from '../components/quest/PostQuestModal';
 
 const CATEGORIES = [
   { id: 'all', label: 'All', iconName: 'sparkles' },
-  { id: 'Gate Parcel', label: 'Gate Delivery', iconName: 'cube' },
-  { id: 'Night Canteen', label: 'Night Canteen', iconName: 'restaurant' },
-  { id: 'Printouts', label: 'Printouts', iconName: 'print' },
+  { id: 'Academic Gigs', label: '📝 Lab & Assignments', iconName: 'document-text' },
+  { id: 'Gate Parcel', label: '📦 Gate Delivery', iconName: 'cube' },
+  { id: 'Printouts', label: '🖨️ Printouts & Xerox', iconName: 'print' },
   { id: 'Scheduled', label: '⏰ Pre-Orders', iconName: 'time' },
-  { id: 'Borrow Item', label: 'Borrow Item', iconName: 'swap-horizontal' },
+  { id: 'Canteen & Snacks', label: '☕ Canteen & Snacks', iconName: 'restaurant' },
+  { id: 'Borrow Item', label: '🔄 Borrow Item', iconName: 'swap-horizontal' },
 ];
 
 const INITIAL_QUESTS = [
   {
+    id: 'q_acad_1',
+    category: 'Academic Gigs',
+    item: 'Compiler Design Lab Manual (12 pgs handwritten)',
+    pickupSpot: 'BH-1 (Junior Block) • Room 108',
+    dropOffHostelRoom: 'BH-1 • Room 302',
+    countdown: 'Due Tomorrow 8:30 AM',
+    cashTip: '₹140', // ₹100 writer payout + ₹40 Quest platform fee
+    qpReward: '+120 QP',
+    notes: 'Question paper PDF attached. Blue ball pen, neat handwriting.',
+    deliveryMethod: '4-Digit OTP Handover',
+    isAccepted: false,
+    isAcademic: true,
+    academicDetails: { pages: 12, writerPayout: 100, platformFee: 40, subject: 'Compiler Design' },
+  },
+  {
+    id: 'q_acad_2',
+    category: 'Academic Gigs',
+    item: 'Engineering Drawing (ED) Sheet — Isometric Projections',
+    pickupSpot: 'BH-2 • Room 204',
+    dropOffHostelRoom: 'BH-2 • Room 412',
+    countdown: 'Due Friday 9:00 AM',
+    cashTip: '₹220', // ₹160 drafter payout + ₹60 Quest platform fee
+    qpReward: '+180 QP',
+    notes: 'A2 chart sheet with standard title block. Finished physical drawing.',
+    deliveryMethod: '4-Digit OTP Handover',
+    isAccepted: false,
+    isAcademic: true,
+    academicDetails: { pages: 1, writerPayout: 160, platformFee: 60, subject: 'Engineering Drawing' },
+  },
+  {
     id: 'q_2',
     category: 'Gate Parcel',
     item: 'Swiggy Food Parcel (Biryani & Coke)',
-    pickupSpot: 'Main Security Gate (Zomato/Swiggy Drop)',
+    pickupSpot: 'Main Security Gate 1 (Zomato/Swiggy Drop)',
     dropOffHostelRoom: 'BH-2 • Room 214',
     countdown: '8 mins left',
-    cashTip: '₹40',
-    qpReward: '+65 QP',
-    notes: 'Show OTP 4821 to delivery executive Ramesh.',
+    cashTip: '₹15',
+    qpReward: '+35 QP',
+    notes: 'Show OTP 4821 to delivery executive Ramesh at Main Gate 1.',
     deliveryMethod: '4-Digit OTP Handover',
     isAccepted: false,
   },
@@ -54,11 +85,11 @@ const INITIAL_QUESTS = [
     id: 'q_sched_1',
     category: 'Scheduled',
     item: 'Operating Systems Lab File (Printed & Spiral Bound)',
-    pickupSpot: 'Campus Xerox Shop (Counter 2)',
+    pickupSpot: 'Campus Central Xerox Shop',
     dropOffHostelRoom: 'BH-1 • Room 302',
     countdown: 'Scheduled: Tomorrow 8:45 AM',
-    cashTip: '₹35',
-    qpReward: '+60 QP',
+    cashTip: '₹10',
+    qpReward: '+25 QP',
     notes: 'Pre-ordered for morning submission! Token #14.',
     deliveryMethod: 'Drop at Door',
     isAccepted: false,
@@ -66,41 +97,28 @@ const INITIAL_QUESTS = [
   },
   {
     id: 'q_1',
-    category: 'Night Canteen',
-    item: '2× Cheese Butter Maggi & Cold Coffee',
-    pickupSpot: 'Night Canteen (Nescafe Booth)',
-    dropOffHostelRoom: 'BH-2 • Room 308',
-    countdown: '15 mins left',
-    cashTip: '₹30',
-    qpReward: '+50 QP',
-    notes: 'Please ask for extra seasoning packet if possible.',
+    category: 'Canteen & Snacks',
+    item: '2× Butter Maggi & Nescafe Cold Coffee',
+    pickupSpot: 'Day Canteen (Nescafe Booth)',
+    dropOffHostelRoom: 'GH-1 (Girls Hostel Reception)',
+    countdown: 'Must deliver before 6:30 PM lock!',
+    cashTip: '₹12',
+    qpReward: '+30 QP',
+    notes: 'Deliver to GH-1 security reception desk before 6:30 PM curfew.',
     deliveryMethod: 'Drop at Door',
     isAccepted: false,
   },
   {
     id: 'q_3',
     category: 'Printouts',
-    item: 'Compiler Design Lab Manual (14 pgs B&W)',
-    pickupSpot: 'Stationery Shop (Xerox Counter)',
+    item: 'Data Structures Question Bank (15 pgs)',
+    pickupSpot: 'Central Xerox Shop (Counter 1)',
     dropOffHostelRoom: 'BH-2 • Room 104',
     countdown: '25 mins left',
-    cashTip: '₹20',
-    qpReward: '+35 QP',
+    cashTip: '₹10',
+    qpReward: '+20 QP',
     notes: 'Already paid via UPI, collect envelope with token #19.',
     deliveryMethod: 'Drop at Door',
-    isAccepted: false,
-  },
-  {
-    id: 'q_4',
-    category: 'Night Canteen',
-    item: 'Spicy Paneer Roll + Thums Up (Can)',
-    pickupSpot: 'Night Canteen (Roll Counter)',
-    dropOffHostelRoom: 'BH-2 • Room 412',
-    countdown: '10 mins left',
-    cashTip: '₹25',
-    qpReward: '+45 QP',
-    notes: 'Deliver to 4th floor before hostel roll call.',
-    deliveryMethod: '4-Digit OTP Handover',
     isAccepted: false,
   },
 ];
@@ -193,7 +211,7 @@ export default function HomeFeedScreen() {
       <View style={styles.vendorStrip}>
         <View style={styles.vendorStripLeft}>
           <Ionicons name="storefront" size={14} color="#F59E0B" />
-          <Text style={styles.vendorStripText}>Campus Canteen & Xerox B2B2C Network</Text>
+          <Text style={styles.vendorStripText}>AKGEC Day Canteen & Central Xerox Network</Text>
         </View>
         <TouchableOpacity
           style={styles.vendorStripBtn}
@@ -202,6 +220,22 @@ export default function HomeFeedScreen() {
         >
           <Text style={styles.vendorStripBtnText}>Vendor Portal →</Text>
         </TouchableOpacity>
+      </View>
+
+      {/* AKGEC Campus Timings & Curfew Status Strip */}
+      <View style={styles.akgecCurfewStrip}>
+        <View style={styles.curfewPill}>
+          <Text style={styles.curfewEmoji}>🚺</Text>
+          <Text style={styles.curfewText}>Girls Hostel: <Text style={styles.curfewHighlightRed}>6:30 PM Lock</Text></Text>
+        </View>
+        <View style={styles.curfewPill}>
+          <Text style={styles.curfewEmoji}>🚹</Text>
+          <Text style={styles.curfewText}>1st-Yr: <Text style={styles.curfewHighlightAmber}>10:00 PM</Text></Text>
+        </View>
+        <View style={styles.curfewPill}>
+          <Text style={styles.curfewEmoji}>🚹</Text>
+          <Text style={styles.curfewText}>Seniors: <Text style={styles.curfewHighlightGreen}>12:00 AM</Text></Text>
+        </View>
       </View>
 
       <ScrollView
@@ -231,9 +265,19 @@ export default function HomeFeedScreen() {
                 onPress={() => setIsModalVisible(true)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.tileEmoji}>🍔</Text>
-                <Text style={styles.tileTitle}>Food Delivery</Text>
-                <Text style={styles.tileSub}>Main Gate Pickup</Text>
+                <Text style={styles.tileEmoji}>📝</Text>
+                <Text style={styles.tileTitle}>Academic Gigs</Text>
+                <Text style={styles.tileSub}>Lab Manuals & ED Sheets</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.quickTile}
+                onPress={() => setIsModalVisible(true)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.tileEmoji}>📦</Text>
+                <Text style={styles.tileTitle}>Main Gate 1</Text>
+                <Text style={styles.tileSub}>Zomato / Amazon Drops</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -243,17 +287,7 @@ export default function HomeFeedScreen() {
               >
                 <Text style={styles.tileEmoji}>🖨️</Text>
                 <Text style={styles.tileTitle}>Urgent Printouts</Text>
-                <Text style={styles.tileSub}>Xerox Shop</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.quickTile}
-                onPress={() => setIsModalVisible(true)}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.tileEmoji}>🍫</Text>
-                <Text style={styles.tileTitle}>Midnight Snacks</Text>
-                <Text style={styles.tileSub}>Night Canteen</Text>
+                <Text style={styles.tileSub}>Central Xerox Shop</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -421,7 +455,7 @@ export default function HomeFeedScreen() {
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                 <Ionicons name="storefront" size={20} color="#F59E0B" />
                 <View>
-                  <Text style={styles.vendorTitle}>Night Canteen & Xerox Portal</Text>
+                  <Text style={styles.vendorTitle}>AKGEC Day Canteen & Central Xerox Portal</Text>
                   <Text style={styles.vendorSub}>Order Queue & Ready-for-Pickup Dispatch</Text>
                 </View>
               </View>
@@ -886,5 +920,49 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '800',
     color: '#F8FAFC',
+  },
+
+  // AKGEC Curfew Live Alert Strip
+  akgecCurfewStrip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#0D0D12',
+    paddingHorizontal: Spacing.base,
+    paddingVertical: 7,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+    gap: 6,
+  },
+  curfewPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#161622',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.06)',
+    gap: 4,
+  },
+  curfewEmoji: {
+    fontSize: 11,
+  },
+  curfewText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#CBD5E1',
+  },
+  curfewHighlightRed: {
+    color: '#EF4444',
+    fontWeight: '800',
+  },
+  curfewHighlightAmber: {
+    color: '#F59E0B',
+    fontWeight: '800',
+  },
+  curfewHighlightGreen: {
+    color: '#10B981',
+    fontWeight: '800',
   },
 });

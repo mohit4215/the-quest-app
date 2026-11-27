@@ -33,7 +33,7 @@
 
 **Quest** is a cross-platform (React Native / Expo + Node.js / PostgreSQL) peer-to-peer micro-delivery and errand platform designed for university students. 
 
-Traditional delivery platforms (Zomato, Swiggy, Blinkit, Amazon) are barred by campus security rules from entering student residential zones, leaving packages at the main security gate. Quest unlocks the latent **"footpath liquidity"** of students already walking back from campus gates, night canteens, stationery/xerox shops, and lecture halls by incentivizing them to complete micro-errands for their peers right to their hostel room doors.
+Traditional delivery platforms (Zomato, Swiggy, Blinkit, Amazon) are barred by campus security rules from entering student residential zones, leaving packages at the main security gate. Quest unlocks the latent **"footpath liquidity"** of students already walking back from campus gates, central xerox shops, day canteens, and lecture halls, while creating a secure escrow network for high-margin academic micro-gigs (handwritten lab manuals, assignments, and engineering drawing sheets).
 
 ---
 
@@ -124,8 +124,8 @@ To transition Quest from a campus prototype to a viral production network, six p
 - **The Upgrade**: Supports non-urgent morning runs (e.g. *"Print Lab Manual & Spiral Bound from Xerox shop and deliver to BH-1 by 8:45 AM tomorrow"*).
 - **Schema**: Backed by `scheduled_for` timestamp in `quests`. Couriers claim scheduled quests the night before, locking in guaranteed earnings for their morning walk to class.
 
-### 4. B2B2C Vendor Dashboard (Canteen & Xerox Queue)
-- **The Upgrade**: Specialized web and in-app portal for Night Canteens, Nescafe stalls, and Xerox centers.
+### 4. B2B2C Vendor Dashboard (Day Canteen & Xerox Queue)
+- **The Upgrade**: Specialized web and in-app portal for Campus Day Canteens, Nescafe stalls, and Central Xerox centers.
 - **Order Token Dispatch**: Vendors mark orders as `PREPARING` or `READY FOR PICKUP (Token #22)`. Runners receive real-time Socket.io alerts when their order is packed, eliminating queue wait times.
 
 ### 5. Trust, Safety & Dispute Resolution

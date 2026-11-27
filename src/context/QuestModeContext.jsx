@@ -4,19 +4,21 @@ import { Colors } from '../constants';
 const QuestModeContext = createContext(null);
 
 export const DEFAULT_ACTIVE_QUEST = {
-  id: 'q_active_default',
-  item: '2× Butter Maggi & Cold Coffee',
-  pickupSpot: 'Night Canteen (Nescafe Booth)',
-  dropOffHostelRoom: 'BH-2 • Room 214',
+  id: 'q_acad_default',
+  item: 'Compiler Design Lab Manual (12 pages)',
+  pickupSpot: 'BH-1 (Junior Block) • Room 108',
+  dropOffHostelRoom: 'BH-1 • Room 302',
   recipientName: 'Aman Sharma',
   recipientPhone: '+91 98765 43210',
-  cashTip: '₹30',
-  qpReward: '+50 QP',
-  rewardQPNumber: 50,
+  cashTip: '₹140',
+  qpReward: '+120 QP',
+  rewardQPNumber: 120,
   otpCode: '4821',
-  countdown: '15 mins left',
-  notes: 'Extra seasoning in Maggi. Call when reaching 2nd floor.',
+  countdown: 'Due Tomorrow 8:30 AM',
+  notes: '12 pages handwritten assignment. Question paper PDF attached. Blue ball pen.',
   status: 'active',
+  isAcademic: true,
+  academicDetails: { pages: 12, writerPayout: 100, platformFee: 40 },
 };
 
 export function QuestModeProvider({ children }) {

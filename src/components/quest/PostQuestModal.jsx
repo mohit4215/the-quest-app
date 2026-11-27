@@ -20,43 +20,67 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius } from '../../constants';
 import { useQuestMode } from '../../context/QuestModeContext';
 
-// Quick-fill templates
+// Quick-fill templates tailored for AKGEC Campus Realities
 const TEMPLATES = [
   {
-    id: 'zomato',
-    label: 'Gate Zomato Pickup',
-    iconName: 'fast-food-outline',
-    item: 'Zomato Food Order (Hot & Fresh)',
-    pickup: 'Main Gate Security Desk',
-    category: 'Gate Parcel',
-    categoryIcon: 'cube',
-    defaultTip: 40,
+    id: 'lab_manual',
+    label: 'Lab Manual Writing (10 pgs)',
+    iconName: 'document-text-outline',
+    item: '10-Page Lab Manual Writing (Handwritten)',
+    pickup: 'Hostel Room (Provide Question PDF)',
+    category: 'Academic Gigs',
+    categoryIcon: 'document-text',
+    defaultTip: 140, // ₹100 writer payout + ₹40 Quest fee
     deliveryMethod: 'otp',
-    notes: 'Call on arrival at hostel gate.',
+    notes: 'Neat handwriting required in blue ball pen. Due tomorrow 8:30 AM.',
+    isAcademic: true,
+    writerPayout: 100,
+    platformFee: 40,
   },
   {
-    id: 'maggi',
-    label: '2x Maggi from Canteen',
-    iconName: 'restaurant-outline',
-    item: '2× Butter Maggi & Cold Coffee',
-    pickup: 'Night Canteen (Nescafe Booth)',
-    category: 'Night Canteen',
-    categoryIcon: 'restaurant',
-    defaultTip: 25,
-    deliveryMethod: 'door',
-    notes: 'Extra masala in Maggi please.',
+    id: 'ed_sheet',
+    label: 'Engineering Drawing (ED)',
+    iconName: 'brush-outline',
+    item: 'Engineering Drawing (ED) Sheet — Isometric',
+    pickup: 'Hostel Room (Problem Sheet Given)',
+    category: 'Academic Gigs',
+    categoryIcon: 'brush',
+    defaultTip: 220, // ₹160 drafter payout + ₹60 Quest fee
+    deliveryMethod: 'otp',
+    notes: 'A2 Chart Sheet with title block and borders. Finished physical sheet handover.',
+    isAcademic: true,
+    writerPayout: 160,
+    platformFee: 60,
+  },
+  {
+    id: 'zomato',
+    label: 'Main Gate 1 Parcel Pickup',
+    iconName: 'fast-food-outline',
+    item: 'Main Gate Food Drop (Swiggy / Zomato)',
+    pickup: 'Main Security Gate 1 (Drop Desk)',
+    category: 'Gate Parcel',
+    categoryIcon: 'cube',
+    defaultTip: 15,
+    deliveryMethod: 'otp',
+    notes: 'Show OTP 4821 to delivery rider. Deliver to hostel door before curfew.',
+    isAcademic: false,
+    writerPayout: 15,
+    platformFee: 2,
   },
   {
     id: 'printout',
-    label: 'Lab File Printout',
+    label: 'Lab File Print & Spiral',
     iconName: 'print-outline',
-    item: 'Lab Manual & Assignment (10 Pages B&W)',
-    pickup: 'Stationery Shop (Xerox Counter)',
+    item: 'Lab Manual Print & Spiral Binding',
+    pickup: 'Campus Central Xerox Shop',
     category: 'Printouts',
     categoryIcon: 'print',
-    defaultTip: 20,
+    defaultTip: 10,
     deliveryMethod: 'door',
     notes: 'Paid via UPI, collect envelope with token #24.',
+    isAcademic: false,
+    writerPayout: 10,
+    platformFee: 1.5,
   },
 ];
 
@@ -77,11 +101,14 @@ export default function PostQuestModal({
   const [dropOffRoom, setDropOffRoom] = useState(
     userProfile?.hostelBadge || 'BH-2 • Room 214'
   );
-  const [category, setCategory] = useState('Night Canteen');
-  const [categoryIcon, setCategoryIcon] = useState('🌙');
+  const [category, setCategory] = useState('Academic Gigs');
+  const [categoryIcon, setCategoryIcon] = useState('📝');
   const [notes, setNotes] = useState('');
-  const [tip, setTip] = useState(30);
+  const [tip, setTip] = useState(140);
   const [deliveryMethod, setDeliveryMethod] = useState('otp');
+  const [isAcademic, setIsAcademic] = useState(true);
+  const [writerPayout, setWriterPayout] = useState(100);
+  const [platformFee, setPlatformFee] = useState(40);
 
   const sliderWidth = useRef(260).current;
   const trackRef = useRef(null);
@@ -97,15 +124,23 @@ export default function PostQuestModal({
     setTip(template.defaultTip);
     setDeliveryMethod(template.deliveryMethod);
     setNotes(template.notes);
+    setIsAcademic(template.isAcademic || false);
+    setWriterPayout(template.writerPayout || template.defaultTip);
+    setPlatformFee(template.platformFee || 2);
   };
 
   const handleSliderTouch = (evt) => {
     const { locationX } = evt.nativeEvent;
     const clampedX = Math.max(0, Math.min(sliderWidth, locationX));
     const percentage = clampedX / sliderWidth;
-    const rawVal = 10 + percentage * 90;
+    const rawVal = 10 + percentage * 240;
     const steppedVal = Math.round(rawVal / 5) * 5;
-    setTip(Math.max(10, Math.min(100, steppedVal)));
+    const newTip = Math.max(10, Math.min(250, steppedVal));
+    setTip(newTip);
+    if (isAcademic) {
+      setWriterPayout(Math.round(newTip * 0.72));
+      setPlatformFee(newTip - Math.round(newTip * 0.72));
+    }
   };
 
   const panResponder = useRef(
@@ -128,11 +163,13 @@ export default function PostQuestModal({
       dropOffHostelRoom: dropOffRoom.trim() || 'BH-2 • Room 214',
       category: category,
       categoryIcon: categoryIcon,
-      countdown: '30 mins left',
+      countdown: isAcademic ? 'Due Tomorrow 8:30 AM' : '30 mins left',
       cashTip: `₹${tip}`,
       qpReward: `+${bonusQP} QP`,
       deliveryMethod: deliveryMethod === 'door' ? 'Drop at Door' : '4-Digit OTP Handover',
       otp: deliveryMethod === 'otp' ? Math.floor(1000 + Math.random() * 9000).toString() : null,
+      isAcademic: isAcademic,
+      academicDetails: isAcademic ? { writerPayout, platformFee } : null,
       notes: notes.trim()
         ? `${notes.trim()} • ${deliveryMethod === 'otp' ? '🔐 4-Digit OTP Handover' : '🚪 Drop at Door'}`
         : deliveryMethod === 'otp'
@@ -151,12 +188,16 @@ export default function PostQuestModal({
     setItemTitle('');
     setPickupSpot('');
     setDropOffRoom(userProfile?.hostelBadge || 'BH-2 • Room 214');
-    setTip(30);
+    setTip(140);
+    setCategory('Academic Gigs');
+    setIsAcademic(true);
+    setWriterPayout(100);
+    setPlatformFee(40);
     setDeliveryMethod('otp');
     setNotes('');
   };
 
-  const sliderPercent = ((tip - 10) / 90) * 100;
+  const sliderPercent = Math.min(100, Math.max(0, ((tip - 10) / 240) * 100));
 
   return (
     <Modal
@@ -233,14 +274,27 @@ export default function PostQuestModal({
               </ScrollView>
             </View>
 
+            {/* AKGEC Campus Timings Banner */}
+            <View style={styles.akgecNoticeCard}>
+              <View style={styles.akgecNoticeHeader}>
+                <Ionicons name="information-circle" size={16} color="#F59E0B" />
+                <Text style={styles.akgecNoticeTitle}>AKGEC Campus Lock-In Curfews</Text>
+              </View>
+              <Text style={styles.akgecNoticeText}>
+                • Girls Hostel: Locked at <Text style={{fontWeight: '700', color: '#EF4444'}}>6:30 PM</Text> (Order early!){'\n'}
+                • 1st Year Boys (BH-1): Locked at <Text style={{fontWeight: '700', color: '#F59E0B'}}>10:00 PM</Text>{'\n'}
+                • Senior Boys (BH-2/BH-3): Locked at <Text style={{fontWeight: '700', color: '#10B981'}}>12:00 AM Midnight</Text>
+              </Text>
+            </View>
+
             {/* Input Fields */}
             <View style={styles.section}>
               <Text style={styles.inputTitle}>
-                Item Details <Text style={styles.required}>*</Text>
+                Item / Gig Details <Text style={styles.required}>*</Text>
               </Text>
               <TextInput
                 style={styles.textInput}
-                placeholder="e.g. 2x Maggi & Cold Coffee, Stationery, Zomato Bag"
+                placeholder="e.g. Compiler Design Lab File (10 pgs), ED Sheet, Swiggy Gate Drop"
                 placeholderTextColor="#94A3B8"
                 value={itemTitle}
                 onChangeText={(text) => {
@@ -252,7 +306,7 @@ export default function PostQuestModal({
               <Text style={styles.inputTitle}>Pickup Location</Text>
               <TextInput
                 style={styles.textInput}
-                placeholder="e.g. Night Canteen Nescafe, Main Gate, Xerox Shop"
+                placeholder="e.g. Main Gate 1, Central Xerox Shop, BH-1 Floor 2"
                 placeholderTextColor="#94A3B8"
                 value={pickupSpot}
                 onChangeText={setPickupSpot}
@@ -267,10 +321,10 @@ export default function PostQuestModal({
                 onChangeText={setDropOffRoom}
               />
 
-              <Text style={styles.inputTitle}>Special Instructions / Notes</Text>
+              <Text style={styles.inputTitle}>Special Instructions / Submission Deadline</Text>
               <TextInput
                 style={[styles.textInput, styles.notesInput]}
-                placeholder="e.g. Call when entering BH-2 2nd floor, extra ketchup"
+                placeholder="e.g. Due tomorrow 8:30 AM, neat handwriting in blue ball pen"
                 placeholderTextColor="#94A3B8"
                 value={notes}
                 onChangeText={setNotes}
@@ -282,9 +336,35 @@ export default function PostQuestModal({
             {/* Bounty Tip Slider */}
             <View style={styles.section}>
               <View style={styles.sliderHeaderRow}>
-                <Text style={styles.sectionLabel}>Bounty Cash Tip</Text>
+                <Text style={styles.sectionLabel}>
+                  {isAcademic ? 'Academic Gig Bounty (Escrow)' : 'Bounty Cash Tip'}
+                </Text>
                 <View style={styles.tipBadge}>
                   <Text style={styles.tipBadgeText}>₹{tip}</Text>
+                </View>
+              </View>
+
+              {/* Escrow Fee Transparency Breakdown */}
+              <View style={styles.escrowCard}>
+                <View style={styles.escrowHeader}>
+                  <Ionicons name="shield-checkmark" size={15} color="#10B981" />
+                  <Text style={styles.escrowTitle}>
+                    {isAcademic ? 'Academic Escrow Breakdown' : 'Micro-Errand Escrow Breakdown'}
+                  </Text>
+                </View>
+                <View style={styles.escrowRow}>
+                  <Text style={styles.escrowLabel}>
+                    {isAcademic ? '✍️ Peer Writer Payout:' : '🏃 Runner Tip:'}
+                  </Text>
+                  <Text style={styles.escrowValGreen}>₹{writerPayout}</Text>
+                </View>
+                <View style={styles.escrowRow}>
+                  <Text style={styles.escrowLabel}>⚡ Quest Platform Fee:</Text>
+                  <Text style={styles.escrowValPurple}>₹{platformFee}</Text>
+                </View>
+                <View style={[styles.escrowRow, styles.escrowTotalRow]}>
+                  <Text style={styles.escrowTotalLabel}>Total Escrow Paid by You:</Text>
+                  <Text style={styles.escrowTotalVal}>₹{tip}</Text>
                 </View>
               </View>
 
@@ -331,8 +411,8 @@ export default function PostQuestModal({
 
                 <View style={styles.sliderLimitsRow}>
                   <Text style={styles.limitLabel}>₹10 (Min)</Text>
-                  <Text style={styles.limitLabel}>₹50</Text>
-                  <Text style={styles.limitLabel}>₹100 (Max)</Text>
+                  <Text style={styles.limitLabel}>₹140 (Lab Gig)</Text>
+                  <Text style={styles.limitLabel}>₹250 (Max)</Text>
                 </View>
               </View>
             </View>
@@ -747,5 +827,88 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '800',
+  },
+
+  // AKGEC Notice Card
+  akgecNoticeCard: {
+    backgroundColor: '#FFFBEB',
+    borderRadius: Radius.md,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#FDE68A',
+    marginBottom: Spacing.md,
+  },
+  akgecNoticeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 4,
+  },
+  akgecNoticeTitle: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#92400E',
+  },
+  akgecNoticeText: {
+    fontSize: 11,
+    color: '#78350F',
+    lineHeight: 16,
+  },
+
+  // Escrow Breakdown Card
+  escrowCard: {
+    backgroundColor: '#F8FAFC',
+    borderRadius: Radius.md,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    marginBottom: Spacing.md,
+  },
+  escrowHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 8,
+  },
+  escrowTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#0F172A',
+  },
+  escrowRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 3,
+  },
+  escrowLabel: {
+    fontSize: 12,
+    color: '#64748B',
+  },
+  escrowValGreen: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#10B981',
+  },
+  escrowValPurple: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#7C3AED',
+  },
+  escrowTotalRow: {
+    borderTopWidth: 1,
+    borderTopColor: '#E2E8F0',
+    marginTop: 6,
+    paddingTop: 6,
+  },
+  escrowTotalLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#0F172A',
+  },
+  escrowTotalVal: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#0F172A',
   },
 });

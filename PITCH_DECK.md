@@ -4,21 +4,21 @@
 ---
 
 ## Executive Summary
-**Quest** is a peer-to-peer micro-errand and delivery network built specifically for residential university campuses. It solves the critical **"Last-500-Meter Campus Delivery Problem"** by incentivizing students already walking back from campus gates, night canteens, and xerox shops to complete deliveries for peers right to their hostel room doors.
+**Quest** is a peer-to-peer micro-errand and academic micro-gig network built specifically for residential university campuses. It solves the critical **"Last-500-Meter Campus Delivery Problem"** and the **"Academic Submission Crunch"** by incentivizing students to complete deliveries and high-margin academic drafting (Lab Manuals, Assignments, Engineering Drawing sheets) for peers right to their hostel room doors.
 
 ---
 
-## 1. Problem Statement: The Last 500m Campus Black Hole
+## 1. Problem Statement: The Last 500m Campus Black Hole & Submission Scramble
 Commercial delivery giants (Zomato, Swiggy, Blinkit, Amazon) stop at the university main gate due to campus security regulations. For residential hostel students:
-- **The Walk of Dread**: Getting a midnight snack or parcel requires a 15–25 minute round trip (800m – 1.5km) in extreme weather or late hours.
-- **High Friction for Small Needs**: Buying a ₹20 Maggi or picking up a ₹10 xerox manual takes 40 minutes of queueing and walking.
-- **Wasted Footpath Liquidity**: At any given minute, dozens of students are walking the exact same corridor with empty hands.
-- **Awkward Social Debt**: Asking wing-mates via WhatsApp groups results in unanswered texts, delays, and uncomfortable financial follow-ups.
+- **The Walk of Dread & Strict Curfews**: At AKGEC, Girls Hostel closes at 6:30 PM, 1st-Year Boys at 10:00 PM, Seniors at 12:00 AM. Getting gate parcels or food requires walking 1.2 km before lock-in.
+- **Zero Night Canteen Reality**: In campuses without night canteens like AKGEC, external gate drops and daytime canteen/xerox runs are the only lifeline.
+- **The Academic Submission Crisis**: Hundreds of students desperately pay peers to write handwritten lab manuals and draw ED sheets before morning 9 AM submissions.
+- **Wasted Footpath & Peer Liquidity**: At any given minute, dozens of students are walking the same corridor or have the skills to complete tasks for cash.
 
 ---
 
-## 2. The Solution: Dual-Mode Campus Micro-Delivery
-Quest turns everyday campus walking routes into cash and social capital via a single toggle switch:
+## 2. The Solution: Dual-Mode Campus Micro-Delivery & Academic Escrow
+Quest turns everyday campus walking routes and peer skills into cash and social capital via a single toggle switch:
 
 ```
 ┌─────────────────────────────────┐
@@ -26,53 +26,54 @@ Quest turns everyday campus walking routes into cash and social capital via a si
 └─────────────────────────────────┘
 ```
 1. **Lazy Mode (Purple Accent `#7C3AED`)**:
-   - Order snacks, gate parcels, or printouts without leaving your study chair.
-   - Set a dynamic cash tip (₹10 – ₹100) that automatically awards bonus Quest Points (QP).
+   - Order gate parcels, printouts, or outsource 10-page lab manuals without leaving your study chair.
+   - Transparent escrow pricing: ₹140 for 10-page manual (₹100 to peer writer, ₹40 Quest margin).
    - Safe delivery with a 4-digit OTP handshake.
 2. **Quester Mode (Green Accent `#10B981`)**:
-   - Students walking back from the gate or canteen check the feed for bounties along their path.
-   - Earn instant cash tips + QP to redeem in the campus perk store.
+   - Students walking back from the gate or skilled peers accept assignments and bounties along their path.
+   - Multi-order route batching (up to 3 parcels in one walk).
+   - Earn instant cash via frictionless UPI + QP to redeem in the campus perk store.
 
 ---
 
 ## 3. Product Architecture & User Journey
 
 ### A. Live Campus Radar
-- Real-time pulse indicator showing active peer concentration at key campus hubs:
-  - *8 peers at Night Canteen (Nescafe Booth)*
-  - *5 peers at Main Gate (Zomato / Swiggy drop point)*
-  - *2 peers at Stationery Shop (Xerox counter)*
-  - *4 peers at Academic Block*
+- Real-time pulse indicator showing active peer concentration and curfew-sensitive hubs:
+  - *12 peers at Academic Block (Lab Manuals & ED Sheets)*
+  - *7 peers at Main Gate 1 (Zomato / Swiggy drop point)*
+  - *4 peers at Central Xerox Shop (Lab manual print & spiral binding)*
+  - *9 peers at Girls Hostel (GH-1 Curfew 6:30 PM Lock)*
 
 ### B. Interactive 4-Step Delivery Pipeline
 ```
 [1. Claimed] ──► [2. At Shop/Gate] ──► [3. Walking to Hostel] ──► [4. OTP Delivered]
 ```
-- Step 1: Quest locked to the runner.
-- Step 2: Confirmation of pickup at vendor/gate.
-- Step 3: En route with built-in 1-tap quick replies (*"At your hostel gate"*, *"Item out of stock, alternative?"*, *"Send UPI on delivery"*).
+- Step 1: Quest locked to the runner / writer with secure escrow balance.
+- Step 2: Confirmation of pickup at vendor/gate or draft start.
+- Step 3: En route with built-in 1-tap quick replies (*"At your hostel gate"*, *"Handover at room door"*, *"UPI payment on delivery"*).
 - Step 4: Secure 4-digit OTP code verification before reward payout.
 
 ### C. Gamified Campus Economy
 - **Inter-Hostel Leaderboard**: Hostels compete for weekly rankings (BH-1 vs BH-2 vs GH-1), driving massive organic student engagement.
-- **Reliability Metrics**: Track runner reliability (98%), total quests completed, and unlockable badges (*"Night Owl Runner"*, *"Hostel Saviour"*).
-- **Redeem Store**: Swap points for *Free Delivery Passes* and *Night Canteen ₹50 Vouchers*.
+- **Reliability Metrics**: Track runner reliability (98%), total quests completed, and unlockable badges (*"Campus Legend"*, *"Speed Demon"*, *"Lab Courier"*).
+- **Redeem Store**: Swap points for *Free Delivery Passes* and *Nescafe & Day Canteen ₹50 Vouchers*.
 
 ---
 
 ## 4. Market Opportunity (India)
 - **Total Addressable Market (TAM)**: 40 Million+ higher education students in India.
-- **Serviceable Addressable Market (SAM)**: 12 Million+ students living in residential campus hostels (IITs, NITs, BITS, VIT, Manipal, SRM, Thapar, Amity, etc.).
-- **Initial Target (SOM)**: 1.5 Million residential students across top 100 private & national residential institutes with closed campus borders.
-- **Frequency**: 4–7 micro-errands per student per week during active semesters.
+- **Serviceable Addressable Market (SAM)**: 12 Million+ students living in residential campus hostels (AKGEC, IITs, NITs, BITS, VIT, Thapar, etc.).
+- **Initial Target (SOM)**: 1.5 Million residential students across top private & national engineering institutes with closed campus borders.
+- **Frequency**: 4–7 micro-errands & 1–2 academic assignments per student per month.
 
 ---
 
-## 5. Business Model & Revenue Streams
-1. **Platform Transaction Fee**: 10% fee on bounties above ₹30.
-2. **Campus Vendor Integration**: Revenue share with campus canteens and stationery shops for priority digital ordering.
-3. **Brand Sampling & Sponsorships**: FMCG snack and energy drink brands sponsor QP Store rewards and direct-to-dorm product drops.
-4. **Quest Campus Pass**: ₹99/semester subscription offering zero platform fees and priority radar placement.
+## 5. Business Model & Revenue Streams (AKGEC Ground Economics)
+1. **Academic Micro-Gigs (62% of Revenue)**: ₹35 – ₹60 platform take rate per lab manual / assignment / ED sheet (₹140 paid, ₹100 to writer, ₹40 to Quest).
+2. **Micro-Errand Platform Fees (18% of Revenue)**: ₹1.50 – ₹3.00 flat convenience fee per gate parcel or xerox run.
+3. **Canteen & Xerox B2B SaaS**: Flat ₹1,500/month per campus vendor for order queue management and direct courier dispatch.
+4. **Quest Campus Pass**: ₹49/semester subscription offering zero errand platform fees and priority radar placement.
 
 ---
 

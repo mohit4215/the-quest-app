@@ -239,6 +239,40 @@ export default function ActiveQuestScreen() {
               <Text style={styles.qpText}>{currentQuest?.qpReward || '+50 QP'}</Text>
             </View>
           </View>
+
+          {/* Real-World Escrow & Payout Transparency */}
+          <View style={styles.escrowTransparencyCard}>
+            <View style={styles.escrowTransHeader}>
+              <Ionicons name="shield-checkmark" size={12} color="#10B981" />
+              <Text style={styles.escrowTransTitle}>
+                {currentQuest?.isAcademic ? 'ACADEMIC ESCROW TRANSPARENCY' : 'CAMPUS ERRAND TRANSPARENCY'}
+              </Text>
+            </View>
+            <View style={styles.escrowTransGrid}>
+              <View style={styles.escrowTransItem}>
+                <Text style={styles.escrowTransLabel}>
+                  {currentQuest?.isAcademic ? '✍️ Writer Payout' : '🏃 Runner Tip'}
+                </Text>
+                <Text style={styles.escrowTransValGreen}>
+                  ₹{currentQuest?.academicDetails?.writerPayout || (currentQuest?.isAcademic ? 100 : 15)}
+                </Text>
+              </View>
+              <View style={styles.escrowTransDivider} />
+              <View style={styles.escrowTransItem}>
+                <Text style={styles.escrowTransLabel}>⚡ Quest Take</Text>
+                <Text style={styles.escrowTransValPurple}>
+                  ₹{currentQuest?.academicDetails?.platformFee || (currentQuest?.isAcademic ? 40 : 2)}
+                </Text>
+              </View>
+              <View style={styles.escrowTransDivider} />
+              <View style={styles.escrowTransItem}>
+                <Text style={styles.escrowTransLabel}>Total Escrow</Text>
+                <Text style={styles.escrowTransValWhite}>
+                  {currentQuest?.cashTip || '₹140'}
+                </Text>
+              </View>
+            </View>
+          </View>
         </View>
 
         {/* ── 1. THE BATCHING SYSTEM (MULTI-ORDER CLAIMS) ── */}
@@ -1352,5 +1386,62 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '900',
     color: '#FFFFFF',
+  },
+
+  // Escrow Transparency Card
+  escrowTransparencyCard: {
+    marginTop: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    borderRadius: Radius.md,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  escrowTransHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 6,
+  },
+  escrowTransTitle: {
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 0.8,
+    color: '#94A3B8',
+  },
+  escrowTransGrid: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  escrowTransItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  escrowTransLabel: {
+    fontSize: 9,
+    color: '#64748B',
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  escrowTransValGreen: {
+    fontSize: 13,
+    fontWeight: '900',
+    color: '#10B981',
+  },
+  escrowTransValPurple: {
+    fontSize: 13,
+    fontWeight: '900',
+    color: '#A78BFA',
+  },
+  escrowTransValWhite: {
+    fontSize: 13,
+    fontWeight: '900',
+    color: '#F8FAFC',
+  },
+  escrowTransDivider: {
+    width: 1,
+    height: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
 });

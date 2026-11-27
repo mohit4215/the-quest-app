@@ -510,7 +510,7 @@ const rateQuest = asyncHandler(async (req, res) => {
 
 // ── Vendor Dashboard Endpoints ───────────────────────────────────────────────
 const getVendorOrders = asyncHandler(async (req, res) => {
-  const { vendor } = req.query; // 'Night Canteen', 'Xerox Shop'
+  const { vendor } = req.query; // 'Day Canteen', 'Xerox Shop', 'Academic Blocks'
   const { rows } = await query(
     `SELECT q.*, r.name as requester_name, c.name as courier_name
        FROM quests q
